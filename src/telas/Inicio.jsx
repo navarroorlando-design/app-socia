@@ -5,6 +5,7 @@ import { BLOQUEIOS_LISTA, ORGS, ORG_ORDER, PROCESSOS_LISTA, RECLAMACOES_LISTA, T
 import { fmtBRL, fmtBRLCurto, fmtData } from "../dados/formato";
 import { CARD, F, S, SEMANTICA, T, semDe } from "../estilo/tokens";
 import { Avatar } from "../preferencias";
+import { Dica } from "../ajuda/Dica";
 
 /* ------------------------------------------------------------------ */
 /* Telas: Início                                                       */
@@ -202,6 +203,7 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onO
         </button>
       </div>
 
+      <Dica id="inicio" />
       {ordem.filter((x) => x.visivel).map((x) => <React.Fragment key={x.id}>{SECOES[x.id]}</React.Fragment>)}
     </div>
   );

@@ -20,6 +20,8 @@ import { RelatorioCliente } from "./telas/RelatorioCliente";
 import { AvisoSemInternet, Bloqueio, FluxoEntrada, Seguranca, useConexao } from "./telas/Entrada";
 import { MenuVA, OrdemClientes, PerfilUsuaria } from "./telas/Perfil";
 import { ProcessoDetalhe } from "./telas/ProcessoDetalhe";
+import { ComoUsar, TourBoasVindas } from "./telas/Ajuda";
+import { AjudaContext } from "./ajuda/Dica";
 
 function AppSociosPrototype() {
   const sample = useSample();
@@ -78,6 +80,12 @@ function AppSociosPrototype() {
     const o = lerPref("inicio", INICIO_PADRAO);
     return Array.isArray(o) && INICIO_PADRAO.every((p) => o.some((x) => x.id === p.id)) ? o : INICIO_PADRAO;
   });
+  // Tutorial: tour de boas-vindas (uma vez) e dicas de primeira vez em cada tela
+  const [tourAberto, setTourAberto] = useState(() => !!acesso.entrou && !lerPref("tourVisto", false));
+  const fecharTour = () => { setTourAberto(false); gravarPref("tourVisto", true); };
+  const [dicasVistas, setDicasVistasS] = useState(() => lerPref("dicas", []));
+  const setDicasVistas = (v) => { setDicasVistasS(v); gravarPref("dicas", v); };
+  const ajuda = { vistas: dicasVistas, marcar: (id) => setDicasVistas([...dicasVistas.filter((x) => x !== id), id]), mini: false };
   const setOrdemInicio = (o) => { setOrdemInicioS(o); gravarPref("inicio", o); };
   const mudarAlertas = (f) => setAlertasS((as) => { const n = f(as); gravarPref("alertas", n); return n; });
   const hojeCurto = () => new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
@@ -159,6 +167,16 @@ function AppSociosPrototype() {
   const openOsDetalhe = (tipo, item, origem) => {
     if (tipo === "processo") setSelectedProcesso(item); else setSelectedBloqueio(item);
     setOsDetalheOrigin(origem); setOsView(tipo);
+  };
+  // "Me leve lá" das perguntas comuns
+  const irPara = (destino) => {
+    const perfil = { alertas: "alertas", personalizar: "personalizar", seguranca: "seguranca", perfil: "main" };
+    const inicio = { carteira: "carteira", acompanhando: "acompanhando", busca: "busca" };
+    if (perfil[destino]) { setTab("perfil"); setPerfilView(perfil[destino]); }
+    else if (inicio[destino]) { setTab("inicio"); setInicioView(inicio[destino]); }
+    else if (destino === "org") openOrg(ordem[0]);
+    else if (destino === "contratos") { setSelectedOrg(ordem[0]); setTab("os"); setOsView("contratos"); }
+    else changeTab(destino);
   };
   const osLabels = { profile: ORGS[selectedOrg]?.name, contratos: "Contratos de gestão", contrato: selectedContrato, bloqueios: "Bloqueios", processos: "Processos", bloqueio: "Bloqueio", reclamacoes: "Reclamações", reclamacao: "Reclamação" };
   const openContratoDe = (orgId, orgao) => { setSelectedOrg(orgId); setTab("os"); setSelectedContrato(orgao); setContratoOrigin("profile"); setOsView("contrato"); };
@@ -253,13 +271,16 @@ function AppSociosPrototype() {
         <div className="app-island absolute left-1/2 -translate-x-1/2 top-3 w-[110px] h-[30px] rounded-full z-20" style={{ background: T.ink }} />
         <PrefsContext.Provider value={{ lerVoz }}>
         <PessoalContext.Provider value={pessoal}>
+        <AjudaContext.Provider value={ajuda}>
         <div className="absolute inset-0 flex flex-col" style={{ zoom: escala }}>
         <StatusBar />
         {!acesso.entrou ? (
           <FluxoEntrada escala={escala} setEscala={setEscala} lerVoz={lerVoz} setLerVoz={setLerVoz}
-            onConcluir={(faceId) => setAcesso({ entrou: true, faceId })} />
+            onConcluir={(faceId) => { setAcesso({ entrou: true, faceId }); if (!lerPref("tourVisto", false)) setTourAberto(true); }} />
         ) : bloqueado ? (
           <Bloqueio onDesbloquear={() => setBloqueado(false)} />
+        ) : tourAberto ? (
+          <TourBoasVindas onFim={fecharTour} apelido={apelido} foto={foto} escala={escala} lerVoz={lerVoz} />
         ) : (<>
         {!online && <AvisoSemInternet desde={desde} />}
 
@@ -381,9 +402,13 @@ function AppSociosPrototype() {
         )}
 
         {tab === "perfil" && perfilView === "main" && <PerfilUsuaria onOpenNotifPrefs={() => setPerfilView("notif")} onOpenSeguranca={() => setPerfilView("seguranca")}
-            onOpenAlertas={() => setPerfilView("alertas")} onOpenPersonalizar={() => setPerfilView("personalizar")} alertasCount={alertas.length} onOpenPasta={() => setPerfilView("pasta")} pinnedCount={pinned.length} onOpenGuia={() => setPerfilView("guia")}
+            onOpenAlertas={() => setPerfilView("alertas")} onOpenPersonalizar={() => setPerfilView("personalizar")} alertasCount={alertas.length} onOpenPasta={() => setPerfilView("pasta")} pinnedCount={pinned.length} onOpenGuia={() => setPerfilView("guia")} onOpenAjuda={() => setPerfilView("ajuda")}
             onOpenOrdem={() => setPerfilView("ordem")} foto={foto} setFoto={setFoto} apelido={apelido} setApelido={setApelido}
             escala={escala} setEscala={setEscala} lerVoz={lerVoz} setLerVoz={setLerVoz} />}
+        {tab === "perfil" && perfilView === "ajuda" && (
+          <ComoUsar onBack={() => setPerfilView("main")} onTour={() => setTourAberto(true)} onReativarDicas={() => setDicasVistas([])}
+            onIr={irPara} onPerguntar={() => changeTab("ia")} />
+        )}
         {tab === "perfil" && perfilView === "ordem" && <OrdemClientes ordem={ordem} setOrdem={setOrdem} onBack={() => setPerfilView("main")} />}
         {tab === "perfil" && perfilView === "guia" && <GuiaEstilo onBack={() => setPerfilView("main")} />}
         {tab === "perfil" && perfilView === "pasta" && <PastaRelatorios pinned={pinned} onOpenPinned={(p) => openPinned(p, "pasta")} onBack={() => setPerfilView("main")} />}
@@ -407,6 +432,7 @@ function AppSociosPrototype() {
         )}
         </>)}
         </div>
+        </AjudaContext.Provider>
         </PessoalContext.Provider>
         </PrefsContext.Provider>
       </div>

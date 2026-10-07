@@ -5,6 +5,7 @@ import { CLIENTE_NOME } from "../dados/base";
 import { CARD, F, LINK, S, T } from "../estilo/tokens";
 import { Resposta, lerSugestoes, textoParaOuvir } from "../ia/Resposta";
 import { OuvirBtn } from "../preferencias";
+import { Dica } from "../ajuda/Dica";
 
 /* ------------------------- Telas de IA ----------------------------- */
 function AskBar({ value, onChange, onSubmit, placeholder, disabled, scopeLabel }) {
@@ -51,6 +52,7 @@ function IaAsk({ onAsk, sample, conversa, onContinuar }) {
         </p>
       </div>
       <div className="px-5 shrink-0">
+        <Dica id="ia" style={{ marginTop: 0, marginBottom: 12 }} />
         {sample === null && (
           <p className="mb-2 text-center" style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2 }}>A IA responde quando este app é aberto no Claude.</p>
         )}

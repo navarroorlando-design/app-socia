@@ -38,11 +38,12 @@ function Avatar({ foto, size = 44, badge = 0, claro = false }) {
   );
 }
 
-function OuvirBtn({ texto }) {
+// sempre: mostra o botão mesmo com "Ouvir resumos" desligado (tour e ajuda)
+function OuvirBtn({ texto, sempre }) {
   const { lerVoz } = React.useContext(PrefsContext);
   const [falando, setFalando] = useState(false);
   useEffect(() => () => { try { window.speechSynthesis?.cancel(); } catch {} }, []);
-  if (!lerVoz || typeof window === "undefined" || !("speechSynthesis" in window) || !texto) return null;
+  if ((!lerVoz && !sempre) || typeof window === "undefined" || !("speechSynthesis" in window) || !texto) return null;
   const alternar = () => {
     try {
       const synth = window.speechSynthesis;
@@ -55,7 +56,7 @@ function OuvirBtn({ texto }) {
   };
   return (
     <button onClick={alternar} className="mt-3 inline-flex items-center gap-2 rounded-full"
-            style={{ background: "#FFFDF9", color: S.ink, fontFamily: F.ui, fontSize: 15, fontWeight: 600, height: 40, padding: "0 16px" }}>
+            style={{ background: "#FFFDF9", color: S.ink, fontFamily: F.ui, fontSize: 15, fontWeight: 600, height: 44, padding: "0 16px" }}>
       {falando ? <PauseIcon size={18} color={S.ink} strokeWidth={1.9} /> : <SoundIcon size={18} color={S.ink} strokeWidth={1.9} />}
       {falando ? "Parar leitura" : "Ouvir"}
     </button>

@@ -8,6 +8,7 @@ import { erroTexto } from "../ia/motor";
 import { OuvirBtn } from "../preferencias";
 import { Resposta, textoParaOuvir } from "../ia/Resposta";
 import { Anotacao, BotaoAlerta } from "../pessoal";
+import { Dica } from "../ajuda/Dica";
 
 function ProcessoDetalhe({ processo, isFollowing, onToggleFollow, onBack, backLabel = "Processos", sample }) {
   const [resumo, setResumo] = useState({ status: "idle", text: "" });
@@ -81,6 +82,7 @@ ${JSON.stringify(dados)}`,
           <BotaoAlerta base={{ tipo: "processo_parado", processoId: processo.id }} rotulo="Avisar se ficar parado" titulo="Avisar se ficar parado" />
           <Anotacao chave={`processo:${processo.id}`} sobre="este processo" />
         </Faixa>
+        <Dica id="processo" />
 
         {resumo.status !== "idle" && (
           <div className="mt-4" style={{ background: S.iaFundo, borderRadius: 24, padding: 18 }} aria-live="polite">

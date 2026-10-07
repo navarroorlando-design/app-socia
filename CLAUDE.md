@@ -51,6 +51,7 @@ o artifact carrega do Google Fonts.
 - `src/ia/`: `motor.js` (`useSample`, `TOOLS_DEF`, `montarPrompt`, `gerarRelatorio`, relatórios de
   exemplo) e `RelatorioView.jsx` (blocos `destaque`, `linha`, `barras`, `tabela`, `texto`).
 - `src/preferencias.jsx`: preferências guardadas no aparelho, `Avatar`, `OuvirBtn`.
+- `src/ajuda/`: textos do tutorial (`conteudo.js`) e a dica de primeira vez (`Dica.jsx`).
 - `src/telas/`: uma tela (ou grupo de telas) por arquivo.
 
 As importações seguem uma direção só: estilo → ícones → dados → IA → telas → App. Manter assim
@@ -130,6 +131,18 @@ Guardadas no aparelho no protótipo (`lerPref`/`gravarPref`); no app real, no se
 - **Contar a história do processo** (`ProcessoDetalhe`): a IA narra por fases, com datas, dinheiro e
   próximo passo de rito, sem prognóstico. Fica profunda quando entrarem DataJud (linha do tempo) e as
   publicações do Legal One (conteúdo das decisões).
+
+## Tutorial do app (`src/ajuda/`, `src/telas/Ajuda.jsx`)
+
+Três camadas, todas com texto em 17pt e botão Ouvir (`OuvirBtn sempre`). Nada de balõezinhos sobre a tela.
+- **Tour de boas-vindas** (`TourBoasVindas`): 5 cartões (Início, OS, IA, só seu, Perfil), cada um com a
+  miniatura da tela de verdade (reduzida, sem toque, com a parte importante recortada em `foco`).
+  Abre depois do primeiro acesso e uma vez para quem já usava (`tourVisto`); revisto em Perfil → Como usar o app.
+- **Dicas de primeira vez** (`<Dica id>`): cartão em osso no alto de Início, OS, organização, contrato,
+  processo e IA, até tocar em "Entendi" (`dicas`). "Mostrar as dicas de novo" zera a lista.
+- **Como usar o app** (`ComoUsar`, Perfil → Sobre): perguntas comuns com passos e "Me leve lá" (`irPara` no App).
+- Os textos ficam em `src/ajuda/conteudo.js` (`PASSOS_TOUR`, `DICAS`, `PERGUNTAS`). A IA recebe as
+  `PERGUNTAS` nas regras e responde "como faço…" em passos curtos, sem o formato de relatório.
 
 ## DataJud (movimentações dos processos acompanhados)
 

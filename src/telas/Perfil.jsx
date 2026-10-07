@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BellIcon, BuildingIcon, HouseIcon, ChevronDownIcon, ChevronIcon, ChevronUpIcon, FolderIcon, LockIcon, PersonIcon, SparkleIcon, StarIcon } from "../componentes/icones";
+import { AjudaIcon, BellIcon, BuildingIcon, HouseIcon, ChevronDownIcon, ChevronIcon, ChevronUpIcon, FolderIcon, LockIcon, PersonIcon, SparkleIcon, StarIcon } from "../componentes/icones";
 import { Botao, Faixa, Row, SecLabel, Toggle } from "../componentes/ui";
 import { ORGS } from "../dados/base";
 import { CARD, F, LINK, S } from "../estilo/tokens";
@@ -36,7 +36,7 @@ function MenuVA({ unread, followedCount, onClose, onNotificacoes, onAcompanhando
   );
 }
 
-function PerfilUsuaria({ onOpenNotifPrefs, onOpenSeguranca, onOpenAlertas, onOpenPersonalizar, alertasCount = 0, onOpenPasta, pinnedCount, onOpenGuia, onOpenOrdem, foto, setFoto, apelido, setApelido, escala, setEscala, lerVoz, setLerVoz }) {
+function PerfilUsuaria({ onOpenNotifPrefs, onOpenSeguranca, onOpenAlertas, onOpenPersonalizar, alertasCount = 0, onOpenPasta, pinnedCount, onOpenGuia, onOpenOrdem, onOpenAjuda, foto, setFoto, apelido, setApelido, escala, setEscala, lerVoz, setLerVoz }) {
   const fileRef = React.useRef(null);
   const [aviso, setAviso] = useState("");
   const [rascunho, setRascunho] = useState(apelido);
@@ -151,6 +151,7 @@ function PerfilUsuaria({ onOpenNotifPrefs, onOpenSeguranca, onOpenAlertas, onOpe
 
         <SecLabel>Sobre</SecLabel>
         <div style={CARD}>
+          <Row icon={<AjudaIcon color={S.ink} />} label="Como usar o app" onClick={onOpenAjuda} />
           <Row icon={<LockIcon color={S.ink} />} label="Segurança" onClick={onOpenSeguranca} />
           <Row icon={<SparkleIcon color={S.ink} />} label="Guia de estilo" onClick={onOpenGuia} last />
         </div>

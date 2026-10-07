@@ -9,6 +9,7 @@ import { AskBar } from "./Ia";
 import { FeedItem } from "./Inicio";
 import { ContratoCard } from "./OrgMetricas";
 import { Anotacao } from "../pessoal";
+import { Dica } from "../ajuda/Dica";
 
 /* ------------------------------------------------------------------ */
 /* Telas: OS                                                           */
@@ -19,6 +20,7 @@ function OsLista({ onOpenOrg, ordem = ORG_ORDER }) {
       <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 110 }}>
         <Faixa bleed={32} eyebrow="Clientes do escritório" titulo="Organizações" tituloSize={36}
                sub={`${ordem.length} principais e ${OUTRAS_ORGS.length + 14} outras`} />
+        <Dica id="osLista" style={{ marginTop: 0 }} />
         <SecLabel>Principais clientes</SecLabel>
         {/* grade 2×2: todos os principais ficam visíveis, sem rolar para o lado */}
         <div className="grid grid-cols-2 gap-3">
@@ -96,6 +98,7 @@ function OsPerfil({ orgId, onBack, sample, onAsk, onOpenContratos, onOpenContrat
           </button>
           <Anotacao chave={`org:${orgId}`} sobre={o.name} />
         </Faixa>
+        <Dica id="osPerfil" />
 
         <SecLabel acao="Ver todos" onAcao={onOpenContratos}>Passivo por contrato</SecLabel>
         <div className="flex flex-col gap-3">

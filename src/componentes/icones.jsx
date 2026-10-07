@@ -37,6 +37,9 @@ const SemInternetIcon = (p) => <Icon {...p}><path d="M12 19.51L12.01 19.4989"/><
 const DownloadIcon = (p) => <Icon {...p}><path d="M6 20L18 20"/><path d="M12 4V16M12 16L15.5 12.5M12 16L8.5 12.5"/></Icon>;
 const SairIcon = (p) => <Icon {...p}><path d="M12 12H19M19 12L16 15M19 12L16 9"/><path d="M19 6V5C19 3.89543 18.1046 3 17 3H7C5.89543 3 5 3.89543 5 5V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V18"/></Icon>;
 const EscudoIcon = (p) => <Icon {...p}><path d="M8.5 11.5L11.5 14.5L16.5 9.5"/><path d="M5 18L3.13036 4.91253C3.05646 4.39524 3.39389 3.91247 3.90398 3.79912L11.5661 2.09641C11.8519 2.03291 12.1481 2.03291 12.4339 2.09641L20.096 3.79912C20.6061 3.91247 20.9435 4.39524 20.8696 4.91252L19 18C18.9293 18.495 18.5 21.5 12 21.5C5.5 21.5 5.07071 18.495 5 18Z"/></Icon>;
+const AjudaIcon = (p) => <Icon {...p}><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"/><path d="M9 9C9 5.49997 14.5 5.5 14.5 9C14.5 11.5 12 10.9999 12 13.9999"/><path d="M12 18.01L12.01 17.9989"/></Icon>;
+const DicaIcon = (p) => <Icon {...p}><path d="M9 18H15"/><path d="M10 21H14"/><path d="M9.00082 15C9.00098 13 8.50098 12.5 7.50082 11.5C6.50067 10.5 6.02422 9.48689 6.00082 8C5.95284 4.95029 8.00067 3 12.0008 3C16.001 3 18.0488 4.95029 18.0008 8C17.9774 9.48689 17.5007 10.5 16.5008 11.5C15.501 12.5 15.001 13 15.0008 15"/></Icon>;
+const PlayIcon = (p) => <Icon {...p}><path d="M6.90588 4.53682C6.50592 4.2998 6 4.58808 6 5.05299V18.947C6 19.4119 6.50592 19.7002 6.90588 19.4632L18.629 12.5162C19.0211 12.2838 19.0211 11.7162 18.629 11.4838L6.90588 4.53682Z"/></Icon>;
 
 const SendIcon = ({ color = T.brass, size = 17 }) => <Icon size={size} color={color} strokeWidth={1.9}><path d="M22.1525 3.55321L11.1772 21.0044L9.50686 12.4078L2.00002 7.89795L22.1525 3.55321Z"/><path d="M9.45557 12.4436L22.1524 3.55321"/></Icon>;
 
@@ -58,4 +61,4 @@ function IconeSem({ tipo, cor, size = 15 }) {
   return <Icon size={size} color={cor} strokeWidth={2.1}>{SEM_ICONE[tipo] || SEM_ICONE.pausa}</Icon>;
 }
 
-export { BackIcon, BellIcon, DownloadIcon, EscudoIcon, FaceIdIcon, SairIcon, SemInternetIcon, BuildingIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronIcon, ChevronUpIcon, FlagIcon, FolderIcon, HouseIcon, Icon, IconeSem, LockIcon, PauseIcon, PersonIcon, PinIcon, SearchIcon, SendIcon, SoundIcon, SparkleIcon, StarIcon, SunIcon };
+export { AjudaIcon, BackIcon, DicaIcon, BellIcon, DownloadIcon, EscudoIcon, FaceIdIcon, SairIcon, SemInternetIcon, BuildingIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronIcon, ChevronUpIcon, FlagIcon, FolderIcon, HouseIcon, Icon, IconeSem, LockIcon, PauseIcon, PersonIcon, PinIcon, PlayIcon, SearchIcon, SendIcon, SoundIcon, SparkleIcon, StarIcon, SunIcon };

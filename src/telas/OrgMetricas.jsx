@@ -6,6 +6,7 @@ import { fmtBRL, fmtBRLCurto, fmtData } from "../dados/formato";
 import { ORDEM_PROGNOSTICO, resumoContrato, resumoOrg } from "../dados/passivo";
 import { CARD, F, S, SEMANTICA, semDe } from "../estilo/tokens";
 import { Anotacao, BotaoAlerta } from "../pessoal";
+import { Dica } from "../ajuda/Dica";
 
 /* ------------------------------------------------------------------ */
 /* Organização: contratos de gestão (passivo), bloqueios e processos   */
@@ -159,6 +160,7 @@ function ContratoDetalhe({ orgId, orgao, onBack, backLabel, onOpenProcesso, onOp
           <KPIs itens={[["Processos", String(c.processos.length)], ["Bloqueado", fmtBRLCurto(c.bloqueadoAtivo)], ["Levantado", fmtBRLCurto(c.levantado)]]} />
         </div>
       </Faixa>
+      <Dica id="contrato" />
       {onEnviarCliente && (
         <button onClick={onEnviarCliente} className="w-full inline-flex items-center justify-center gap-2 mt-4"
                 style={{ height: 52, borderRadius: 14, fontFamily: F.ui, fontSize: 17, fontWeight: 600, background: S.cartao, color: S.ink, boxShadow: `inset 0 0 0 1.5px ${S.ink}` }}>

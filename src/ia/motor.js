@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { BLOQUEIOS_LISTA, CLIENTE_NOME, TOTAIS } from "../dados/base";
 import { consultarCruzado, consultarDados, listarProcessos } from "../dados/consultas";
+import { PERGUNTAS, textoDaPergunta } from "../ajuda/conteudo";
 
 /* ------------------------------------------------------------------ */
 /* IA real: o Claude escolhe a apresentação, o app calcula os números  */
@@ -124,6 +125,9 @@ Tipos:
 - "indicadores": até 4 números-chave. "itens": [{"rotulo": "Bloqueado em setembro", "consulta": {...}, "comparar_com": {...}, "comparacao": "vs. agosto", "bom_quando": "desce"}]. comparar_com e bom_quando são opcionais; bom_quando é "sobe" ou "desce" (bloqueio e passivo: desce é bom).
 - "tabela": lista de processos. "processos": parâmetros de listar_processos.
 As consultas usam exatamente os parâmetros das funções (metrica, agrupar_por, dividir_por, cliente, area, contrato, status_bloqueio, prognostico, mes_inicio, mes_fim, dias_minimos_parado). Use no máximo 4 gráficos por resposta.
+
+COMO USAR O APP: se a sócia perguntar como fazer algo no próprio app, responda em passos curtos e numerados com base no guia abaixo, sem consultar dados, sem gráficos e sem o formato de relatório (sem Resumo nem Próximos passos). Termine dizendo que o passo a passo também está em Perfil → Como usar o app. Se o guia não cobrir, diga que não sabe em vez de inventar um caminho.
+${PERGUNTAS.map((p) => `- ${p.pergunta} ${textoDaPergunta(p)}`).join("\n")}
 
 SUGESTÕES no fim, assim:
 \`\`\`sugestoes
