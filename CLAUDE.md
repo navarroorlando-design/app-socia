@@ -9,6 +9,8 @@ não é detalhe: contraste, tamanho de texto e alvos de toque guiam todas as dec
 
 ## Estado atual (versão 9)
 
+- Versão de trabalho publicada em https://claude.ai/artifact/GFoRKY7Ht8UpAKLsqZCnyj ("App dos Sócios v9").
+
 - **App web instalável (PWA) em Next.js 16 + React 19**, a caminho do Vercel (região São Paulo,
   `vercel.json`). Stack escolhida: Next.js no Vercel, servidor próprio chamando a API da Anthropic,
   Postgres como cópia dos números do Legal One e do Log de Bloqueios.
@@ -62,9 +64,14 @@ evita ciclos entre módulos.
 - **Cor com significado**, sempre com ícone e palavra: Risco `#9B2A1C`, Atenção `#835000`,
   Em curso `#245476`, Resolvido `#24603F`, Inativo `#4F565B`.
 - **Dourado `#765614` é exclusivo da IA.** Status nunca usa dourado.
-- **Topo**: Início sem título (saudação em duas linhas, cartão-resumo, 4 atalhos); abas e listas
-  com título grande estilo iOS que encolhe ao rolar; detalhes com cabeçalho de objeto
-  (cliente, valor/nome, etiqueta de status, fileira de números-chave). Sem faixas coloridas.
+- **Marinho `#1E3A5F` é a cor da marca** (token `S.marca`). Usado no cartão principal do Início e no
+  bloco de título das telas de detalhe (processo, bloqueio, organização), com texto branco e apoio
+  `#D3DCE8`. Etiquetas sobre o marinho usam fundo branco (`sobreCor`). Verde e azul ficam só para status.
+- **Topo**: Início com saudação em duas linhas ("Bom dia" + nome em negrito), cartão principal marinho
+  (valor bloqueado e anel "já levantado") e grade 2×2 de atalhos com detalhe; abas e listas com título
+  grande estilo iOS que encolhe ao rolar; detalhes com o título num bloco marinho arredondado e a
+  fileira de números-chave logo abaixo, em cartão branco.
+- **Cartões com cantos de 24px.** Organizações principais em grade 2×2 (todas visíveis, sem rolagem lateral).
 - **Subtítulos de seção**: 18pt seminegrito na cor do texto, ação à direita ("Ver todos").
 - **Aba IA** em branco com "Pergunte qualquer coisa!" e sugestões; relatórios fixados ficam em
   Perfil → Relatórios fixados.
