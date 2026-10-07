@@ -10,7 +10,8 @@ import { FeedItem } from "./Inicio";
 import { ContratoCard } from "./OrgMetricas";
 import { Anotacao } from "../pessoal";
 import { Dica } from "../ajuda/Dica";
-import { MarcaOrg } from "../componentes/MarcaOrg";
+import { LogoOrg, MarcaOrg, tomOrg } from "../componentes/MarcaOrg";
+import { MARCAS } from "../componentes/marcas";
 
 /* ------------------------------------------------------------------ */
 /* Telas: OS                                                           */
@@ -30,9 +31,9 @@ function OsLista({ onOpenOrg, ordem = ORG_ORDER }) {
             return (
               <button key={id} onClick={() => onOpenOrg(id)} className="flex flex-col items-start text-left min-w-0"
                       aria-label={`${o.name}: ${o.processos} processos`}
-                      style={{ ...CARD, padding: 16, gap: 12 }}>
-                <MarcaOrg id={id} iniciais={o.initials} size={44} />
-                <span className="block min-w-0 w-full">
+                      style={{ ...CARD, padding: 10, gap: 10, background: tomOrg(id) }}>
+                {MARCAS[id]?.logo ? <LogoOrg id={id} /> : <MarcaOrg id={id} iniciais={o.initials} size={44} />}
+                <span className="block min-w-0 w-full" style={{ padding: "2px 6px 6px" }}>
                   <span className="block" style={{ fontFamily: F.ui, fontSize: 17, fontWeight: 600, color: S.ink, lineHeight: 1.25, minHeight: "2.5em" }}>{o.name}</span>
                   <span className="block" style={{ fontFamily: F.ui, fontSize: 28, fontWeight: 600, color: S.ink, letterSpacing: "-0.02em", marginTop: 8, fontVariantNumeric: "tabular-nums" }}>{o.processos}</span>
                   <span className="block" style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2 }}>processos</span>

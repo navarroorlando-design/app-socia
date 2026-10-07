@@ -80,6 +80,10 @@ evita ciclos entre módulos.
   (valor bloqueado e anel "já levantado") e grade 2×2 de atalhos com detalhe; abas e listas com título
   grande estilo iOS que encolhe ao rolar; detalhes com o título num bloco carvão arredondado e a
   fileira de números-chave logo abaixo, em cartão branco.
+- **Identidade das OS** (`src/componentes/MarcaOrg.jsx`, `marcas.js` gerado por `python3 scripts/marcas.py` a partir de
+  `marcas/originais/`): na aba OS, o logo inteiro numa placa branca com um fio na cor da OS e o cartão num tom bem
+  claro dessa cor (`tomOrg`); nas outras telas, o símbolo num círculo branco. A cor da OS **nunca** vai em texto
+  (AFNE e IGEDES não passam de 4,5:1 sobre o creme). Sem logo, voltam as iniciais em carvão.
 - **Cartões com cantos de 24px.** Organizações principais em grade 2×2 (todas visíveis, sem rolagem lateral).
 - **Listas dentro de cartão** com `LinhaLista`: ícone num círculo na cor do status, título, detalhe e
   etiqueta. Em listas de processos a etiqueta vai abaixo da descrição (`abaixo`); em bloqueios, à direita.

@@ -1,42 +1,64 @@
 {
-  "gerado_em": "2026-10-07",
-  "observacao": "Nenhum site pôde ser baixado: a política de rede do ambiente de nuvem negou a conexão (CONNECT 403 no proxy de saída). Liberar os domínios em Network access e rodar de novo.",
-  "sites": {
-    "afne": {
-      "url_site": "https://www.afne.org.br/",
-      "status": "erro",
-      "erro": "curl (56) CONNECT tunnel failed, response 403 — proxy de saída negou www.afne.org.br:443 (política de rede do ambiente)",
-      "logo": null,
-      "favicon": null,
-      "cores": [],
-      "cor_principal": null
-    },
-    "gnosis": {
-      "url_site": "https://www.institutognosis.org.br/",
-      "status": "erro",
-      "erro": "curl (56) CONNECT tunnel failed, response 403 — proxy de saída negou www.institutognosis.org.br:443 (política de rede do ambiente)",
-      "logo": null,
-      "favicon": null,
-      "cores": [],
-      "cor_principal": null
-    },
-    "fas": {
-      "url_site": "https://fas.org.br/",
-      "status": "erro",
-      "erro": "curl (56) CONNECT tunnel failed, response 403 — proxy de saída negou fas.org.br:443 (política de rede do ambiente)",
-      "logo": null,
-      "favicon": null,
-      "cores": [],
-      "cor_principal": null
-    },
-    "igedes": {
-      "url_site": "https://igedes.org.br/",
-      "status": "erro",
-      "erro": "curl (56) CONNECT tunnel failed, response 403 — proxy de saída negou igedes.org.br:443 (política de rede do ambiente)",
-      "logo": null,
-      "favicon": null,
-      "cores": [],
-      "cor_principal": null
-    }
+  "afne": {
+    "nome": "Associação Filantrópica Nova Esperança",
+    "arquivo": "logo.png",
+    "tamanho_original": [
+      226,
+      82
+    ],
+    "cores_do_logo": [
+      "#019751",
+      "#B22E2E",
+      "#525451"
+    ],
+    "cor_principal": "#019751",
+    "contraste_sobre_cartao": 3.73,
+    "fonte": "logo enviado pela usuária (salvo do site da organização)"
+  },
+  "fas": {
+    "nome": "FAS",
+    "arquivo": "logo.png",
+    "tamanho_original": [
+      300,
+      106
+    ],
+    "cores_do_logo": [
+      "#0071E9",
+      "#00495B",
+      "#00CC49"
+    ],
+    "cor_principal": "#0071E9",
+    "contraste_sobre_cartao": 4.55,
+    "fonte": "logo enviado pela usuária (salvo do site da organização)"
+  },
+  "gnosis": {
+    "nome": "Instituto Gnosis",
+    "arquivo": "logo.webp",
+    "tamanho_original": [
+      1529,
+      719
+    ],
+    "cores_do_logo": [
+      "#182848",
+      "#681B33"
+    ],
+    "cor_principal": "#182848",
+    "contraste_sobre_cartao": 14.39,
+    "fonte": "logo enviado pela usuária (salvo do site da organização)"
+  },
+  "igedes": {
+    "nome": "IGEDES",
+    "arquivo": "logo.png",
+    "tamanho_original": [
+      170,
+      55
+    ],
+    "cores_do_logo": [
+      "#008981",
+      "#D53320"
+    ],
+    "cor_principal": "#008981",
+    "contraste_sobre_cartao": 4.22,
+    "fonte": "logo enviado pela usuária (salvo do site da organização)"
   }
 }
