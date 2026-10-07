@@ -1,0 +1,18 @@
+export default function manifest() {
+  return {
+    name: "App dos Sócios — Azevedo dos Reis",
+    short_name: "Sócios",
+    description: "Processos, bloqueios e reclamações dos clientes do escritório.",
+    lang: "pt-BR",
+    start_url: "/",
+    display: "standalone",
+    orientation: "portrait",
+    background_color: "#F2F3F7",
+    theme_color: "#F2F3F7",
+    icons: [
+      { src: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { src: "/icon-512.png", sizes: "512x512", type: "image/png" },
+      { src: "/icon-maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+    ],
+  };
+}

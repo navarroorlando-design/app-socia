@@ -7,42 +7,51 @@ bloqueios judiciais (SISBAJUD) e reclamações constitucionais pelo celular.
 Usuária principal: uma sócia que **tem dificuldade de ver de perto**. Acessibilidade de leitura
 não é detalhe: contraste, tamanho de texto e alvos de toque guiam todas as decisões.
 
-## Estado atual (versão 8)
+## Estado atual (versão 9)
 
-- Publicado como artifact do claude.ai, com IA real pela capacidade `sample` (o Claude responde
-  com a conta de quem abre o link). `app-socios-publicado.html` é a versão publicada.
-- Tudo está em **um arquivo**: `src/App.jsx` (React 18 + Tailwind + estilos inline).
-- Os dados são uma **base de exemplo determinística** (58 processos, 39 bloqueios, 4 clientes),
-  gerada no próprio arquivo. Não há dado real de cliente.
+- **App web instalável (PWA) em Next.js 16 + React 19**, a caminho do Vercel (região São Paulo,
+  `vercel.json`). Stack escolhida: Next.js no Vercel, servidor próprio chamando a API da Anthropic,
+  Postgres como cópia dos números do Legal One e do Log de Bloqueios.
+- O mesmo código ainda gera o **artifact do claude.ai** (arquivo HTML único), que usa IA real pela
+  capacidade `sample`. `app-socios-publicado.html` é a última versão publicada (v8).
+- Fora do claude.ai, `window.claude` não existe: no app Next.js a IA fica desativada até o servidor
+  com a API da Anthropic ficar pronto.
+- Os dados são uma **base de exemplo determinística** (58 processos, 39 bloqueios, 4 clientes).
+  Não há dado real de cliente.
 
-## Como compilar
+## Como rodar
 
 ```
 npm install
-npm run build                 # gera dist/bundle.js e dist/out.css
-python3 scripts/build_html.py # junta tudo em dist/app-socios.html
+npm run dev        # app Next.js em http://localhost:3000
+npm run build      # build de produção do Next.js
+npm run artifact   # gera dist/app-socios.html (artifact do claude.ai)
+npm run icones     # regera os ícones do app (precisa do Playwright)
 ```
 
-O HTML final carrega a fonte Lexend do Google Fonts. Fora do claude.ai, `window.claude` não existe:
-a IA fica desativada e as telas mostram o aviso correspondente.
+As fontes Lexend e IBM Plex Mono vêm do pacote `@fontsource` (servidas pelo próprio app) no Next.js;
+o artifact carrega do Google Fonts.
 
-## Mapa do `src/App.jsx` (seções na ordem do arquivo)
+## Estrutura
 
-1. **Tokens antigos `T`** e `GlobalStyle` (CSS global, animações, `prefers-reduced-motion`).
-2. **Ícones** em SVG.
-3. **Base de exemplo**: geração de processos e bloqueios, `consultarDados()` e `listarProcessos()`
-   (funções de consulta que a IA chama), `TOTAIS`.
-4. **Peças compartilhadas**: `CARD`, `LINK`, `semDe()`, `BackHeader`, `IconBtn`, `SecLabel`
-   (subtítulo de seção com ação à direita), `CardRow`, `TabBar`, `Badge`.
-5. **`Faixa`**: o cabeçalho das telas (o nome ficou de uma versão anterior). Título grande que
-   vira barra fina translúcida ao rolar. Com `tom`, vira cabeçalho de objeto (telas de detalhe).
-   `KPIs` é a fileira de números-chave.
-6. **Telas**: Início, listas, processo, bloqueio, busca, organizações, perfil da organização.
-7. **IA**: `useSample`, `TOOLS_DEF`, `montarPrompt`, `gerarRelatorio`, renderização dos blocos
-   do relatório (`destaque`, `linha`, `barras`, `tabela`, `texto`), `IaAsk`, `IaReport`.
-8. **Notificações**, **Perfil** (foto, apelido, tamanho do texto, leitura em voz alta, ordem dos
-   clientes), **Guia de estilo** (`GuiaEstilo`, tokens `S` e `F`, `SEMANTICA`, `Etiqueta`, `Botao`).
-9. **App**: estado e navegação.
+- `app/`: casca do Next.js. `layout.jsx` (metadados, fontes, viewport), `page.jsx` (renderiza
+  `src/App` só no navegador), `manifest.js` (PWA), `icon.svg`/`apple-icon.png`.
+- `src/main.jsx`: entrada do artifact (esbuild).
+- `src/App.jsx`: estado e navegação.
+- `src/estilo/`: `tokens.js` (tokens `T`, `S`, `F`, `SEMANTICA`, `TONS`, `CARD`, `LINK`, `semDe`) e
+  `GlobalStyle.jsx` (CSS global, animações, `prefers-reduced-motion`).
+- `src/componentes/`: `icones.jsx` (SVG) e `ui.jsx` (peças compartilhadas: `Faixa`, `KPIs`,
+  `SecLabel`, `CardRow`, `TabBar`, `Etiqueta`, `Botao`, `Badge`...). `Faixa` é o cabeçalho das telas:
+  título grande que vira barra fina ao rolar; com `tom`, vira cabeçalho de objeto.
+- `src/dados/`: `formato.js` (datas e moeda), `base.js` (base de exemplo, `TOTAIS`),
+  `consultas.js` (`consultarDados`, `listarProcessos`: as funções que a IA chama).
+- `src/ia/`: `motor.js` (`useSample`, `TOOLS_DEF`, `montarPrompt`, `gerarRelatorio`, relatórios de
+  exemplo) e `RelatorioView.jsx` (blocos `destaque`, `linha`, `barras`, `tabela`, `texto`).
+- `src/preferencias.jsx`: preferências guardadas no aparelho, `Avatar`, `OuvirBtn`.
+- `src/telas/`: uma tela (ou grupo de telas) por arquivo.
+
+As importações seguem uma direção só: estilo → ícones → dados → IA → telas → App. Manter assim
+evita ciclos entre módulos.
 
 ## Decisões de design já aprovadas (não reverter sem pedir)
 
@@ -70,9 +79,11 @@ o contrato com a IA.
 
 ## Próximos passos sugeridos
 
-- Separar `App.jsx` em módulos (dados, IA, componentes, telas) antes de crescer.
-- Decidir a plataforma do app real (web/PWA no Vercel, React Native ou SwiftUI) e, com isso,
-  trocar a capacidade `sample` por chamadas à API da Anthropic num backend do escritório.
-- Ligar os dados reais no lugar da base de exemplo.
+- Servidor da IA: rota no Next.js que chama a API da Anthropic com as ferramentas
+  `consultar_dados` / `listar_processos` executadas no servidor, no lugar da capacidade `sample`.
+- Login (Microsoft Entra ID se o escritório usa Microsoft 365; senão, código por e-mail).
+- Esconder a barra de status falsa ("9:41") e a moldura de celular quando o app roda num aparelho
+  de verdade, respeitando as áreas seguras (`env(safe-area-inset-*)`).
+- Ligar os dados reais (Legal One + Log de Bloqueios) numa cópia em Postgres.
 - Pendências conhecidas: comparação entre organizações; modo escuro como opção; testar
   "Ouvir resumos" em aparelhos reais.
