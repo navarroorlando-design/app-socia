@@ -100,7 +100,7 @@ function OsPerfil({ orgId, onBack, sample, onAsk }) {
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 px-6 pb-7 pt-5" style={{ background: `linear-gradient(to top, ${T.paper} 70%, transparent)` }}>
+      <div className="absolute bottom-0 left-0 right-0 px-6 pb-7 pt-8" style={{ background: `linear-gradient(to top, ${T.paper} calc(100% - 24px), transparent)` }}>
         {sample === null && <p className="text-[14px] mb-2" style={{ color: T.muted }}>A IA responde quando este app é aberto no Claude.</p>}
         <AskBar value={q} onChange={setQ} onSubmit={(t) => { onAsk(t); setQ(""); }} disabled={!sample}
                 scopeLabel={`Perguntando sobre ${o.name}`} placeholder={`Pergunte sobre ${o.name.startsWith("I") ? "o" : "a"} ${o.name}…`} />

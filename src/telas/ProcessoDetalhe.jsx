@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { IconeSem, SparkleIcon, StarIcon } from "../componentes/icones";
-import { Badge, Botao, Faixa, KPIs, SecLabel } from "../componentes/ui";
+import { BuildingIcon, IconeSem, LockIcon, SparkleIcon, StarIcon } from "../componentes/icones";
+import { Badge, Botao, Faixa, InfoLinha, KPIs, SecLabel } from "../componentes/ui";
+import { fmtData } from "../dados/formato";
 import { BLOQUEIOS_LISTA } from "../dados/base";
-import { CARD, F, LINK, S, T, tomDeStatus } from "../estilo/tokens";
+import { CARD, F, LINK, S, T, semDe, tomDeStatus } from "../estilo/tokens";
 import { erroTexto } from "../ia/motor";
 import { OuvirBtn } from "../preferencias";
 
@@ -84,12 +85,20 @@ function ProcessoDetalhe({ processo, isFollowing, onToggleFollow, onBack, backLa
         {bloqueios.length > 0 && (
           <>
             <SecLabel>Bloqueios</SecLabel>
-            {bloqueios.map((b, i) => (
-              <div key={b.id} className="flex items-center justify-between py-2.5" style={{ borderBottom: i === bloqueios.length - 1 ? "none" : `1px solid ${T.hairline}` }}>
-                <span className="text-[16px]" style={{ fontVariantNumeric: "tabular-nums" }}>{b.valor}</span>
-                <Badge text={b.status} />
-              </div>
-            ))}
+            <div style={CARD}>
+              {bloqueios.map((b, i) => (
+                <div key={b.id} className="flex items-center gap-3" style={{ padding: "14px 16px", borderBottom: i === bloqueios.length - 1 ? "none" : `1px solid ${S.linha}` }}>
+                  <span className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: semDe(b.status).fundo }}>
+                    <LockIcon size={18} color={semDe(b.status).cor} />
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p style={{ fontFamily: F.ui, fontSize: 17, fontWeight: 600, color: S.ink, fontVariantNumeric: "tabular-nums" }}>{b.valor}</p>
+                    <p style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2 }}>Bloqueado em {fmtData(b.data)}</p>
+                  </div>
+                  <Badge text={b.status} />
+                </div>
+              ))}
+            </div>
           </>
         )}
 
@@ -106,7 +115,9 @@ function ProcessoDetalhe({ processo, isFollowing, onToggleFollow, onBack, backLa
         </div>
 
         <SecLabel>Contrato de gestão</SecLabel>
-        <p className="text-[16px]">{processo.contrato}</p>
+        <div style={CARD}>
+          <InfoLinha icone={<BuildingIcon size={18} color={S.curso} />} fundo={S.cursoFundo} rotulo="Órgão contratante" valor={processo.contrato} last />
+        </div>
       </div>
     </>
   );
