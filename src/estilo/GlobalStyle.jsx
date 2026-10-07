@@ -13,6 +13,8 @@ const GlobalStyle = () => (
       .app-island{ display:none; }
     }
     :focus-visible{ outline:2px solid #1A1916; outline-offset:2px; }
+    .busca-campo:focus-within{ box-shadow:0 0 0 2px #1A1916 !important; }
+    .busca-campo input:focus-visible{ outline:none; }
     .guia-btn:active:not(:disabled){ transform: scale(.97); }
     .guia-btn:disabled{ cursor:not-allowed; }
     .guia-spin{ width:16px; height:16px; border-radius:50%; border:2px solid; animation: gspin .8s linear infinite; }

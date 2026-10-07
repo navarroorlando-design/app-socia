@@ -6,14 +6,14 @@ const { chromium } = require("playwright");
 
 const fonte = fs.readFileSync(require.resolve("@fontsource/lexend/files/lexend-latin-600-normal.woff2")).toString("base64");
 
-// Monograma "AR" branco sobre o marinho dos cabeçalhos. `margem` encolhe o desenho para a zona segura do ícone maskable.
+// Monograma "AR" branco sobre o carvão da marca, com traço em osso. `margem` encolhe o desenho para a zona segura do ícone maskable.
 const svg = (lado, { margem = 0, raio = 0 } = {}) => `
 <svg xmlns="http://www.w3.org/2000/svg" width="${lado}" height="${lado}" viewBox="0 0 100 100">
   <style>@font-face{font-family:L;src:url(data:font/woff2;base64,${fonte})}</style>
-  <rect width="100" height="100" rx="${raio}" fill="#1E3A5F"/>
+  <rect width="100" height="100" rx="${raio}" fill="#1F1E1A"/>
   <g transform="translate(50 50) scale(${1 - margem}) translate(-50 -50)">
     <text x="50" y="62" text-anchor="middle" font-family="L" font-weight="600" font-size="38" letter-spacing="-1" fill="#FFFFFF">AR</text>
-    <rect x="30" y="72" width="40" height="3" rx="1.5" fill="#D3DCE8"/>
+    <rect x="30" y="72" width="40" height="3" rx="1.5" fill="#D8CFBC"/>
   </g>
 </svg>`;
 

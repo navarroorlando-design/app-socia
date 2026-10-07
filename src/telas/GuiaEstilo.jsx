@@ -25,7 +25,7 @@ function GuiaEstilo({ onBack }) {
       </div>
 
       <div className="flex-1 overflow-y-auto no-scrollbar px-6 pt-3" style={{ paddingBottom: 80 }}>
-        <p style={rotulo}>Sistema visual · versão 4</p>
+        <p style={rotulo}>Sistema visual · versão 5</p>
         <h1 style={{ fontFamily: F.display, letterSpacing: "-0.02em", fontSize: 34, fontWeight: 500, color: S.ink, lineHeight: 1.08, marginTop: 6, textWrap: "balance" }}>Guia de estilo</h1>
         <p style={{ fontFamily: F.ui, fontSize: 17, color: S.texto2, lineHeight: 1.45, marginTop: 10 }}>
           A base que vai para todas as telas: tipos, cores com significado e componentes. Todos os textos passam de 4,5:1 de contraste.
@@ -90,7 +90,7 @@ function GuiaEstilo({ onBack }) {
             </div>
           </Cartao>
           <div className="flex gap-3 mt-3">
-            {[["Fundo", S.papel, "cinza-gelo"], ["Cartão", S.cartao, "branco"], ["Texto", S.ink, "17,7:1"], ["Apoio", S.texto2, "7,6:1"]].map(([n, c, d]) => (
+            {[["Fundo", S.papel, "cinza quente"], ["Cartão", S.cartao, "branco floral"], ["Texto", S.ink, "15,3:1"], ["Apoio", S.texto2, "6,6:1"]].map(([n, c, d]) => (
               <div key={n} className="flex-1 min-w-0">
                 <div style={{ height: 44, borderRadius: 12, background: c, boxShadow: `inset 0 0 0 1px ${S.linha}` }} />
                 <p style={{ fontFamily: F.ui, fontSize: 13, fontWeight: 600, color: S.ink, marginTop: 6 }}>{n}</p>
@@ -101,29 +101,32 @@ function GuiaEstilo({ onBack }) {
         </Secao>
 
         {/* ---------------- Cartões coloridos ---------------- */}
-        <Secao titulo="Cartões coloridos" nota="A cor do cartão sempre quer dizer algo. Branco é o padrão; os outros três aparecem só quando têm motivo.">
-          <div className="flex flex-col gap-3">
-            <div style={{ background: S.ink, borderRadius: 20, padding: 20, color: "#FFFFFF" }}>
-              <p style={{ fontFamily: F.ui, fontSize: 15, fontWeight: 600, color: "#CDC7BB" }}>Escuro · o número principal da tela</p>
-              <p style={{ fontFamily: F.display, letterSpacing: "-0.02em", fontSize: 34, fontWeight: 500, marginTop: 4 }}>3 processos</p>
-              <p style={{ fontFamily: F.ui, fontSize: 15, color: "#E4E7EA", marginTop: 4 }}>No máximo um por tela.</p>
-            </div>
-            <div style={{ background: S.riscoFundo, borderRadius: 24, padding: 18 }}>
-              <div className="flex items-center justify-between gap-3">
-                <p style={{ fontFamily: F.ui, fontSize: 15, fontWeight: 600, color: S.ink }}>Semântico · o cartão é sobre um status</p>
+        <Secao titulo="Família de tons" nota="Uma cor só, em vários tons, alinhada aos cinzas da logo. O tom marca a importância; a cor de status fica só nas etiquetas e nos ícones, nunca no fundo do cartão.">
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              ["Carvão", S.marca, "#FFFFFF", S.marcaTexto2, "Número principal da tela", "16,7:1"],
+              ["Oliva", S.oliva, "#FFFFFF", "#E6E1D6", "Números secundários", "7,6:1"],
+              ["Osso", S.osso, S.ink, S.ossoTexto2, "Apoio, com moderação", "11,4:1"],
+              ["Latão", S.ia, "#FFFFFF", S.iaFundo, "Só a IA", "6,7:1"],
+            ].map(([nome, fundo, texto, apoio, uso, ratio]) => (
+              <div key={nome} style={{ background: fundo, borderRadius: 24, padding: 16 }}>
+                <p style={{ fontFamily: F.ui, fontSize: 17, fontWeight: 600, color: texto }}>{nome}</p>
+                <p style={{ fontFamily: F.ui, fontSize: 14, color: apoio, marginTop: 2, lineHeight: 1.3 }}>{uso}</p>
+                <p style={{ fontFamily: F.dados, fontSize: 12, color: apoio, marginTop: 10 }}>{fundo} · {ratio}</p>
               </div>
-              <p style={{ fontFamily: F.display, letterSpacing: "-0.02em", fontSize: 28, fontWeight: 500, color: S.ink, marginTop: 6 }}>R$ 62.000</p>
-              <div className="mt-2"><Etiqueta s={SEMANTICA[0]} texto="Bloqueio ativo" /></div>
-            </div>
+            ))}
+          </div>
+          <div className="flex flex-col gap-3 mt-3">
             <div style={{ background: S.iaFundo, borderRadius: 24, padding: 18 }}>
               <p className="flex items-center gap-1.5" style={{ fontFamily: F.ui, fontSize: 14, fontWeight: 700, color: S.ia }}>
-                <SparkleIcon size={15} color={S.ia} strokeWidth={2} /> Dourado · gerado pela IA
+                <SparkleIcon size={15} color={S.ia} strokeWidth={2} /> Dourado claro · texto gerado pela IA
               </p>
-              <p style={{ fontFamily: F.ui, fontSize: 16, color: S.ink, marginTop: 6, lineHeight: 1.45 }}>Resumos e conclusões dos relatórios.</p>
+              <p style={{ fontFamily: F.ui, fontSize: 16, color: S.ink, marginTop: 6, lineHeight: 1.45 }}>Resumos e conclusões dos relatórios. Nunca sobre osso: os dois se confundem.</p>
             </div>
             <Cartao>
-              <p style={{ fontFamily: F.ui, fontSize: 15, fontWeight: 600, color: S.ink }}>Branco · todo o resto</p>
-              <p style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2, marginTop: 4 }}>Listas, navegação e dados de apoio.</p>
+              <p style={{ fontFamily: F.ui, fontSize: 15, fontWeight: 600, color: S.ink }}>Branco floral · todo o resto</p>
+              <p style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2, marginTop: 4 }}>Listas, textos longos e navegação.</p>
+              <div className="mt-3"><Etiqueta s={SEMANTICA[0]} texto="Bloqueio ativo" /></div>
             </Cartao>
           </div>
         </Secao>

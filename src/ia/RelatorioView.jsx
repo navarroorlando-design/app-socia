@@ -46,7 +46,7 @@ function BlocoBarras({ b }) {
           <div key={i} className="flex items-center gap-3">
             <span className="text-[14px] w-[96px] shrink-0 leading-tight">{it.rotulo}</span>
             <div className="flex-1 h-2 rounded-full" style={{ background: "rgba(31,30,26,0.08)" }}>
-              <div className="h-2 rounded-full" style={{ width: `${Math.max(2, ((Number(it.valor) || 0) / max) * 100)}%`, background: i === 0 ? T.brass : T.slate }} />
+              <div className="h-2 rounded-full" style={{ width: `${Math.max(2, ((Number(it.valor) || 0) / max) * 100)}%`, background: i === 0 ? S.ia : S.oliva }} />
             </div>
             <span className="text-[14px] w-[84px] text-right whitespace-nowrap" style={{ color: S.ink, fontVariantNumeric: "tabular-nums" }}>{fmtValorCurto(it.valor, b.unidade)}</span>
           </div>

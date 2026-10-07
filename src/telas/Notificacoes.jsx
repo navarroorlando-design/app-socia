@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ChartIcon, FlagIcon, FolderIcon, LockIcon, SunIcon } from "../componentes/icones";
 import { Faixa, SecLabel, Toggle } from "../componentes/ui";
-import { LINK, S, T } from "../estilo/tokens";
+import { CARD, LINK, S, T } from "../estilo/tokens";
 
 const NOTIF_TYPES = {
   movimentacao: { label: "Movimentação", Icon: FolderIcon, color: "#245476" },
@@ -49,15 +49,16 @@ function NotificacoesCentral({ notifs, onOpen, onMarkAll, onBack }) {
         )}
         {groups.map(([g, items]) => (
           <div key={g}>
-            <p className="text-[14px] mt-5 mb-1" style={{ color: T.muted }}>{g}</p>
+            <SecLabel>{g}</SecLabel>
+            <div style={CARD}>
             {items.map((n, i) => {
               const t = NOTIF_TYPES[n.type];
               return (
-                <button key={n.id} onClick={() => onOpen(n)} className="w-full text-left flex items-start gap-3 py-3.5"
-                        style={{ borderBottom: i === items.length - 1 ? "none" : `1px solid ${T.hairline}` }}>
-                  <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 relative" style={{ background: `${t.color}1A` }}>
+                <button key={n.id} onClick={() => onOpen(n)} className="w-full text-left flex items-start gap-3"
+                        style={{ padding: "14px 16px", borderBottom: i === items.length - 1 ? "none" : `1px solid ${S.linha}` }}>
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 relative" style={{ background: `${t.color}1A` }}>
                     <t.Icon size={17} color={t.color} />
-                    {!n.read && <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full" style={{ background: T.brass, border: `2px solid ${T.paper}` }} />}
+                    {!n.read && <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full" style={{ background: S.risco, border: `2px solid ${S.cartao}` }} />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
@@ -71,6 +72,7 @@ function NotificacoesCentral({ notifs, onOpen, onMarkAll, onBack }) {
                 </button>
               );
             })}
+            </div>
           </div>
         ))}
       </div>

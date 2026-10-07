@@ -120,7 +120,7 @@ function IaReport({ job, isPinned, onTogglePin, onStop, onRetry, onRefresh, onBa
             <ul className="mt-3 flex flex-col gap-1.5">
               {job.progress.map((p, i) => (
                 <li key={i} className="text-[15px] flex items-center gap-2" style={{ color: T.muted }}>
-                  <CheckIcon size={13} color={T.slate} /> {p}
+                  <CheckIcon size={14} color={S.oliva} /> {p}
                 </li>
               ))}
             </ul>

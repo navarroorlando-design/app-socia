@@ -1,9 +1,9 @@
 import React from "react";
-import { ChevronIcon, SearchIcon } from "../componentes/icones";
-import { Badge, SecLabel } from "../componentes/ui";
+import { ChevronIcon, FolderIcon, LockIcon, SearchIcon } from "../componentes/icones";
+import { Badge, LinhaLista, SecLabel } from "../componentes/ui";
 import { BLOQUEIOS_LISTA, ORGS, ORG_ORDER, PROCESSOS_LISTA } from "../dados/base";
 import { norm } from "../dados/formato";
-import { LINK, T } from "../estilo/tokens";
+import { CARD, F, LINK, S, T, semDe } from "../estilo/tokens";
 
 function BuscaGlobal({ q, setQ, onBack, onOpenProcesso, onOpenBloqueio, onOpenOrg }) {
   const term = norm(q.trim());
@@ -15,17 +15,17 @@ function BuscaGlobal({ q, setQ, onBack, onOpenProcesso, onOpenBloqueio, onOpenOr
 
   const Section = ({ title, children }) => (
     <>
-      <p className="text-[14px] mt-6 mb-1" style={{ color: T.muted }}>{title}</p>
-      <div className="flex flex-col">{children}</div>
+      <SecLabel>{title}</SecLabel>
+      <div style={CARD}>{children}</div>
     </>
   );
 
   return (
     <>
       <div className="flex items-center gap-2 px-6 pt-3 pb-2 shrink-0">
-        <div className="flex-1 flex items-center gap-2 px-4 py-2.5 rounded-full" style={{ background: "white", border: `1px solid ${T.hairline}` }}>
-          <SearchIcon size={16} color={T.muted} />
-          <input autoFocus value={q} onChange={(e) => setQ(e.target.value)}
+        <div className="busca-campo flex-1 flex items-center gap-2 px-4 rounded-full" style={{ height: 50, background: S.cartao, boxShadow: CARD.boxShadow }}>
+          <SearchIcon size={20} color={S.texto2} />
+          <input id="busca" aria-label="Buscar" autoFocus value={q} onChange={(e) => setQ(e.target.value)}
                  placeholder="Cliente, processo ou valor"
                  className="flex-1 bg-transparent outline-none text-[17px]" style={{ color: T.ink }} />
         </div>
@@ -38,7 +38,7 @@ function BuscaGlobal({ q, setQ, onBack, onOpenProcesso, onOpenBloqueio, onOpenOr
             <SecLabel>Sugestões</SecLabel>
             <div className="flex flex-wrap gap-2">
               {["AFNE", "Gnosis", "trabalhista", "SISBAJUD", "Niterói"].map((s) => (
-                <button key={s} onClick={() => setQ(s)} className="text-[15px] px-3 py-1.5 rounded-full" style={{ background: "#FFFDF9" }}>{s}</button>
+                <button key={s} onClick={() => setQ(s)} className="rounded-full" style={{ background: S.cartao, boxShadow: CARD.boxShadow, fontFamily: F.ui, fontSize: 16, color: S.ink, padding: "8px 14px" }}>{s}</button>
               ))}
             </div>
           </>
@@ -52,11 +52,11 @@ function BuscaGlobal({ q, setQ, onBack, onOpenProcesso, onOpenBloqueio, onOpenOr
 
         {orgs.length > 0 && (
           <Section title="Organizações">
-            {orgs.map((id) => (
-              <button key={id} onClick={() => onOpenOrg(id)} className="flex items-center gap-3 py-3 w-full text-left" style={{ borderBottom: `1px solid ${T.hairline}` }}>
-                <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 font-serif-legal text-[14px]" style={{ background: T.ink, color: T.paper }}>{ORGS[id].initials}</div>
-                <p className="text-[16px] flex-1">{ORGS[id].name}</p>
-                <ChevronIcon size={14} color={T.muted} strokeWidth={2} />
+            {orgs.map((id, i) => (
+              <button key={id} onClick={() => onOpenOrg(id)} className="flex items-center gap-3 w-full text-left" style={{ padding: "12px 16px", borderBottom: i === orgs.length - 1 ? "none" : `1px solid ${S.linha}` }}>
+                <span className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: S.marca, color: "#FFFFFF", fontFamily: F.display, fontSize: 14, fontWeight: 600 }}>{ORGS[id].initials}</span>
+                <span className="flex-1" style={{ fontFamily: F.ui, fontSize: 16, fontWeight: 600, color: S.ink }}>{ORGS[id].name}</span>
+                <ChevronIcon size={16} color={S.texto2} strokeWidth={2} />
               </button>
             ))}
           </Section>
@@ -64,25 +64,19 @@ function BuscaGlobal({ q, setQ, onBack, onOpenProcesso, onOpenBloqueio, onOpenOr
 
         {processos.length > 0 && (
           <Section title="Processos">
-            {processos.map((p) => (
-              <button key={p.id} onClick={() => onOpenProcesso(p)} className="w-full text-left py-3" style={{ borderBottom: `1px solid ${T.hairline}` }}>
-                <p className="text-[16px] font-medium">{p.cliente}</p>
-                <p className="text-[15px] mt-0.5" style={{ color: T.muted }}>{p.desc}</p>
-              </button>
+            {processos.map((p, i) => (
+              <LinhaLista key={p.id} onClick={() => onOpenProcesso(p)} last={i === processos.length - 1} sem={semDe(p.status)}
+                          icone={<FolderIcon size={18} color={semDe(p.status).cor} />} titulo={p.cliente} detalhe={p.desc} abaixo={<Badge text={p.status} />} />
             ))}
           </Section>
         )}
 
         {bloqueios.length > 0 && (
           <Section title="Bloqueios">
-            {bloqueios.map((b) => (
-              <button key={b.id} onClick={() => onOpenBloqueio(b)} className="w-full text-left py-3 flex items-center justify-between gap-2" style={{ borderBottom: `1px solid ${T.hairline}` }}>
-                <div>
-                  <p className="text-[16px] font-medium">{b.cliente}</p>
-                  <p className="text-[15px] mt-0.5" style={{ color: T.muted }}>{b.valor}</p>
-                </div>
-                <Badge text={b.status} />
-              </button>
+            {bloqueios.map((b, i) => (
+              <LinhaLista key={b.id} onClick={() => onOpenBloqueio(b)} last={i === bloqueios.length - 1} sem={semDe(b.status)}
+                          icone={<LockIcon size={18} color={semDe(b.status).cor} />} titulo={<span style={{ fontSize: 17, fontVariantNumeric: "tabular-nums" }}>{b.valor}</span>}
+                          detalhe={b.cliente} direita={<Badge text={b.status} />} />
             ))}
           </Section>
         )}

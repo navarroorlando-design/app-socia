@@ -81,12 +81,11 @@ function OsPerfil({ orgId, onBack, sample, onAsk }) {
             const st = fim < 2026 ? { s: SEMANTICA.find((x) => x.id === "atencao"), t: `Vigência encerrada em ${fim}` }
                      : fim === 2026 ? { s: SEMANTICA.find((x) => x.id === "atencao"), t: "Vence este ano" }
                      : { s: SEMANTICA.find((x) => x.id === "curso"), t: "Vigente" };
-            const destaque = st.s.id === "atencao";
             return (
-              <div key={i} style={destaque ? { background: st.s.fundo, borderRadius: 24, padding: 18 } : { ...CARD, padding: 18 }}>
+              <div key={i} style={{ ...CARD, padding: 18 }}>
                 <p style={{ fontFamily: F.ui, fontSize: 17, fontWeight: 600, color: S.ink }}>{c.orgao}</p>
                 <p style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2, marginTop: 2 }}>Vigência {c.vigencia}</p>
-                <div className="mt-2.5"><Etiqueta s={st.s} texto={st.t} sobreCor={destaque} /></div>
+                <div className="mt-2.5"><Etiqueta s={st.s} texto={st.t} /></div>
               </div>
             );
           })}
