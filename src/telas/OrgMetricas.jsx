@@ -5,6 +5,7 @@ import { ORGS } from "../dados/base";
 import { fmtBRL, fmtBRLCurto, fmtData } from "../dados/formato";
 import { ORDEM_PROGNOSTICO, resumoContrato, resumoOrg } from "../dados/passivo";
 import { CARD, F, S, SEMANTICA, semDe } from "../estilo/tokens";
+import { Anotacao, BotaoAlerta } from "../pessoal";
 
 /* ------------------------------------------------------------------ */
 /* Organização: contratos de gestão (passivo), bloqueios e processos   */
@@ -164,6 +165,8 @@ function ContratoDetalhe({ orgId, orgao, onBack, backLabel, onOpenProcesso, onOp
           <DownloadIcon size={20} color={S.ink} /> Relatório para o cliente (PDF)
         </button>
       )}
+      <BotaoAlerta base={{ tipo: "passivo_contrato", orgId, orgao }} rotulo="Avisar se o passivo passar de um valor" titulo="Avisar sobre o passivo" />
+      <Anotacao chave={`contrato:${orgId}:${orgao}`} sobre="este contrato" />
 
       {porArea.length > 0 && (
         <>
@@ -209,6 +212,7 @@ function BloqueiosOrg({ orgId, onBack, onOpenContrato, onOpenBloqueio }) {
              titulo={fmtBRL(r.bloqueadoAtivo)} tituloCompacto="Bloqueios" tituloSize={36}
              sub={`${r.bloqueiosAtivos} bloqueios ativos via SISBAJUD`}>
         <KPIs itens={[["Ativo", fmtBRLCurto(r.bloqueadoAtivo)], ["Levantado", fmtBRLCurto(r.levantado)], ["Já liberado", `${pct}%`]]} />
+        <BotaoAlerta base={{ tipo: "bloqueio_cliente", orgId }} rotulo="Avisar se o bloqueado passar de um valor" titulo="Avisar sobre bloqueios" />
       </Faixa>
       <SecLabel>Por contrato de gestão</SecLabel>
       <PorContrato onOpenContrato={onOpenContrato}

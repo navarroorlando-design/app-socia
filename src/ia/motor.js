@@ -103,6 +103,7 @@ DADOS
 - Passivo de um contrato de gestão = metrica passivo_estimado (valor em discussão nos processos, por prognóstico Provável/Possível/Remoto). Não confunda com valor bloqueado (o que já saiu da conta).
 - Se pedirem algo que a base não tem (prazos, honorários, partes, outros anos), diga com clareza e ofereça o que dá para mostrar.
 - Faça quantas consultas precisar, em geral de 3 a 8.
+- Se a sócia pedir para ser avisada (bloqueio de um cliente passar de um valor, passivo de um contrato passar de um valor, processo ficar parado X dias), use criar_alerta e confirme em uma frase o que foi criado. Alertas ficam em Perfil → Meus alertas.
 
 FORMATO DA RESPOSTA (Markdown)
 1. Comece com **Resumo:** e 2 ou 3 frases com a resposta direta e o número principal.
@@ -138,8 +139,8 @@ function montarTurnos(mensagens, clienteId) {
   return [{ role: "user", content: regras(clienteId) }, ...hist];
 }
 
-async function conversar(sample, mensagens, { clienteId, onText, onProgress, signal }) {
-  const { text, truncated } = await sample(montarTurnos(mensagens, clienteId), { tools: TOOLS_DEF(onProgress), signal, onText, modelTier: "default" });
+async function conversar(sample, mensagens, { clienteId, onText, onProgress, signal, ferramentasExtras = [] }) {
+  const { text, truncated } = await sample(montarTurnos(mensagens, clienteId), { tools: [...TOOLS_DEF(onProgress), ...ferramentasExtras], signal, onText, modelTier: "default" });
   return { text, truncated };
 }
 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ChartIcon, FlagIcon, FolderIcon, LockIcon, SunIcon } from "../componentes/icones";
+import { BellIcon, ChartIcon, FlagIcon, FolderIcon, LockIcon, SunIcon } from "../componentes/icones";
 import { Faixa, SecLabel, Toggle } from "../componentes/ui";
 import { CARD, LINK, S, T } from "../estilo/tokens";
 
@@ -9,6 +9,7 @@ const NOTIF_TYPES = {
   reclamacao: { label: "Reclamação", Icon: FlagIcon, color: "#835000" },
   relatorio: { label: "Relatório da IA", Icon: ChartIcon, color: "#765614" },
   resumo: { label: "Resumo diário", Icon: SunIcon, color: "#4F565B" },
+  alerta: { label: "Seu alerta", Icon: BellIcon, color: "#835000" },
 };
 
 const INITIAL_NOTIFS = [

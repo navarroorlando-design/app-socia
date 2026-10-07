@@ -29,8 +29,10 @@ function Anel({ pct, rotulo, size = 92 }) {
   );
 }
 const NATUREZAS = ["Trabalhista", "Cível", "Administrativo"];
+const INICIO_BLOCOS = { resumo: "Bloqueado hoje", atalhos: "Passivo e atalhos", ativos: "Processos ativos", seguidos: "Processos que você segue", hoje: "Hoje no escritório", navegar: "Navegar por tipo" };
+const INICIO_PADRAO = Object.keys(INICIO_BLOCOS).map((id) => ({ id, visivel: true }));
 
-function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onOpenProcesso, onOpenBloqueio, onOpenReclamacao, onOpenAcompanhando, onOpenBusca, onOpenMenu, onPerguntar, unreadCount, foto, apelido }) {
+function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onOpenProcesso, onOpenBloqueio, onOpenReclamacao, onOpenAcompanhando, onOpenBusca, onOpenMenu, onPerguntar, unreadCount, foto, apelido, ordem = INICIO_PADRAO }) {
   const preview = followedItems.slice(0, 3);
   const parados90 = PROCESSOS_LISTA.filter((p) => p.diasParado >= 90).length;
   const sem = (id) => SEMANTICA.find((x) => x.id === id);
@@ -73,20 +75,9 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onO
     );
   };
 
-  return (
-    <div className="flex-1 overflow-y-auto no-scrollbar px-6" style={{ paddingBottom: 120 }}>
-      {/* saudação em duas linhas + VA */}
-      <div className="flex items-center justify-between gap-3" style={{ paddingTop: 10 }}>
-        <div className="min-w-0">
-          <p style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2 }}>{data.charAt(0).toUpperCase() + data.slice(1)}</p>
-          <p style={{ fontFamily: F.titulo, fontSize: 30, fontWeight: 400, color: S.ink, letterSpacing: "-0.02em", lineHeight: 1.1, marginTop: 8 }}>{saudacao.replace(",", "")}</p>
-          <p style={{ fontFamily: F.titulo, fontSize: 30, fontWeight: 700, color: S.ink, letterSpacing: "-0.025em", lineHeight: 1.1 }}>{apelido || "Sócia"}</p>
-        </div>
-        <button onClick={onOpenMenu} aria-label={`Menu da conta${unreadCount ? `, ${unreadCount} notificações novas` : ""}`} className="rounded-full shrink-0">
-          <Avatar foto={foto} size={54} badge={unreadCount} />
-        </button>
-      </div>
-
+  // Blocos do Início: a sócia escolhe quais aparecem e em que ordem (Perfil → Personalizar Início).
+  const SECOES = {
+    resumo: (<>
       {/* cartão principal em marinho: valor bloqueado e quanto já foi levantado */}
       <div className="mt-6" style={{ borderRadius: CARD.borderRadius, background: S.marca, padding: 22, boxShadow: "0 10px 24px rgba(31,30,26,.22)" }}>
         <p style={{ fontFamily: F.ui, fontSize: 15, color: S.marcaTexto2 }}>Bloqueado hoje, todos os clientes</p>
@@ -106,7 +97,8 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onO
           <Anel pct={pctLevantado} rotulo="já levantado" size={84} />
         </div>
       </div>
-
+    </>),
+    atalhos: (<>
       {/* atalhos em grade 2×2 */}
       <div className="grid grid-cols-2 gap-3 mt-4">
         <button onClick={() => onOpenList("carteira")} className="col-span-2 text-left flex items-center gap-3"
@@ -124,7 +116,8 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onO
         <Atalho rotulo="Buscar" detalhe="Processo, cliente ou número" onClick={onOpenBusca} Icone={SearchIcon} />
         <Atalho rotulo="Perguntar" detalhe="Relatórios com a IA" onClick={onPerguntar} Icone={SparkleIcon} tom="ia" />
       </div>
-
+    </>),
+    ativos: (<>
       {/* processos ativos do escritório, por natureza */}
       <SecLabel acao="Ver todos" onAcao={() => onOpenProcessos("todos")}>Processos ativos</SecLabel>
       <div style={{ ...CARD, padding: 18 }}>
@@ -150,7 +143,8 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onO
         </div>
         {outrosProc > 0 && <p style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2, marginTop: 6 }}>Mais {outrosProc} {outrosProc === 1 ? "processo constitucional" : "processos constitucionais"} (reclamações no STF).</p>}
       </div>
-
+    </>),
+    seguidos: (<>
       {preview.length > 0 && (
         <>
           <SecLabel acao="Ver todos" onAcao={onOpenAcompanhando}>Processos que você segue</SecLabel>
@@ -173,7 +167,8 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onO
           </div>
         </>
       )}
-
+    </>),
+    hoje: (<>
       <SecLabel acao="Ver tudo" onAcao={() => onOpenList("movimentacoes")}>Hoje no escritório</SecLabel>
       <div style={CARD}>
         <FeedItem cliente="Instituto Gnosis" text="Decisão interlocutória publicada na ação cível de cobrança" time="40 min" sem={sem("curso")} tag="Movimentação" onClick={() => onOpenProcesso(proc("p2"), "feed")} />
@@ -182,13 +177,32 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onO
         <FeedItem cliente="IGEDES" text="Processo administrativo disciplinar movimentado" time="2 dias" sem={sem("curso")} tag="Movimentação" onClick={() => onOpenProcesso(proc("p5"), "feed")} />
         <FeedItem cliente="AFNE" text="Audiência trabalhista remarcada na ação declaratória" time="4 dias" sem={sem("atencao")} tag="Remarcação" onClick={() => onOpenProcesso(proc("p4"), "feed")} last />
       </div>
-
+    </>),
+    navegar: (<>
       <SecLabel>Navegar por tipo</SecLabel>
       <div style={CARD}>
         <CardRow icon={<FolderIcon size={20} color={S.ink} />} label="Processos" value={TOTAIS.processos.toLocaleString("pt-BR")} onClick={() => onOpenList("processos")} />
         <CardRow icon={<LockIcon size={20} color={S.ink} />} label="Bloqueios ativos" value={fmtBRLCurto(TOTAIS.bloqueadoAtivo)} onClick={() => onOpenList("bloqueios")} />
         <CardRow icon={<FlagIcon size={20} color={S.ink} />} label="Reclamações no STF" value={String(RECLAMACOES_LISTA.length)} onClick={() => onOpenList("reclamacoes")} last />
       </div>
+    </>),
+  };
+
+  return (
+    <div className="flex-1 overflow-y-auto no-scrollbar px-6" style={{ paddingBottom: 120 }}>
+      {/* saudação em duas linhas + VA */}
+      <div className="flex items-center justify-between gap-3" style={{ paddingTop: 10 }}>
+        <div className="min-w-0">
+          <p style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2 }}>{data.charAt(0).toUpperCase() + data.slice(1)}</p>
+          <p style={{ fontFamily: F.titulo, fontSize: 30, fontWeight: 400, color: S.ink, letterSpacing: "-0.02em", lineHeight: 1.1, marginTop: 8 }}>{saudacao.replace(",", "")}</p>
+          <p style={{ fontFamily: F.titulo, fontSize: 30, fontWeight: 700, color: S.ink, letterSpacing: "-0.025em", lineHeight: 1.1 }}>{apelido || "Sócia"}</p>
+        </div>
+        <button onClick={onOpenMenu} aria-label={`Menu da conta${unreadCount ? `, ${unreadCount} notificações novas` : ""}`} className="rounded-full shrink-0">
+          <Avatar foto={foto} size={54} badge={unreadCount} />
+        </button>
+      </div>
+
+      {ordem.filter((x) => x.visivel).map((x) => <React.Fragment key={x.id}>{SECOES[x.id]}</React.Fragment>)}
     </div>
   );
 }
@@ -312,4 +326,4 @@ function AcompanhandoLista({ items, onOpen, onBack }) {
   );
 }
 
-export { AcompanhandoLista, FeedItem, InicioFeed, ListaGenerica };
+export { INICIO_BLOCOS, INICIO_PADRAO, AcompanhandoLista, FeedItem, InicioFeed, ListaGenerica };

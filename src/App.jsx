@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StatusBar, TabBar } from "./componentes/ui";
 import { BLOQUEIOS_LISTA, CLIENTE_NOME, ORGS, ORG_ORDER, PROCESSOS_LISTA, RECLAMACOES_LISTA } from "./dados/base";
 import { GlobalStyle } from "./estilo/GlobalStyle";
@@ -9,7 +9,8 @@ import { BloqueioDetalhe } from "./telas/BloqueioDetalhe";
 import { BuscaGlobal } from "./telas/BuscaGlobal";
 import { GuiaEstilo } from "./telas/GuiaEstilo";
 import { IaAsk, IaConversa, PastaRelatorios } from "./telas/Ia";
-import { AcompanhandoLista, InicioFeed, ListaGenerica } from "./telas/Inicio";
+import { AcompanhandoLista, INICIO_BLOCOS, INICIO_PADRAO, InicioFeed, ListaGenerica } from "./telas/Inicio";
+import { MeusAlertas, PersonalizarInicio, PessoalContext, TIPOS_ALERTA, mesmoAlvo } from "./pessoal";
 import { INITIAL_NOTIFS, NotifPrefs, NotificacoesCentral } from "./telas/Notificacoes";
 import { OsLista, OsPerfil } from "./telas/Organizacoes";
 import { BloqueiosOrg, ContratoDetalhe, ContratosOrg, ProcessosOrg } from "./telas/OrgMetricas";
@@ -70,6 +71,70 @@ function AppSociosPrototype() {
   const [desde] = useState(() => new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }));
   const [relatorioOrgao, setRelatorioOrgao] = useState(null);
   const [recorteLista, setRecorteLista] = useState("todos");
+  // Só da sócia: anotações, alertas e o jeito do Início (guardados no aparelho no protótipo)
+  const [notas, setNotasS] = useState(() => lerPref("notas", {}));
+  const [alertas, setAlertasS] = useState(() => lerPref("alertas", []));
+  const [ordemInicio, setOrdemInicioS] = useState(() => {
+    const o = lerPref("inicio", INICIO_PADRAO);
+    return Array.isArray(o) && INICIO_PADRAO.every((p) => o.some((x) => x.id === p.id)) ? o : INICIO_PADRAO;
+  });
+  const setOrdemInicio = (o) => { setOrdemInicioS(o); gravarPref("inicio", o); };
+  const mudarAlertas = (f) => setAlertasS((as) => { const n = f(as); gravarPref("alertas", n); return n; });
+  const hojeCurto = () => new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+  const pessoal = {
+    notas,
+    salvarNota: (chave, texto) => setNotasS((ns) => {
+      const n = { ...ns };
+      if (texto) n[chave] = { texto, atualizado: hojeCurto() }; else delete n[chave];
+      gravarPref("notas", n); return n;
+    }),
+    alertas,
+    criarAlerta: (base) => mudarAlertas((as) => [{ ...base, id: "a" + Date.now(), ativo: true, disparadoEm: null }, ...as.filter((a) => !mesmoAlvo(a, base))]),
+    removerAlerta: (id) => mudarAlertas((as) => as.filter((a) => a.id !== id)),
+    alternarAlerta: (id) => mudarAlertas((as) => as.map((a) => (a.id === id ? { ...a, ativo: !a.ativo, disparadoEm: a.ativo ? a.disparadoEm : null } : a))),
+  };
+  // Confere os alertas ligados. No app real, quem confere é o servidor, a cada atualização dos dados.
+  useEffect(() => {
+    const disparar = alertas.filter((a) => a.ativo && !a.disparadoEm && TIPOS_ALERTA[a.tipo]?.disparou(a));
+    if (!disparar.length) return;
+    setNotifs((ns) => [...disparar.map((a) => {
+      const t = TIPOS_ALERTA[a.tipo];
+      return { id: "al-" + a.id, type: "alerta", cliente: t.cliente(a), text: t.aviso(a), time: "agora", group: "Hoje", read: false, target: t.alvo(a) };
+    }), ...ns.filter((n) => !disparar.some((a) => n.id === "al-" + a.id))]);
+    mudarAlertas((as) => as.map((a) => (disparar.some((d) => d.id === a.id) ? { ...a, disparadoEm: `em ${hojeCurto()}` } : a)));
+  }, [alertas]);
+  // A IA também cria alertas quando a sócia pede ("me avise se...")
+  const ferramentaAlerta = {
+    name: "criar_alerta",
+    description: "Cria um alerta para a sócia. tipo: bloqueio_cliente (valor bloqueado de um cliente passar de limite em R$), passivo_contrato (passivo de um contrato de gestão passar de limite em R$) ou processo_parado (processo ficar limite dias sem movimentação). Devolve a descrição do alerta criado.",
+    inputSchema: { type: "object", properties: {
+      tipo: { type: "string", enum: ["bloqueio_cliente", "passivo_contrato", "processo_parado"] },
+      cliente: { type: "string", description: "AFNE, Instituto Gnosis, FAS ou IGEDES" },
+      contrato: { type: "string", description: "Parte do nome do órgão do contrato, para passivo_contrato" },
+      processo_numero: { type: "string", description: "Número CNJ do processo, para processo_parado" },
+      limite: { type: "number" },
+    }, required: ["tipo", "limite"] },
+    execute: (inp) => {
+      const orgId = ORG_ORDER.find((k) => inp.cliente && ORGS[k].name.toLowerCase().includes(String(inp.cliente).toLowerCase().replace("instituto ", "")));
+      let base;
+      if (inp.tipo === "processo_parado") {
+        const p = PROCESSOS_LISTA.find((x) => x.numero === String(inp.processo_numero || "").trim());
+        if (!p) throw new Error("Processo não encontrado pelo número CNJ.");
+        base = { tipo: inp.tipo, processoId: p.id };
+      } else {
+        if (!orgId) throw new Error("Cliente não encontrado. Use AFNE, Instituto Gnosis, FAS ou IGEDES.");
+        if (inp.tipo === "passivo_contrato") {
+          const c = ORGS[orgId].contratos.find((x) => inp.contrato && x.orgao.toLowerCase().includes(String(inp.contrato).toLowerCase()));
+          if (!c) throw new Error(`Contrato não encontrado. Contratos de ${ORGS[orgId].name}: ${ORGS[orgId].contratos.map((x) => x.orgao).join(", ")}.`);
+          base = { tipo: inp.tipo, orgId, orgao: c.orgao };
+        } else base = { tipo: inp.tipo, orgId };
+      }
+      const limite = Number(inp.limite);
+      if (!(limite > 0)) throw new Error("Informe um limite maior que zero.");
+      pessoal.criarAlerta({ ...base, limite });
+      return { criado: TIPOS_ALERTA[base.tipo].texto({ ...base, limite }), onde: "Perfil → Meus alertas" };
+    },
+  };
   const [relatorioOrigin, setRelatorioOrigin] = useState("contratos");
   const comPersistencia = (set, chave) => (v) => { set(v); gravarPref(chave, v); };
   const setFoto = comPersistencia(setFotoS, "foto"), setApelido = comPersistencia(setApelidoS, "apelido"),
@@ -115,7 +180,7 @@ function AppSociosPrototype() {
     if (!sample) { muda(() => ({ status: "erro", error: "A IA responde quando este app é aberto no Claude.", retryable: false })); return; }
     try {
       const { text, truncated } = await conversar(sample, msgs.slice(0, -1), {
-        clienteId: base.clienteId, signal: ctl.signal,
+        clienteId: base.clienteId, signal: ctl.signal, ferramentasExtras: [ferramentaAlerta],
         onText: ({ text }) => muda(() => ({ text, status: "escrevendo" })),
         onProgress: (p) => muda((m) => ({ progress: [...m.progress, p] })),
       });
@@ -156,11 +221,12 @@ function AppSociosPrototype() {
 
   const openNotif = (n) => {
     setNotifs((prev) => prev.map((x) => (x.id === n.id ? { ...x, read: true } : x)));
-    const { kind, id } = n.target;
+    const { kind, id, orgao } = n.target;
     if (kind === "processo") openProcesso(PROCESSOS_LISTA.find((p) => p.id === id), "notificacoes");
     if (kind === "bloqueio") openBloqueio(BLOQUEIOS_LISTA.find((b) => b.id === id), "notificacoes");
     if (kind === "report") { const p = pinned.find((x) => x.id === id); if (p) openPinned(p, "notificacoes"); }
     if (kind === "org") openOrg(id);
+    if (kind === "contrato") openContratoDe(id, orgao);
     if (kind === "reclamacao") openReclamacao(RECLAMACOES_LISTA.find((r) => r.id === id), "notificacoes");
     if (kind === "acompanhando") setInicioView("acompanhando");
   };
@@ -186,6 +252,7 @@ function AppSociosPrototype() {
       <div className="app-phone relative flex flex-col overflow-hidden" style={{ background: T.paper, color: T.ink }}>
         <div className="app-island absolute left-1/2 -translate-x-1/2 top-3 w-[110px] h-[30px] rounded-full z-20" style={{ background: T.ink }} />
         <PrefsContext.Provider value={{ lerVoz }}>
+        <PessoalContext.Provider value={pessoal}>
         <div className="absolute inset-0 flex flex-col" style={{ zoom: escala }}>
         <StatusBar />
         {!acesso.entrou ? (
@@ -210,6 +277,7 @@ function AppSociosPrototype() {
             onOpenMenu={() => setMenuVA(true)}
             onPerguntar={() => changeTab("ia")}
             unreadCount={unreadCount}
+            ordem={ordemInicio}
             foto={foto}
             apelido={apelido}
           />
@@ -312,13 +380,18 @@ function AppSociosPrototype() {
             onNova={() => { ctlRef.current?.abort(); setConversa(null); setIaView("ask"); }} />
         )}
 
-        {tab === "perfil" && perfilView === "main" && <PerfilUsuaria onOpenNotifPrefs={() => setPerfilView("notif")} onOpenSeguranca={() => setPerfilView("seguranca")} onOpenPasta={() => setPerfilView("pasta")} pinnedCount={pinned.length} onOpenGuia={() => setPerfilView("guia")}
+        {tab === "perfil" && perfilView === "main" && <PerfilUsuaria onOpenNotifPrefs={() => setPerfilView("notif")} onOpenSeguranca={() => setPerfilView("seguranca")}
+            onOpenAlertas={() => setPerfilView("alertas")} onOpenPersonalizar={() => setPerfilView("personalizar")} alertasCount={alertas.length} onOpenPasta={() => setPerfilView("pasta")} pinnedCount={pinned.length} onOpenGuia={() => setPerfilView("guia")}
             onOpenOrdem={() => setPerfilView("ordem")} foto={foto} setFoto={setFoto} apelido={apelido} setApelido={setApelido}
             escala={escala} setEscala={setEscala} lerVoz={lerVoz} setLerVoz={setLerVoz} />}
         {tab === "perfil" && perfilView === "ordem" && <OrdemClientes ordem={ordem} setOrdem={setOrdem} onBack={() => setPerfilView("main")} />}
         {tab === "perfil" && perfilView === "guia" && <GuiaEstilo onBack={() => setPerfilView("main")} />}
         {tab === "perfil" && perfilView === "pasta" && <PastaRelatorios pinned={pinned} onOpenPinned={(p) => openPinned(p, "pasta")} onBack={() => setPerfilView("main")} />}
         {tab === "perfil" && perfilView === "notif" && <NotifPrefs onBack={() => setPerfilView("main")} />}
+        {tab === "perfil" && perfilView === "alertas" && <MeusAlertas onBack={() => setPerfilView("main")} />}
+        {tab === "perfil" && perfilView === "personalizar" && (
+          <PersonalizarInicio onBack={() => setPerfilView("main")} ordem={ordemInicio} setOrdem={setOrdemInicio} blocos={INICIO_BLOCOS} padrao={INICIO_PADRAO} />
+        )}
         {tab === "perfil" && perfilView === "seguranca" && (
           <Seguranca onBack={() => setPerfilView("main")} faceId={acesso.faceId} setFaceId={(v) => setAcesso({ ...acesso, faceId: v })}
             onBloquear={() => setBloqueado(true)} onSair={() => { setAcesso({ entrou: false, faceId: false }); setBloqueado(false); changeTab("inicio"); }}
@@ -334,6 +407,7 @@ function AppSociosPrototype() {
         )}
         </>)}
         </div>
+        </PessoalContext.Provider>
         </PrefsContext.Provider>
       </div>
     </div>

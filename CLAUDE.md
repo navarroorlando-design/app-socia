@@ -119,6 +119,18 @@ sua (`src/telas/OrgMetricas.jsx`). O cartão da lista de organizações mostra s
   conferência obrigatória e PDF (jsPDF). No claude.ai o arquivo sai pela capacidade `downloads`
   (declarar `capabilities: {sample: {}, downloads: true}` ao publicar); fora dele, baixa direto.
 
+## Funções pessoais da sócia (`src/pessoal.jsx`)
+
+Guardadas no aparelho no protótipo (`lerPref`/`gravarPref`); no app real, no servidor por usuária.
+- **Anotações privadas** em processo, contrato e organização (bloco em osso no topo da tela).
+- **Alertas sob medida**: processo parado X dias, bloqueado de um cliente acima de R$ X, passivo de um
+  contrato acima de R$ X. Criados pelo botão "Avisar se…" ou pedindo à IA (ferramenta `criar_alerta`).
+  Ao disparar, viram notificação "Seu alerta". Lista em Perfil → Meus alertas.
+- **Personalizar Início**: mostrar, esconder e reordenar os blocos (saudação fica sempre no topo).
+- **Contar a história do processo** (`ProcessoDetalhe`): a IA narra por fases, com datas, dinheiro e
+  próximo passo de rito, sem prognóstico. Fica profunda quando entrarem DataJud (linha do tempo) e as
+  publicações do Legal One (conteúdo das decisões).
+
 ## DataJud (movimentações dos processos acompanhados)
 
 - `lib/datajud.mjs`: descobre o tribunal pelo número CNJ, consulta a API Pública do DataJud, junta os

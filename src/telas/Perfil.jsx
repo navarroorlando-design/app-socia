@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BellIcon, BuildingIcon, ChevronDownIcon, ChevronIcon, ChevronUpIcon, FolderIcon, LockIcon, PersonIcon, SparkleIcon, StarIcon } from "../componentes/icones";
+import { BellIcon, BuildingIcon, HouseIcon, ChevronDownIcon, ChevronIcon, ChevronUpIcon, FolderIcon, LockIcon, PersonIcon, SparkleIcon, StarIcon } from "../componentes/icones";
 import { Botao, Faixa, Row, SecLabel, Toggle } from "../componentes/ui";
 import { ORGS } from "../dados/base";
 import { CARD, F, LINK, S } from "../estilo/tokens";
@@ -36,7 +36,7 @@ function MenuVA({ unread, followedCount, onClose, onNotificacoes, onAcompanhando
   );
 }
 
-function PerfilUsuaria({ onOpenNotifPrefs, onOpenSeguranca, onOpenPasta, pinnedCount, onOpenGuia, onOpenOrdem, foto, setFoto, apelido, setApelido, escala, setEscala, lerVoz, setLerVoz }) {
+function PerfilUsuaria({ onOpenNotifPrefs, onOpenSeguranca, onOpenAlertas, onOpenPersonalizar, alertasCount = 0, onOpenPasta, pinnedCount, onOpenGuia, onOpenOrdem, foto, setFoto, apelido, setApelido, escala, setEscala, lerVoz, setLerVoz }) {
   const fileRef = React.useRef(null);
   const [aviso, setAviso] = useState("");
   const [rascunho, setRascunho] = useState(apelido);
@@ -143,6 +143,8 @@ function PerfilUsuaria({ onOpenNotifPrefs, onOpenSeguranca, onOpenPasta, pinnedC
         <SecLabel>Organização</SecLabel>
         <div style={CARD}>
           <Row icon={<FolderIcon color={S.ink} />} label="Relatórios fixados" value={String(pinnedCount)} onClick={onOpenPasta} />
+          <Row icon={<BellIcon color={S.ink} />} label="Meus alertas" value={String(alertasCount)} onClick={onOpenAlertas} />
+          <Row icon={<HouseIcon color={S.ink} />} label="Personalizar Início" onClick={onOpenPersonalizar} />
           <Row icon={<BuildingIcon color={S.ink} />} label="Ordem dos clientes" onClick={onOpenOrdem} />
           <Row icon={<BellIcon color={S.ink} />} label="Notificações" onClick={onOpenNotifPrefs} last />
         </div>

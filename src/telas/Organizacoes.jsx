@@ -8,6 +8,7 @@ import { CARD, F, LINK, S, SEMANTICA, T } from "../estilo/tokens";
 import { AskBar } from "./Ia";
 import { FeedItem } from "./Inicio";
 import { ContratoCard } from "./OrgMetricas";
+import { Anotacao } from "../pessoal";
 
 /* ------------------------------------------------------------------ */
 /* Telas: OS                                                           */
@@ -93,6 +94,7 @@ function OsPerfil({ orgId, onBack, sample, onAsk, onOpenContratos, onOpenContrat
             </span>
             <ChevronIcon size={16} color={S.texto2} strokeWidth={2} />
           </button>
+          <Anotacao chave={`org:${orgId}`} sobre={o.name} />
         </Faixa>
 
         <SecLabel acao="Ver todos" onAcao={onOpenContratos}>Passivo por contrato</SecLabel>
