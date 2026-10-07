@@ -12,3 +12,7 @@ html,body{{height:100%;margin:0;}} body{{background:#CFC9BD;color:#1A1916;}}
 """
 open("dist/app-socios.html", "w").write(html)
 open("dist/teste-local.html", "w").write("<meta charset=utf-8>" + html)
+
+# Logos das OS: arquivos separados ao lado da página (publicados no artifact com `files`)
+import shutil
+shutil.copytree("public/marcas", "dist/marcas", dirs_exist_ok=True)

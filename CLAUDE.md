@@ -84,6 +84,8 @@ evita ciclos entre módulos.
   `marcas/originais/`): na aba OS, o logo inteiro numa placa branca com um fio na cor da OS e o cartão num tom bem
   claro dessa cor (`tomOrg`); nas outras telas, o símbolo num círculo branco. A cor da OS **nunca** vai em texto
   (AFNE e IGEDES não passam de 4,5:1 sobre o creme). Sem logo, voltam as iniciais em carvão.
+  As imagens ficam em `public/marcas/` (arquivos, nunca embutidas na página): o claude.ai só deixa compartilhar
+  a página se as imagens forem arquivos publicados ao lado dela (`files` no publish: `marcas/<id>-logo.png`).
 - **Cartões com cantos de 24px.** Organizações principais em grade 2×2 (todas visíveis, sem rolagem lateral).
 - **Listas dentro de cartão** com `LinhaLista`: ícone num círculo na cor do status, título, detalhe e
   etiqueta. Em listas de processos a etiqueta vai abaixo da descrição (`abaixo`); em bloqueios, à direita.

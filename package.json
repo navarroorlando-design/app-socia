@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "artifact:js": "esbuild src/main.jsx --bundle --loader:.jsx=jsx --minify --charset=ascii --define:process.env.NODE_ENV='\"production\"' --outfile=dist/bundle.js",
+    "artifact:js": "esbuild src/main.jsx --bundle --loader:.jsx=jsx --minify --charset=ascii --define:process.env.NODE_ENV='\"production\"' --external:html2canvas --external:dompurify --external:canvg --outfile=dist/bundle.js",
     "artifact:css": "tailwindcss -c tailwind.config.js -i src/tailwind.css -o dist/out.css --minify",
     "artifact": "npm run artifact:js && npm run artifact:css && python3 scripts/build_html.py",
     "icones": "node scripts/gerar_icones.js",

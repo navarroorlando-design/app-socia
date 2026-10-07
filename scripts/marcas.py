@@ -4,12 +4,13 @@ Para cada OS: recorta as bordas vazias do logo, reduz para o tamanho usado no ap
 tira o símbolo para o ícone redondo e mede as cores do próprio logo.
 Uso: python3 scripts/marcas.py   (precisa do Pillow: pip install pillow)
 """
-import base64, io, json, pathlib
+import json, pathlib
 from collections import Counter
 from PIL import Image
 
 RAIZ = pathlib.Path(__file__).resolve().parent.parent
 ORIG = RAIZ / "marcas" / "originais"
+PUB = RAIZ / "public" / "marcas"
 
 # Onde está o símbolo de cada logo (fração da largura/altura do logo já recortado).
 # Gnosis não tem símbolo separado: usa o "G" do nome.
@@ -31,12 +32,6 @@ def aparar(im):
     mascara = Image.composite(branco, Image.new("L", im.size, 0), alfa.point(lambda a: 255 if a > 40 else 0))
     caixa = mascara.getbbox()
     return im.crop(caixa) if caixa else im
-
-
-def png_data_uri(im):
-    buf = io.BytesIO()
-    im.save(buf, "PNG", optimize=True)
-    return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
 
 
 def cores(im, n=3):
@@ -82,7 +77,12 @@ def main():
         quadro = quadro.resize((112, 112), Image.LANCZOS)
         cs = cores(im)
         principal = cs[0]
-        marcas[oid] = {"logo": png_data_uri(logo), "icone": png_data_uri(quadro), "cor": principal, "cores": cs}
+        # Arquivos de imagem separados (não embutidos na página): o claude.ai só analisa para compartilhar
+        # imagens publicadas como arquivo, e o Next.js serve public/ direto.
+        PUB.mkdir(parents=True, exist_ok=True)
+        logo.save(PUB / f"{oid}-logo.png", "PNG", optimize=True)
+        quadro.save(PUB / f"{oid}-icone.png", "PNG", optimize=True)
+        marcas[oid] = {"logo": f"marcas/{oid}-logo.png", "icone": f"marcas/{oid}-icone.png", "cor": principal, "cores": cs}
         relatorio[oid] = {
             "nome": NOMES.get(oid, oid), "arquivo": arq.name, "tamanho_original": Image.open(arq).size,
             "cores_do_logo": cs, "cor_principal": principal,
