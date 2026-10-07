@@ -196,13 +196,21 @@ function MeusAlertas({ onBack }) {
 /* Perfil → Personalizar Início */
 function PersonalizarInicio({ onBack, ordem, setOrdem, blocos, padrao }) {
   const mover = (i, d) => { const o = [...ordem]; [o[i], o[i + d]] = [o[i + d], o[i]]; setOrdem(o); };
+  const destaque = ordem.find((x) => x.visivel)?.id; // o primeiro bloco visível fica em carvão no Início
   return (
     <div className="flex-1 overflow-y-auto no-scrollbar px-6" style={{ paddingBottom: 60 }}>
       <Faixa onBack={onBack} backLabel="Perfil" titulo="Personalizar Início" sub="Escolha o que aparece e em que ordem" />
       <div style={CARD}>
         {ordem.map((b, i) => (
           <div key={b.id} className="flex items-center gap-2" style={{ padding: "10px 12px 10px 16px", borderBottom: i === ordem.length - 1 ? "none" : `1px solid ${S.linha}` }}>
-            <span className="flex-1" style={{ fontFamily: F.ui, fontSize: 16, color: b.visivel ? S.ink : S.texto2, fontWeight: 500 }}>{blocos[b.id]}</span>
+            <span className="flex-1 min-w-0">
+              <span className="block" style={{ fontFamily: F.ui, fontSize: 16, color: b.visivel ? S.ink : S.texto2, fontWeight: 500 }}>{blocos[b.id]}</span>
+              {b.id === destaque && (
+                <span className="inline-flex items-center gap-1.5 mt-1" style={{ fontFamily: F.ui, fontSize: 13, fontWeight: 600, color: S.ink }}>
+                  <span style={{ width: 12, height: 12, borderRadius: 4, background: S.marca }} aria-hidden="true" /> Em destaque
+                </span>
+              )}
+            </span>
             <button onClick={() => mover(i, -1)} disabled={i === 0} aria-label={`Subir ${blocos[b.id]}`} className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: i === 0 ? "transparent" : S.papel, opacity: i === 0 ? 0.3 : 1 }}><ChevronUpIcon size={20} color={S.ink} strokeWidth={2} /></button>
             <button onClick={() => mover(i, 1)} disabled={i === ordem.length - 1} aria-label={`Descer ${blocos[b.id]}`} className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: i === ordem.length - 1 ? "transparent" : S.papel, opacity: i === ordem.length - 1 ? 0.3 : 1 }}><ChevronDownIcon size={20} color={S.ink} strokeWidth={2} /></button>
             <Toggle on={b.visivel} onChange={() => setOrdem(ordem.map((x) => (x.id === b.id ? { ...x, visivel: !x.visivel } : x)))} label={`Mostrar ${blocos[b.id]}`} />
@@ -210,7 +218,7 @@ function PersonalizarInicio({ onBack, ordem, setOrdem, blocos, padrao }) {
         ))}
       </div>
       <SecLabel>Dica</SecLabel>
-      <p style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2, lineHeight: 1.5 }}>A saudação e o seu nome ficam sempre no topo. O que você esconder continua disponível pela busca e pelas outras abas.</p>
+      <p style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2, lineHeight: 1.5 }}>A saudação e o seu nome ficam sempre no topo. O primeiro bloco aparece em destaque, em carvão. O que você esconder continua disponível pela busca e pelas outras abas.</p>
       <div className="mt-4"><Botao variante="secundario" onClick={() => setOrdem(padrao)}>Voltar ao padrão</Botao></div>
     </div>
   );

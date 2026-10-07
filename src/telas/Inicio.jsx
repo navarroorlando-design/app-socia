@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ChevronIcon, FlagIcon, FolderIcon, LockIcon, SearchIcon, SparkleIcon, StarIcon } from "../componentes/icones";
-import { Badge, CardRow, Etiqueta, Faixa, LinhaLista, SecLabel } from "../componentes/ui";
+import { Badge, Etiqueta, Faixa, LinhaLista, SecLabel } from "../componentes/ui";
 import { BLOQUEIOS_LISTA, ORGS, ORG_ORDER, PROCESSOS_LISTA, RECLAMACOES_LISTA, TOTAIS } from "../dados/base";
 import { fmtBRL, fmtBRLCurto, fmtData } from "../dados/formato";
 import { CARD, F, S, SEMANTICA, T, semDe } from "../estilo/tokens";
@@ -11,21 +11,21 @@ import { Dica } from "../ajuda/Dica";
 /* Telas: Início                                                       */
 /* ------------------------------------------------------------------ */
 
-/* Anel de progresso para fundo escuro: percentual no centro, rótulo embaixo */
-function Anel({ pct, rotulo, size = 92 }) {
+/* Anel de progresso: percentual no centro, rótulo embaixo (claro: sobre cartão branco) */
+function Anel({ pct, rotulo, size = 92, claro }) {
   const r = 38, c = 2 * Math.PI * r;
   return (
     <div className="flex flex-col items-center shrink-0" role="img" aria-label={`${pct}% ${rotulo}`}>
       <div className="relative" style={{ width: size, height: size }}>
         <svg width={size} height={size} viewBox="0 0 92 92" aria-hidden="true">
-          <circle cx="46" cy="46" r={r} fill="none" stroke={S.marcaTrilho} strokeWidth="8" />
-          <circle cx="46" cy="46" r={r} fill="none" stroke="#FFFFFF" strokeWidth="8" strokeLinecap="round"
+          <circle cx="46" cy="46" r={r} fill="none" stroke={claro ? S.linha : S.marcaTrilho} strokeWidth="8" />
+          <circle cx="46" cy="46" r={r} fill="none" stroke={claro ? S.ink : "#FFFFFF"} strokeWidth="8" strokeLinecap="round"
                   strokeDasharray={`${(c * pct) / 100} ${c}`} transform="rotate(-90 46 46)" />
         </svg>
         <span className="absolute inset-0 flex items-center justify-center"
-              style={{ fontFamily: F.ui, fontSize: 20, fontWeight: 600, color: "#FFFFFF", fontVariantNumeric: "tabular-nums" }}>{pct}%</span>
+              style={{ fontFamily: F.ui, fontSize: 20, fontWeight: 600, color: claro ? S.ink : "#FFFFFF", fontVariantNumeric: "tabular-nums" }}>{pct}%</span>
       </div>
-      <span style={{ fontFamily: F.ui, fontSize: 14, color: S.marcaTexto2, marginTop: 6 }}>{rotulo}</span>
+      <span style={{ fontFamily: F.ui, fontSize: 14, color: claro ? S.texto2 : S.marcaTexto2, marginTop: 6 }}>{rotulo}</span>
     </div>
   );
 }
@@ -53,6 +53,15 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onO
   const ativosProc = PROCESSOS_LISTA.filter((p) => !["Arquivado", "Baixado"].includes(p.status));
   const outrosProc = ativosProc.filter((p) => !NATUREZAS.includes(p.area)).length;
 
+  // O primeiro bloco visível fica em destaque, no carvão da marca; os outros, em cartão branco.
+  // Assim, quando a sócia reordena o Início (Perfil → Personalizar Início), o destaque acompanha.
+  const primeiro = ordem.find((x) => x.visivel && !(x.id === "seguidos" && preview.length === 0))?.id;
+  const tema = (id) => (id === primeiro
+    ? { escuro: true, fundo: S.marca, texto: "#FFFFFF", apoio: S.marcaTexto2, linha: "rgba(255,255,255,.16)", trilho: S.marcaTrilho, barra: S.osso, circulo: "rgba(255,255,255,.12)", sombra: "0 10px 24px rgba(31,30,26,.22)" }
+    : { escuro: false, fundo: S.cartao, texto: S.ink, apoio: S.texto2, linha: S.linha, trilho: S.linha, barra: S.oliva, circulo: "#EFEBE2", sombra: CARD.boxShadow });
+  const caixa = (t) => ({ ...CARD, background: t.fundo, boxShadow: t.sombra });
+  const tResumo = tema("resumo"), tAtalhos = tema("atalhos"), tAtivos = tema("ativos"), tSeguidos = tema("seguidos"), tHoje = tema("hoje"), tNavegar = tema("navegar");
+
   // Tons da família neutra: cada atalho num tom, o latão fica só para a IA.
   const TONS_ATALHO = {
     cartao: { fundo: S.cartao, titulo: S.ink, apoio: S.texto2, circulo: "#EFEBE2", sombra: true },
@@ -79,23 +88,23 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onO
   // Blocos do Início: a sócia escolhe quais aparecem e em que ordem (Perfil → Personalizar Início).
   const SECOES = {
     resumo: (<>
-      {/* cartão principal em marinho: valor bloqueado e quanto já foi levantado */}
-      <div className="mt-6" style={{ borderRadius: CARD.borderRadius, background: S.marca, padding: 22, boxShadow: "0 10px 24px rgba(31,30,26,.22)" }}>
-        <p style={{ fontFamily: F.ui, fontSize: 15, color: S.marcaTexto2 }}>Bloqueado hoje, todos os clientes</p>
-        <p style={{ fontFamily: F.ui, fontSize: 36, fontWeight: 600, color: "#FFFFFF", letterSpacing: "-0.03em", lineHeight: 1.1, marginTop: 6, fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>{fmtBRL(TOTAIS.bloqueadoAtivo)}</p>
+      {/* valor bloqueado e quanto já foi levantado (em carvão quando é o primeiro bloco) */}
+      <div className="mt-6" style={{ ...caixa(tResumo), padding: 22 }}>
+        <p style={{ fontFamily: F.ui, fontSize: 15, color: tResumo.apoio }}>Bloqueado hoje, todos os clientes</p>
+        <p style={{ fontFamily: F.ui, fontSize: 36, fontWeight: 600, color: tResumo.texto, letterSpacing: "-0.03em", lineHeight: 1.1, marginTop: 6, fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>{fmtBRL(TOTAIS.bloqueadoAtivo)}</p>
         <div className="flex items-end justify-between gap-3 mt-4">
           <div className="min-w-0 flex flex-col items-start gap-2">
-            <p style={{ fontFamily: F.ui, fontSize: 15, color: S.marcaTexto2, marginBottom: 2 }}>{ativos} bloqueios ativos</p>
+            <p style={{ fontFamily: F.ui, fontSize: 15, color: tResumo.apoio, marginBottom: 2 }}>{ativos} bloqueios ativos</p>
             {parados90 > 0 && (
               <button onClick={() => onOpenList("processos")} aria-label={`${parados90} processos parados há mais de 90 dias, ver lista`}>
-                <Etiqueta s={sem("risco")} texto={`${parados90} parados há 90 dias`} sobreCor />
+                <Etiqueta s={sem("risco")} texto={`${parados90} parados há 90 dias`} sobreCor={tResumo.escuro} />
               </button>
             )}
             <button onClick={onOpenAcompanhando} aria-label={`${followedItems.length} processos acompanhados`}>
-              <Etiqueta s={sem("curso")} texto={`${followedItems.length} que você segue`} sobreCor />
+              <Etiqueta s={sem("curso")} texto={`${followedItems.length} que você segue`} sobreCor={tResumo.escuro} />
             </button>
           </div>
-          <Anel pct={pctLevantado} rotulo="já levantado" size={84} />
+          <Anel pct={pctLevantado} rotulo="já levantado" size={84} claro={!tResumo.escuro} />
         </div>
       </div>
     </>),
@@ -103,7 +112,7 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onO
       {/* atalhos em grade 2×2 */}
       <div className="grid grid-cols-2 gap-3 mt-4">
         <button onClick={() => onOpenList("carteira")} className="col-span-2 text-left flex items-center gap-3"
-                style={{ ...CARD, background: S.oliva, boxShadow: "none", padding: 16 }}
+                style={{ ...CARD, background: tAtalhos.escuro ? S.marca : S.oliva, boxShadow: tAtalhos.escuro ? tAtalhos.sombra : "none", padding: 16 }}
                 aria-label={`Passivo estimado da carteira: ${fmtBRL(passivo)} em ${nContratos} contratos de gestão`}>
           <span className="flex-1 min-w-0">
             <span className="block" style={{ fontFamily: F.ui, fontSize: 15, fontWeight: 600, color: "#FFFFFF" }}>Passivo estimado da carteira</span>
@@ -121,10 +130,10 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onO
     ativos: (<>
       {/* processos ativos do escritório, por natureza */}
       <SecLabel acao="Ver todos" onAcao={() => onOpenProcessos("todos")}>Processos ativos</SecLabel>
-      <div style={{ ...CARD, padding: 18 }}>
+      <div style={{ ...caixa(tAtivos), padding: 18 }}>
         <div className="flex items-baseline gap-2">
-          <span style={{ fontFamily: F.ui, fontSize: 34, fontWeight: 600, color: S.ink, letterSpacing: "-0.02em" }}>{ativosProc.length}</span>
-          <span style={{ fontFamily: F.ui, fontSize: 16, color: S.texto2 }}>processos em andamento no escritório</span>
+          <span style={{ fontFamily: F.ui, fontSize: 34, fontWeight: 600, color: tAtivos.texto, letterSpacing: "-0.02em" }}>{ativosProc.length}</span>
+          <span style={{ fontFamily: F.ui, fontSize: 16, color: tAtivos.apoio }}>processos em andamento no escritório</span>
         </div>
         <div className="flex flex-col mt-3" style={{ gap: 4 }}>
           {NATUREZAS.map((n) => {
@@ -132,36 +141,36 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onO
             return (
               <button key={n} onClick={() => onOpenProcessos(n)} className="w-full text-left" style={{ padding: "8px 0" }} aria-label={`${n}: ${qtd} processos, ver lista`}>
                 <span className="flex items-baseline justify-between gap-2">
-                  <span style={{ fontFamily: F.ui, fontSize: 16, color: S.ink }}>{n}</span>
-                  <span className="flex items-center gap-1.5" style={{ fontFamily: F.ui, fontSize: 16, fontWeight: 600, color: S.ink }}>{qtd}<ChevronIcon size={14} color={S.texto2} strokeWidth={2} /></span>
+                  <span style={{ fontFamily: F.ui, fontSize: 16, color: tAtivos.texto }}>{n}</span>
+                  <span className="flex items-center gap-1.5" style={{ fontFamily: F.ui, fontSize: 16, fontWeight: 600, color: tAtivos.texto }}>{qtd}<ChevronIcon size={14} color={tAtivos.apoio} strokeWidth={2} /></span>
                 </span>
-                <span className="block" style={{ marginTop: 6, height: 8, borderRadius: 999, background: S.linha }}>
-                  <span className="block" style={{ height: 8, borderRadius: 999, width: `${Math.max(2, (qtd / ativosProc.length) * 100)}%`, background: S.oliva }} />
+                <span className="block" style={{ marginTop: 6, height: 8, borderRadius: 999, background: tAtivos.trilho }}>
+                  <span className="block" style={{ height: 8, borderRadius: 999, width: `${Math.max(2, (qtd / ativosProc.length) * 100)}%`, background: tAtivos.barra }} />
                 </span>
               </button>
             );
           })}
         </div>
-        {outrosProc > 0 && <p style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2, marginTop: 6 }}>Mais {outrosProc} {outrosProc === 1 ? "processo constitucional" : "processos constitucionais"} (reclamações no STF).</p>}
+        {outrosProc > 0 && <p style={{ fontFamily: F.ui, fontSize: 14, color: tAtivos.apoio, marginTop: 6 }}>Mais {outrosProc} {outrosProc === 1 ? "processo constitucional" : "processos constitucionais"} (reclamações no STF).</p>}
       </div>
     </>),
     seguidos: (<>
       {preview.length > 0 && (
         <>
           <SecLabel acao="Ver todos" onAcao={onOpenAcompanhando}>Processos que você segue</SecLabel>
-          <div style={CARD}>
+          <div style={caixa(tSeguidos)}>
             {preview.map((item, i) => (
               <button key={item.id} onClick={() => onOpenProcesso(item, "feed")} className="w-full text-left flex items-center gap-3"
-                      style={{ padding: "14px 16px", borderTop: i ? `1px solid ${S.linha}` : "none" }}>
+                      style={{ padding: "14px 16px", borderTop: i ? `1px solid ${tSeguidos.linha}` : "none" }}>
                 <span className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: semDe(item.status).fundo }}>
                   <FolderIcon size={18} color={semDe(item.status).cor} />
                 </span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-baseline justify-between gap-2">
-                    <p style={{ fontFamily: F.ui, fontSize: 16, fontWeight: 600, color: S.ink }}>{item.cliente}</p>
-                    <span style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2, flexShrink: 0 }}>{item.lastUpdate}</span>
+                    <p style={{ fontFamily: F.ui, fontSize: 16, fontWeight: 600, color: tSeguidos.texto }}>{item.cliente}</p>
+                    <span style={{ fontFamily: F.ui, fontSize: 14, color: tSeguidos.apoio, flexShrink: 0 }}>{item.lastUpdate}</span>
                   </div>
-                  <p style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2, marginTop: 2, lineHeight: 1.35 }}>{item.desc}</p>
+                  <p style={{ fontFamily: F.ui, fontSize: 15, color: tSeguidos.apoio, marginTop: 2, lineHeight: 1.35 }}>{item.desc}</p>
                 </div>
               </button>
             ))}
@@ -171,20 +180,20 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onO
     </>),
     hoje: (<>
       <SecLabel acao="Ver tudo" onAcao={() => onOpenList("movimentacoes")}>Hoje no escritório</SecLabel>
-      <div style={CARD}>
-        <FeedItem cliente="Instituto Gnosis" text="Decisão interlocutória publicada na ação cível de cobrança" time="40 min" sem={sem("curso")} tag="Movimentação" onClick={() => onOpenProcesso(proc("p2"), "feed")} />
-        <FeedItem cliente="AFNE" text="Bloqueio de R$ 18.400 foi levantado" time="3 h" sem={sem("resolvido")} tag="Levantado" onClick={() => onOpenBloqueio(BLOQUEIOS_LISTA.find((b) => b.id === "b1"), "feed")} />
-        <FeedItem cliente="FAS" text="Nova reclamação constitucional protocolada no STF" time="ontem" sem={sem("atencao")} tag="Reclamação" onClick={() => onOpenReclamacao(RECLAMACOES_LISTA.find((r) => r.id === "r1"), "feed")} />
-        <FeedItem cliente="IGEDES" text="Processo administrativo disciplinar movimentado" time="2 dias" sem={sem("curso")} tag="Movimentação" onClick={() => onOpenProcesso(proc("p5"), "feed")} />
-        <FeedItem cliente="AFNE" text="Audiência trabalhista remarcada na ação declaratória" time="4 dias" sem={sem("atencao")} tag="Remarcação" onClick={() => onOpenProcesso(proc("p4"), "feed")} last />
+      <div style={caixa(tHoje)}>
+        <FeedItem cliente="Instituto Gnosis" text="Decisão interlocutória publicada na ação cível de cobrança" time="40 min" sem={sem("curso")} tag="Movimentação" onClick={() => onOpenProcesso(proc("p2"), "feed")} t={tHoje} />
+        <FeedItem cliente="AFNE" text="Bloqueio de R$ 18.400 foi levantado" time="3 h" sem={sem("resolvido")} tag="Levantado" onClick={() => onOpenBloqueio(BLOQUEIOS_LISTA.find((b) => b.id === "b1"), "feed")} t={tHoje} />
+        <FeedItem cliente="FAS" text="Nova reclamação constitucional protocolada no STF" time="ontem" sem={sem("atencao")} tag="Reclamação" onClick={() => onOpenReclamacao(RECLAMACOES_LISTA.find((r) => r.id === "r1"), "feed")} t={tHoje} />
+        <FeedItem cliente="IGEDES" text="Processo administrativo disciplinar movimentado" time="2 dias" sem={sem("curso")} tag="Movimentação" onClick={() => onOpenProcesso(proc("p5"), "feed")} t={tHoje} />
+        <FeedItem cliente="AFNE" text="Audiência trabalhista remarcada na ação declaratória" time="4 dias" sem={sem("atencao")} tag="Remarcação" onClick={() => onOpenProcesso(proc("p4"), "feed")} last t={tHoje} />
       </div>
     </>),
     navegar: (<>
       <SecLabel>Navegar por tipo</SecLabel>
-      <div style={CARD}>
-        <CardRow icon={<FolderIcon size={20} color={S.ink} />} label="Processos" value={TOTAIS.processos.toLocaleString("pt-BR")} onClick={() => onOpenList("processos")} />
-        <CardRow icon={<LockIcon size={20} color={S.ink} />} label="Bloqueios ativos" value={fmtBRLCurto(TOTAIS.bloqueadoAtivo)} onClick={() => onOpenList("bloqueios")} />
-        <CardRow icon={<FlagIcon size={20} color={S.ink} />} label="Reclamações no STF" value={String(RECLAMACOES_LISTA.length)} onClick={() => onOpenList("reclamacoes")} last />
+      <div style={caixa(tNavegar)}>
+        <LinhaNav t={tNavegar} Icone={FolderIcon} label="Processos" value={TOTAIS.processos.toLocaleString("pt-BR")} onClick={() => onOpenList("processos")} />
+        <LinhaNav t={tNavegar} Icone={LockIcon} label="Bloqueios ativos" value={fmtBRLCurto(TOTAIS.bloqueadoAtivo)} onClick={() => onOpenList("bloqueios")} />
+        <LinhaNav t={tNavegar} Icone={FlagIcon} label="Reclamações no STF" value={String(RECLAMACOES_LISTA.length)} onClick={() => onOpenList("reclamacoes")} last />
       </div>
     </>),
   };
@@ -209,14 +218,26 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onO
   );
 }
 
-function FeedItem({ cliente, text, time, sem, tag, onClick, last }) {
+/* Linha de "Navegar por tipo", no tom do bloco (claro ou carvão) */
+function LinhaNav({ t, Icone, label, value, onClick, last }) {
   return (
-    <button onClick={onClick} className="w-full text-left" style={{ padding: "14px 18px", borderBottom: last ? "none" : `1px solid ${S.linha}` }}>
+    <button onClick={onClick} className="flex items-center gap-3 w-full text-left" style={{ padding: "12px 16px", borderBottom: last ? "none" : `1px solid ${t.linha}` }}>
+      <span className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: t.circulo }}><Icone size={20} color={t.texto} /></span>
+      <span style={{ fontFamily: F.ui, fontSize: 17, color: t.texto, flex: 1 }}>{label}</span>
+      {value && <span style={{ fontFamily: F.ui, fontSize: 16, color: t.apoio, fontVariantNumeric: "tabular-nums" }}>{value}</span>}
+      <ChevronIcon size={16} color={t.apoio} strokeWidth={2} />
+    </button>
+  );
+}
+
+function FeedItem({ cliente, text, time, sem, tag, onClick, last, t }) {
+  return (
+    <button onClick={onClick} className="w-full text-left" style={{ padding: "14px 18px", borderBottom: last ? "none" : `1px solid ${t?.linha || S.linha}` }}>
       <div className="flex items-center justify-between gap-3">
-        <Etiqueta s={sem} texto={tag} />
-        <span style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2 }}>{time}</span>
+        <Etiqueta s={sem} texto={tag} sobreCor={t?.escuro} />
+        <span style={{ fontFamily: F.ui, fontSize: 14, color: t?.apoio || S.texto2 }}>{time}</span>
       </div>
-      <p style={{ fontFamily: F.ui, fontSize: 16, color: S.ink, marginTop: 8, lineHeight: 1.4 }}>
+      <p style={{ fontFamily: F.ui, fontSize: 16, color: t?.texto || S.ink, marginTop: 8, lineHeight: 1.4 }}>
         {cliente && <span style={{ fontWeight: 600 }}>{cliente}: </span>}{text}
       </p>
     </button>

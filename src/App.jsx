@@ -52,7 +52,8 @@ function AppSociosPrototype() {
   const [selectedReclamacao, setSelectedReclamacao] = useState(null);
   const [reclamacaoOrigin, setReclamacaoOrigin] = useState("reclamacoes");
 
-  const [pinned, setPinned] = useState(PINNED_INICIAIS);
+  const [pinned, setPinned] = useState(() => { const f = lerPref("fixados", null); return Array.isArray(f) ? f : PINNED_INICIAIS; });
+  useEffect(() => { gravarPref("fixados", pinned); }, [pinned]);
   // Conversa com a IA: { id, clienteId, backTo, backLabel, msgs: [{ role, text, status, progress, error }] }
   const [conversa, setConversa] = useState(null);
   const ctlRef = React.useRef(null);
@@ -411,7 +412,9 @@ function AppSociosPrototype() {
         )}
         {tab === "perfil" && perfilView === "ordem" && <OrdemClientes ordem={ordem} setOrdem={setOrdem} onBack={() => setPerfilView("main")} />}
         {tab === "perfil" && perfilView === "guia" && <GuiaEstilo onBack={() => setPerfilView("main")} />}
-        {tab === "perfil" && perfilView === "pasta" && <PastaRelatorios pinned={pinned} onOpenPinned={(p) => openPinned(p, "pasta")} onBack={() => setPerfilView("main")} />}
+        {tab === "perfil" && perfilView === "pasta" && <PastaRelatorios pinned={pinned} onOpenPinned={(p) => openPinned(p, "pasta")} onBack={() => setPerfilView("main")}
+            onApagar={(id) => setPinned((ps) => ps.filter((p) => p.id !== id))}
+            onRestaurar={(p, i) => setPinned((ps) => (ps.some((x) => x.id === p.id) ? ps : [...ps.slice(0, i), p, ...ps.slice(i)]))} />}
         {tab === "perfil" && perfilView === "notif" && <NotifPrefs onBack={() => setPerfilView("main")} />}
         {tab === "perfil" && perfilView === "alertas" && <MeusAlertas onBack={() => setPerfilView("main")} />}
         {tab === "perfil" && perfilView === "personalizar" && (

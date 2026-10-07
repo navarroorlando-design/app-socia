@@ -87,7 +87,7 @@ evita ciclos entre módulos.
   com ícone dourado.
 - **Subtítulos de seção**: 18pt seminegrito na cor do texto, ação à direita ("Ver todos").
 - **Aba IA** em branco com "Pergunte qualquer coisa!" e sugestões; relatórios fixados ficam em
-  Perfil → Relatórios fixados.
+  Perfil → Relatórios fixados (guardados no aparelho, com "Apagar", confirmação e "Desfazer").
 - **Barra de navegação**: Início, IA, OS, Perfil.
 
 ## Organizações: contratos de gestão, bloqueios e processos
@@ -128,6 +128,7 @@ Guardadas no aparelho no protótipo (`lerPref`/`gravarPref`); no app real, no se
   contrato acima de R$ X. Criados pelo botão "Avisar se…" ou pedindo à IA (ferramenta `criar_alerta`).
   Ao disparar, viram notificação "Seu alerta". Lista em Perfil → Meus alertas.
 - **Personalizar Início**: mostrar, esconder e reordenar os blocos (saudação fica sempre no topo).
+  **O primeiro bloco visível fica em carvão** (destaque da marca); os outros, em cartão branco (`tema` em `InicioFeed`).
 - **Contar a história do processo** (`ProcessoDetalhe`): a IA narra por fases, com datas, dinheiro e
   próximo passo de rito, sem prognóstico. Fica profunda quando entrarem DataJud (linha do tempo) e as
   publicações do Legal One (conteúdo das decisões).

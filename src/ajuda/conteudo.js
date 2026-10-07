@@ -96,7 +96,7 @@ const PERGUNTAS = [
   {
     id: "personalizar",
     pergunta: "Como mudo o que aparece no Início?",
-    resposta: "Em Perfil → Personalizar Início, mostre, esconda ou mude a ordem dos blocos. A saudação fica sempre no alto.",
+    resposta: "Em Perfil → Personalizar Início, mostre, esconda ou mude a ordem dos blocos. A saudação fica sempre no alto, e o primeiro bloco aparece em destaque, em carvão.",
     destino: "personalizar", rotuloDestino: "Personalizar o Início",
   },
   {

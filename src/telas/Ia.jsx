@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { BackIcon, ChartIcon, CheckIcon, ChevronIcon, FolderIcon, LockIcon, PinIcon, SendIcon, SparkleIcon } from "../componentes/icones";
-import { Faixa } from "../componentes/ui";
+import { BackIcon, ChartIcon, CheckIcon, ChevronIcon, FolderIcon, LixoIcon, LockIcon, PinIcon, SendIcon, SparkleIcon } from "../componentes/icones";
+import { Botao, Faixa } from "../componentes/ui";
 import { CLIENTE_NOME } from "../dados/base";
 import { CARD, F, LINK, S, T } from "../estilo/tokens";
 import { Resposta, lerSugestoes, textoParaOuvir } from "../ia/Resposta";
@@ -193,24 +193,55 @@ function IaConversa({ conversa, sample, onEnviar, onParar, onTentar, onFixar, fi
 }
 
 /* Relatórios fixados (respostas guardadas) */
-function PastaRelatorios({ pinned, onOpenPinned, onBack }) {
+function PastaRelatorios({ pinned, onOpenPinned, onApagar, onRestaurar, onBack }) {
   const resumo = (t) => { const r = (t.match(/\*\*Resumo:\*\*\s*([^\n]+)/)?.[1] || t.split("\n").find((l) => l.trim() && !l.startsWith("```")) || "").replace(/\*\*/g, ""); return r.charAt(0).toUpperCase() + r.slice(1); };
+  const [confirmar, setConfirmar] = useState(null);   // id do relatório que pediu para apagar
+  const [apagado, setApagado] = useState(null);       // { p, i } para "Desfazer"
+  const apagar = (p, i) => { onApagar(p.id); setConfirmar(null); setApagado({ p, i }); };
   return (
     <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 60 }}>
       <Faixa bleed={32} onBack={onBack} backLabel="Perfil" titulo="Relatórios fixados"
              sub={pinned.length === 0 ? "Nenhum relatório ainda" : pinned.length === 1 ? "1 relatório guardado" : `${pinned.length} relatórios guardados`} />
+      {apagado && (
+        <div role="status" className="guia-toast flex items-center justify-between gap-3 mb-3" style={{ background: S.marca, borderRadius: 16, padding: "10px 10px 10px 18px" }}>
+          <span style={{ fontFamily: F.ui, fontSize: 16, color: "#FFFFFF" }}>Relatório apagado.</span>
+          <button onClick={() => { onRestaurar(apagado.p, apagado.i); setApagado(null); }} className="rounded-full"
+                  style={{ height: 44, padding: "0 18px", background: "#FFFDF9", color: S.ink, fontFamily: F.ui, fontSize: 16, fontWeight: 600 }}>
+            Desfazer
+          </button>
+        </div>
+      )}
       {pinned.length === 0 ? (
         <p style={{ fontFamily: F.ui, fontSize: 16, color: S.texto2, lineHeight: 1.5 }}>
           Numa conversa da aba IA, toque em "Fixar" embaixo de uma resposta. Ela fica guardada aqui para você abrir de novo quando quiser.
         </p>
       ) : (
         <div className="flex flex-col gap-3">
-          {pinned.map((p) => (
-            <button key={p.id} onClick={() => onOpenPinned(p)} className="w-full text-left" style={{ ...CARD, padding: 18 }}>
-              <p style={{ fontFamily: F.ui, fontSize: 17, fontWeight: 600, color: S.ink, lineHeight: 1.3 }}>{p.question}</p>
-              <p style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2, marginTop: 6, lineHeight: 1.45, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{resumo(p.text)}</p>
-              <p style={{ fontFamily: F.ui, fontSize: 13, color: S.texto2, marginTop: 8 }}>{p.atualizado}</p>
-            </button>
+          {pinned.map((p, i) => (
+            <div key={p.id} style={{ ...CARD, overflow: "hidden" }}>
+              <button onClick={() => onOpenPinned(p)} className="w-full text-left" style={{ padding: "18px 18px 12px" }}>
+                <p style={{ fontFamily: F.ui, fontSize: 17, fontWeight: 600, color: S.ink, lineHeight: 1.3 }}>{p.question}</p>
+                <p style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2, marginTop: 6, lineHeight: 1.45, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{resumo(p.text)}</p>
+              </button>
+              {confirmar === p.id ? (
+                <div style={{ padding: "12px 18px 16px", borderTop: `1px solid ${S.linha}` }}>
+                  <p style={{ fontFamily: F.ui, fontSize: 16, fontWeight: 600, color: S.ink }}>Apagar este relatório?</p>
+                  <p style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2, marginTop: 2 }}>Some só da sua lista. Dá para fazer a pergunta de novo na aba IA.</p>
+                  <div className="flex gap-2 mt-3">
+                    <div className="flex-1"><Botao variante="destrutivo" onClick={() => apagar(p, i)}>Apagar</Botao></div>
+                    <div className="flex-1"><Botao variante="secundario" onClick={() => setConfirmar(null)}>Cancelar</Botao></div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between gap-3" style={{ padding: "0 8px 6px 18px" }}>
+                  <span style={{ fontFamily: F.ui, fontSize: 13, color: S.texto2 }}>{p.atualizado}</span>
+                  <button onClick={() => setConfirmar(p.id)} aria-label={`Apagar o relatório: ${p.question}`} className="inline-flex items-center gap-1.5 rounded-full"
+                          style={{ height: 44, padding: "0 12px", fontFamily: F.ui, fontSize: 15, fontWeight: 600, color: S.risco }}>
+                    <LixoIcon size={18} color={S.risco} /> Apagar
+                  </button>
+                </div>
+              )}
+            </div>
           ))}
         </div>
       )}
