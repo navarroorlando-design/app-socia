@@ -144,6 +144,15 @@ Guardadas no aparelho no protótipo (`lerPref`/`gravarPref`); no app real, no se
 - Limites: o DataJud recebe os dados dos tribunais com atraso (dias), não traz o texto das decisões,
   não cobre o STF nem processos em segredo de justiça. O plano Hobby do Vercel só roda cron 1 vez por dia.
 
+## Banco de dados (`db/schema.sql`, proposta)
+
+Postgres em quatro partes: (1) **cópia dos sistemas**, preenchida só pela sincronização (clientes,
+contratos de gestão, processos, movimentações, bloqueios, reclamações); (2) **contas calculadas** em
+views (`passivo_por_contrato`, `processos_parados`); (3) **o que é de cada sócia** (preferências,
+seguidos, anotações, alertas, notificações, relatórios fixados), protegido por row level security;
+(4) **controle e auditoria** (`sincronizacoes`, `datajud_vistos`, que substitui o Redis, e `auditoria`
+para LGPD). Conversas com a IA não são guardadas, só o que for fixado. Testado no PGlite.
+
 ## Regra da IA (arquitetura)
 
 A IA **nunca** é a fonte do número. Ela chama `consultar_dados`, `consultar_cruzado` e
