@@ -114,7 +114,7 @@ function InfoLinha({ icone, fundo, rotulo, valor, last }) {
   );
 }
 
-function Faixa({ tom, bleed = 24, onBack, backLabel, eyebrow, titulo, tituloCompacto, tituloSize = 34, sub, direita, aside, children }) {
+function Faixa({ tom, bloco, bleed = 24, onBack, backLabel, eyebrow, titulo, tituloCompacto, tituloSize = 34, sub, direita, aside, children }) {
   const ref = React.useRef(null);
   const [compacto, setCompacto] = useState(false);
   useEffect(() => {
@@ -126,6 +126,8 @@ function Faixa({ tom, bleed = 24, onBack, backLabel, eyebrow, titulo, tituloComp
     return () => el.removeEventListener("scroll", on);
   }, []);
   const detalhe = !!tom;
+  // Telas de objeto (processo, bloqueio, organização): título num bloco marinho, como o cartão principal do Início.
+  const azul = detalhe || !!bloco;
   const tituloTexto = tituloCompacto || (typeof titulo === "string" ? titulo : "");
   return (
     <>
@@ -157,12 +159,13 @@ function Faixa({ tom, bleed = 24, onBack, backLabel, eyebrow, titulo, tituloComp
             {!detalhe && direita}
           </div>
         )}
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start justify-between gap-3"
+             style={azul ? { background: S.marca, borderRadius: 24, padding: 22, boxShadow: "0 10px 24px rgba(30,58,95,.22)" } : undefined}>
           <div className="min-w-0">
-            {eyebrow && <p style={{ fontFamily: F.ui, fontSize: 16, color: S.texto2, lineHeight: 1.35 }}>{eyebrow}</p>}
-            <h1 style={{ fontFamily: F.display, fontSize: tituloSize, fontWeight: 600, lineHeight: 1.1, letterSpacing: "-0.025em", color: S.ink, marginTop: eyebrow ? 4 : 0, textWrap: "balance" }}>{titulo}</h1>
+            {eyebrow && <p style={{ fontFamily: F.ui, fontSize: 16, color: azul ? S.marcaTexto2 : S.texto2, lineHeight: 1.35 }}>{eyebrow}</p>}
+            <h1 style={{ fontFamily: F.display, fontSize: tituloSize, fontWeight: 600, lineHeight: 1.1, letterSpacing: "-0.025em", color: azul ? "#FFFFFF" : S.ink, marginTop: eyebrow ? 4 : 0, textWrap: "balance" }}>{titulo}</h1>
             {detalhe && direita && <div style={{ marginTop: 12 }}>{direita}</div>}
-            {sub && <div style={{ fontFamily: F.ui, fontSize: 16, color: S.texto2, marginTop: 8, lineHeight: 1.4 }}>{sub}</div>}
+            {sub && <div style={{ fontFamily: F.ui, fontSize: 16, color: azul ? S.marcaTexto2 : S.texto2, marginTop: 8, lineHeight: 1.4 }}>{sub}</div>}
           </div>
           {aside}
         </div>
@@ -247,7 +250,7 @@ function Secao({ titulo, nota, children }) {
 }
 
 function Cartao({ children, style }) {
-  return <div style={{ background: S.cartao, borderRadius: 18, padding: 18, boxShadow: "0 1px 2px rgba(22,32,43,.06), 0 4px 14px rgba(22,32,43,.05)", ...style }}>{children}</div>;
+  return <div style={{ background: S.cartao, borderRadius: 24, padding: 18, boxShadow: "0 1px 2px rgba(22,32,43,.06), 0 4px 14px rgba(22,32,43,.05)", ...style }}>{children}</div>;
 }
 
 export { BackHeader, Badge, Botao, CardRow, Cartao, Etiqueta, Faixa, InfoLinha, KPIs, Row, SecLabel, Secao, Sparkline, StatusBar, TabBar, Toggle };

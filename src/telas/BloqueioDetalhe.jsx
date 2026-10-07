@@ -14,7 +14,7 @@ function BloqueioDetalhe({ bloqueio, onBack, backLabel, onOpenProcesso }) {
     <>
       <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 60 }}>
         <Faixa bleed={32} tom={tomDeStatus(bloqueio.status)} onBack={onBack} backLabel={backLabel}
-               direita={<Badge text={bloqueio.status} />}
+               direita={<Badge text={bloqueio.status} sobreCor />}
                eyebrow={bloqueio.cliente} titulo={bloqueio.valor} tituloCompacto={`${bloqueio.cliente} · ${bloqueio.valor}`} tituloSize={42}
                sub={bloqueio.status === "Ativo" ? "Valor ainda bloqueado na conta do cliente" : "Valor já liberado para o cliente"}>
           <KPIs itens={[

@@ -92,7 +92,7 @@ function RelatorioView({ spec }) {
           if (b.tipo === "barras") return <BlocoBarras key={i} b={b} />;
           if (b.tipo === "tabela") return <BlocoTabela key={i} b={b} />;
           if (b.tipo === "texto") return (
-            <div key={i} style={{ background: S.iaFundo, borderRadius: 18, padding: 18 }}>
+            <div key={i} style={{ background: S.iaFundo, borderRadius: 24, padding: 18 }}>
               <p className="flex items-center gap-1.5" style={{ fontFamily: F.ui, fontSize: 14, fontWeight: 700, color: S.ia }}>
                 <SparkleIcon size={15} color={S.ia} strokeWidth={2} /> Conclusão da IA
               </p>

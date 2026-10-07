@@ -9,7 +9,6 @@ import { Avatar } from "../preferencias";
 /* ------------------------------------------------------------------ */
 /* Telas: Início                                                       */
 /* ------------------------------------------------------------------ */
-const CARD_INICIO = { ...CARD, borderRadius: 24 };
 
 /* Anel de progresso para fundo escuro: percentual no centro, rótulo embaixo */
 function Anel({ pct, rotulo, size = 92 }) {
@@ -38,7 +37,6 @@ function InicioFeed({ onOpenList, onOpenOrg, followedItems, onOpenProcesso, onOp
   const saudacao = hora < 12 ? "Bom dia," : hora < 18 ? "Boa tarde," : "Boa noite,";
   const data = agora.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
   const novidades = 5;
-  const CARD = CARD_INICIO;
 
   // Parte do valor bloqueado em 2026 que já foi levantada (anel do cartão principal).
   const levantado = BLOQUEIOS_LISTA.filter((b) => b.status === "Levantado").reduce((s, b) => s + b.valorNum, 0);

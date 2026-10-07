@@ -108,14 +108,14 @@ function GuiaEstilo({ onBack }) {
               <p style={{ fontFamily: F.display, letterSpacing: "-0.02em", fontSize: 34, fontWeight: 500, marginTop: 4 }}>3 processos</p>
               <p style={{ fontFamily: F.ui, fontSize: 15, color: "#E4E7EA", marginTop: 4 }}>No máximo um por tela.</p>
             </div>
-            <div style={{ background: S.riscoFundo, borderRadius: 18, padding: 18 }}>
+            <div style={{ background: S.riscoFundo, borderRadius: 24, padding: 18 }}>
               <div className="flex items-center justify-between gap-3">
                 <p style={{ fontFamily: F.ui, fontSize: 15, fontWeight: 600, color: S.ink }}>Semântico · o cartão é sobre um status</p>
               </div>
               <p style={{ fontFamily: F.display, letterSpacing: "-0.02em", fontSize: 28, fontWeight: 500, color: S.ink, marginTop: 6 }}>R$ 62.000</p>
               <div className="mt-2"><Etiqueta s={SEMANTICA[0]} texto="Bloqueio ativo" /></div>
             </div>
-            <div style={{ background: S.iaFundo, borderRadius: 18, padding: 18 }}>
+            <div style={{ background: S.iaFundo, borderRadius: 24, padding: 18 }}>
               <p className="flex items-center gap-1.5" style={{ fontFamily: F.ui, fontSize: 14, fontWeight: 700, color: S.ia }}>
                 <SparkleIcon size={15} color={S.ia} strokeWidth={2} /> Dourado · gerado pela IA
               </p>

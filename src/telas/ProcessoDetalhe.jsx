@@ -39,7 +39,7 @@ function ProcessoDetalhe({ processo, isFollowing, onToggleFollow, onBack, backLa
     <>
       <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 60 }}>
         <Faixa bleed={32} tom={tomDeStatus(processo.status)} onBack={onBack} backLabel={backLabel}
-               direita={<Badge text={processo.status} />}
+               direita={<Badge text={processo.status} sobreCor />}
                eyebrow={`${processo.cliente} · ${processo.area}`} titulo={processo.desc} tituloSize={28}
                sub={<span style={{ fontFamily: F.dados, fontSize: 14, letterSpacing: ".01em" }}>{processo.numero}</span>}>
           <KPIs itens={[
@@ -63,7 +63,7 @@ function ProcessoDetalhe({ processo, isFollowing, onToggleFollow, onBack, backLa
         </Faixa>
 
         {resumo.status !== "idle" && (
-          <div className="mt-4" style={{ background: S.iaFundo, borderRadius: 18, padding: 18 }} aria-live="polite">
+          <div className="mt-4" style={{ background: S.iaFundo, borderRadius: 24, padding: 18 }} aria-live="polite">
             <p className="flex items-center gap-1.5" style={{ fontFamily: F.ui, fontSize: 14, fontWeight: 700, color: S.ia, marginBottom: 6 }}>
               <SparkleIcon size={15} color={S.ia} strokeWidth={2} /> Resumo da IA
             </p>

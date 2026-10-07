@@ -19,7 +19,7 @@ const STATUS_SEM_ID = {
 
 const semDe = (status) => SEMANTICA.find((x) => x.id === (STATUS_SEM_ID[status] || "inativo"));
 
-const CARD = { background: "#FFFFFF", borderRadius: 18, boxShadow: "0 1px 2px rgba(22,32,43,.06), 0 4px 14px rgba(22,32,43,.05)" };
+const CARD = { background: "#FFFFFF", borderRadius: 24, boxShadow: "0 1px 2px rgba(22,32,43,.06), 0 4px 14px rgba(22,32,43,.05)" };
 
 const LINK = { color: "#111827", fontWeight: 600, textDecoration: "underline", textUnderlineOffset: 4 };
 

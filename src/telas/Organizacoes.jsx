@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ChevronIcon, FlagIcon, FolderIcon, LockIcon } from "../componentes/icones";
+import { FlagIcon, FolderIcon, LockIcon } from "../componentes/icones";
 import { Etiqueta, Faixa, KPIs, Row, SecLabel } from "../componentes/ui";
 import { BLOQUEIOS_LISTA, ORGS, ORG_ORDER, OUTRAS_ORGS } from "../dados/base";
 import { CARD, F, LINK, S, SEMANTICA, T } from "../estilo/tokens";
@@ -16,34 +16,35 @@ function OsLista({ onOpenOrg, ordem = ORG_ORDER }) {
         <Faixa bleed={32} eyebrow="Clientes do escritório" titulo="Organizações" tituloSize={36}
                sub={`${ordem.length} principais e ${OUTRAS_ORGS.length + 14} outras`} />
         <SecLabel>Principais clientes</SecLabel>
-        <div className="flex flex-col">
-          {ordem.map((id, i) => {
+        {/* grade 2×2: todos os principais ficam visíveis, sem rolar para o lado */}
+        <div className="grid grid-cols-2 gap-3">
+          {ordem.map((id) => {
             const o = ORGS[id];
             return (
-              <button key={id} onClick={() => onOpenOrg(id)} className="flex items-center gap-3 py-3.5 w-full text-left"
-                      style={{ borderBottom: i === ordem.length - 1 ? "none" : `1px solid ${T.hairline}` }}>
-                <div className="w-11 h-11 rounded-full flex items-center justify-center shrink-0 font-serif-legal text-[15px]" style={{ background: T.ink, color: T.paper }}>{o.initials}</div>
-                <div className="flex-1">
-                  <p className="text-[17px] font-medium">{o.name}</p>
-                  <p className="text-[14px] mt-0.5" style={{ color: T.muted }}>{o.processos} processos, {o.bloqueadoCurto} bloqueado</p>
-                </div>
-                <ChevronIcon size={15} color={T.muted} strokeWidth={2} />
+              <button key={id} onClick={() => onOpenOrg(id)} className="flex flex-col items-start text-left min-w-0"
+                      aria-label={`${o.name}: ${o.bloqueadoCurto} bloqueado, ${o.processos} processos`}
+                      style={{ ...CARD, padding: 16, gap: 12 }}>
+                <span className="flex items-center justify-center shrink-0" style={{ width: 44, height: 44, borderRadius: 999, background: S.marca, color: "#FFFFFF", fontFamily: F.display, fontSize: 15, fontWeight: 600 }}>{o.initials}</span>
+                <span className="block min-w-0 w-full">
+                  <span className="block" style={{ fontFamily: F.ui, fontSize: 17, fontWeight: 600, color: S.ink, lineHeight: 1.25, minHeight: "2.5em" }}>{o.name}</span>
+                  <span className="block" style={{ fontFamily: F.ui, fontSize: 21, fontWeight: 600, color: S.ink, letterSpacing: "-0.02em", marginTop: 8, fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>{o.bloqueadoCurto}</span>
+                  <span className="block" style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2 }}>bloqueado</span>
+                  <span className="block" style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2, marginTop: 6 }}>{o.processos} processos</span>
+                </span>
               </button>
             );
           })}
         </div>
 
         <SecLabel>Outras organizações</SecLabel>
-        <div className="flex flex-col">
+        <div style={CARD}>
           {OUTRAS_ORGS.map((o) => (
-            <div key={o.name} className="flex items-center justify-between py-2.5" style={{ borderBottom: `1px solid ${T.hairline}` }}>
-              <p className="text-[15px]">{o.name}</p>
-              <p className="text-[14px]" style={{ color: T.muted, fontVariantNumeric: "tabular-nums" }}>{o.processos}</p>
+            <div key={o.name} className="flex items-center justify-between gap-3" style={{ padding: "14px 18px", borderBottom: `1px solid ${S.linha}` }}>
+              <p style={{ fontFamily: F.ui, fontSize: 16, color: S.ink }}>{o.name}</p>
+              <p style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2, fontVariantNumeric: "tabular-nums", flexShrink: 0 }}>{o.processos} processos</p>
             </div>
           ))}
-          <div className="flex items-center justify-between py-3 mt-1">
-            <p className="text-[15px]" style={LINK}>Ver mais 14 organizações</p>
-          </div>
+          <p style={{ ...LINK, fontFamily: F.ui, fontSize: 16, padding: "14px 18px" }}>Ver mais 14 organizações</p>
         </div>
       </div>
     </>
@@ -56,9 +57,9 @@ function OsPerfil({ orgId, onBack, sample, onAsk }) {
   return (
     <>
       <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 150 }}>
-        <Faixa bleed={32} onBack={onBack} backLabel="Organizações"
+        <Faixa bleed={32} bloco onBack={onBack} backLabel="Organizações"
                eyebrow={`${o.name} · bloqueado hoje`} titulo={o.bloqueado} tituloCompacto={o.name} tituloSize={40} sub={`${o.processos} processos na base`}
-               aside={<span className="w-14 h-14 rounded-full flex items-center justify-center shrink-0" style={{ background: S.ink, color: "#FFFFFF", fontFamily: F.display, fontSize: 18, fontWeight: 600 }}>{o.initials}</span>}>
+               aside={<span className="w-14 h-14 rounded-full flex items-center justify-center shrink-0" style={{ background: "#FFFFFF", color: S.marca, fontFamily: F.display, fontSize: 18, fontWeight: 600 }}>{o.initials}</span>}>
           <KPIs itens={[
             ["Processos", String(o.processos)],
             ["Bloqueios", String(BLOQUEIOS_LISTA.filter((b) => b.clienteId === orgId && b.status === "Ativo").length)],
@@ -82,7 +83,7 @@ function OsPerfil({ orgId, onBack, sample, onAsk }) {
                      : { s: SEMANTICA.find((x) => x.id === "curso"), t: "Vigente" };
             const destaque = st.s.id === "atencao";
             return (
-              <div key={i} style={destaque ? { background: st.s.fundo, borderRadius: 18, padding: 18 } : { ...CARD, padding: 18 }}>
+              <div key={i} style={destaque ? { background: st.s.fundo, borderRadius: 24, padding: 18 } : { ...CARD, padding: 18 }}>
                 <p style={{ fontFamily: F.ui, fontSize: 17, fontWeight: 600, color: S.ink }}>{c.orgao}</p>
                 <p style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2, marginTop: 2 }}>Vigência {c.vigencia}</p>
                 <div className="mt-2.5"><Etiqueta s={st.s} texto={st.t} sobreCor={destaque} /></div>
