@@ -103,6 +103,20 @@ sua (`src/telas/OrgMetricas.jsx`). O cartão da lista de organizações mostra s
 - Na base de exemplo, cada processo ganhou `valorCausa` e `prognostico` (gerador próprio por id,
   sem mexer na sequência do resto). A IA consulta com `metrica: "passivo_estimado"`.
 
+## Outras telas (versão 9)
+
+- **Reclamações constitucionais** (`src/telas/Reclamacoes.jsx`): lista geral, lista por organização e
+  detalhe (precedente invocado, ato reclamado, liminar, processos de origem, movimentações).
+- **Carteira** (`src/telas/Carteira.jsx`): passivo de todos os clientes, aberto pelo bloco de passivo
+  do Início. **Movimentações** recentes: o "Ver tudo" de "Hoje no escritório".
+- **Listas com filtros**: cliente e recorte (área, parados, status) em chips, mais ordenação.
+- **Entrada** (`src/telas/Entrada.jsx`): login simulado com a conta do escritório, primeiro acesso
+  (tamanho do texto, ouvir resumos), Face ID simulado e tela de bloqueio. Perfil → Segurança liga o
+  Face ID, bloqueia, sai da conta e simula "sem internet" (aviso no topo, IA desligada).
+- **Relatório para o cliente** (`src/telas/RelatorioCliente.jsx`): prévia do passivo por contrato,
+  conferência obrigatória e PDF (jsPDF). No claude.ai o arquivo sai pela capacidade `downloads`
+  (declarar `capabilities: {sample: {}, downloads: true}` ao publicar); fora dele, baixa direto.
+
 ## Regra da IA (arquitetura)
 
 A IA **nunca** é a fonte do número. Ela chama `consultar_dados`, `consultar_cruzado` e

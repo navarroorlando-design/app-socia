@@ -1,5 +1,5 @@
 import React from "react";
-import { ChevronIcon, FolderIcon, LockIcon } from "../componentes/icones";
+import { ChevronIcon, DownloadIcon, FolderIcon, LockIcon } from "../componentes/icones";
 import { Badge, Etiqueta, Faixa, KPIs, LinhaLista, SecLabel } from "../componentes/ui";
 import { ORGS } from "../dados/base";
 import { fmtBRL, fmtBRLCurto, fmtData } from "../dados/formato";
@@ -111,7 +111,7 @@ function PorContrato({ linhas, onOpenContrato }) {
 }
 
 /* ---------------- Tela: contratos de gestão da organização ---------------- */
-function ContratosOrg({ orgId, onBack, onOpenContrato }) {
+function ContratosOrg({ orgId, onBack, onOpenContrato, onEnviarCliente }) {
   const o = ORGS[orgId], r = resumoOrg(orgId);
   return (
     <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 60 }}>
@@ -124,13 +124,19 @@ function ContratosOrg({ orgId, onBack, onOpenContrato }) {
       <div className="flex flex-col gap-3">
         {r.contratos.map((c) => <ContratoCard key={c.orgao} c={c} onClick={() => onOpenContrato(c.orgao)} />)}
       </div>
+      {onEnviarCliente && (
+        <button onClick={onEnviarCliente} className="w-full inline-flex items-center justify-center gap-2 mt-4"
+                style={{ height: 52, borderRadius: 14, fontFamily: F.ui, fontSize: 17, fontWeight: 600, background: S.cartao, color: S.ink, boxShadow: `inset 0 0 0 1.5px ${S.ink}` }}>
+          <DownloadIcon size={20} color={S.ink} /> Relatório para o cliente (PDF)
+        </button>
+      )}
       <Nota>{NOTA_PASSIVO}</Nota>
     </div>
   );
 }
 
 /* ---------------- Tela: um contrato de gestão ---------------- */
-function ContratoDetalhe({ orgId, orgao, onBack, backLabel, onOpenProcesso, onOpenBloqueio }) {
+function ContratoDetalhe({ orgId, orgao, onBack, backLabel, onOpenProcesso, onOpenBloqueio, onEnviarCliente }) {
   const o = ORGS[orgId], c = resumoContrato(orgId, orgao);
   const porArea = ["Trabalhista", "Cível", "Administrativo", "Constitucional"]
     .map((a) => [a, c.processos.filter((p) => p.area === a)])
@@ -152,6 +158,12 @@ function ContratoDetalhe({ orgId, orgao, onBack, backLabel, onOpenProcesso, onOp
           <KPIs itens={[["Processos", String(c.processos.length)], ["Bloqueado", fmtBRLCurto(c.bloqueadoAtivo)], ["Levantado", fmtBRLCurto(c.levantado)]]} />
         </div>
       </Faixa>
+      {onEnviarCliente && (
+        <button onClick={onEnviarCliente} className="w-full inline-flex items-center justify-center gap-2 mt-4"
+                style={{ height: 52, borderRadius: 14, fontFamily: F.ui, fontSize: 17, fontWeight: 600, background: S.cartao, color: S.ink, boxShadow: `inset 0 0 0 1.5px ${S.ink}` }}>
+          <DownloadIcon size={20} color={S.ink} /> Relatório para o cliente (PDF)
+        </button>
+      )}
 
       {porArea.length > 0 && (
         <>

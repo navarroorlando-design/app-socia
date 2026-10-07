@@ -36,7 +36,7 @@ function MenuVA({ unread, followedCount, onClose, onNotificacoes, onAcompanhando
   );
 }
 
-function PerfilUsuaria({ onOpenNotifPrefs, onOpenPasta, pinnedCount, onOpenGuia, onOpenOrdem, foto, setFoto, apelido, setApelido, escala, setEscala, lerVoz, setLerVoz }) {
+function PerfilUsuaria({ onOpenNotifPrefs, onOpenSeguranca, onOpenPasta, pinnedCount, onOpenGuia, onOpenOrdem, foto, setFoto, apelido, setApelido, escala, setEscala, lerVoz, setLerVoz }) {
   const fileRef = React.useRef(null);
   const [aviso, setAviso] = useState("");
   const [rascunho, setRascunho] = useState(apelido);
@@ -149,7 +149,7 @@ function PerfilUsuaria({ onOpenNotifPrefs, onOpenPasta, pinnedCount, onOpenGuia,
 
         <SecLabel>Sobre</SecLabel>
         <div style={CARD}>
-          <Row icon={<LockIcon color={S.ink} />} label="Segurança" />
+          <Row icon={<LockIcon color={S.ink} />} label="Segurança" onClick={onOpenSeguranca} />
           <Row icon={<SparkleIcon color={S.ink} />} label="Guia de estilo" onClick={onOpenGuia} last />
         </div>
       </div>

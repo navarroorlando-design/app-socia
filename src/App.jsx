@@ -15,6 +15,8 @@ import { OsLista, OsPerfil } from "./telas/Organizacoes";
 import { BloqueiosOrg, ContratoDetalhe, ContratosOrg, ProcessosOrg } from "./telas/OrgMetricas";
 import { Carteira, Movimentacoes } from "./telas/Carteira";
 import { ReclamacaoDetalhe, ReclamacoesTela } from "./telas/Reclamacoes";
+import { RelatorioCliente } from "./telas/RelatorioCliente";
+import { AvisoSemInternet, Bloqueio, FluxoEntrada, Seguranca, useConexao } from "./telas/Entrada";
 import { MenuVA, OrdemClientes, PerfilUsuaria } from "./telas/Perfil";
 import { ProcessoDetalhe } from "./telas/ProcessoDetalhe";
 
@@ -59,6 +61,15 @@ function AppSociosPrototype() {
   const [lerVoz, setLerVozS] = useState(() => lerPref("lerVoz", false));
   const [ordem, setOrdemS] = useState(() => { const o = lerPref("ordem", ORG_ORDER); return Array.isArray(o) && o.length === ORG_ORDER.length ? o : ORG_ORDER; });
   const [menuVA, setMenuVA] = useState(false);
+  // Entrada (login simulado, Face ID) e conexão
+  const [acesso, setAcessoS] = useState(() => lerPref("acesso", { entrou: false, faceId: false }));
+  const setAcesso = (a) => { setAcessoS(a); gravarPref("acesso", a); };
+  const [bloqueado, setBloqueado] = useState(() => !!(acesso.entrou && acesso.faceId));
+  const [semInternetSim, setSemInternetSim] = useState(false);
+  const online = useConexao(semInternetSim);
+  const [desde] = useState(() => new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }));
+  const [relatorioOrgao, setRelatorioOrgao] = useState(null);
+  const [relatorioOrigin, setRelatorioOrigin] = useState("contratos");
   const comPersistencia = (set, chave) => (v) => { set(v); gravarPref(chave, v); };
   const setFoto = comPersistencia(setFotoS, "foto"), setApelido = comPersistencia(setApelidoS, "apelido"),
         setEscala = comPersistencia(setEscalaS, "escala"), setLerVoz = comPersistencia(setLerVozS, "lerVoz"), setOrdem = comPersistencia(setOrdemS, "ordem");
@@ -99,6 +110,7 @@ function AppSociosPrototype() {
     setConversa({ ...base, msgs });
     setTab("ia"); setIaView("conversa");
     const muda = (f) => setConversa((c) => (c && c.id === id ? { ...c, msgs: c.msgs.map((m, i) => (i === idx ? { ...m, ...f(m) } : m)) } : c));
+    if (!online) { muda(() => ({ status: "erro", error: "Sem internet. A IA volta a responder quando a conexão voltar.", retryable: true })); return; }
     if (!sample) { muda(() => ({ status: "erro", error: "A IA responde quando este app é aberto no Claude.", retryable: false })); return; }
     try {
       const { text, truncated } = await conversar(sample, msgs.slice(0, -1), {
@@ -175,6 +187,13 @@ function AppSociosPrototype() {
         <PrefsContext.Provider value={{ lerVoz }}>
         <div className="absolute inset-0 flex flex-col" style={{ zoom: escala }}>
         <StatusBar />
+        {!acesso.entrou ? (
+          <FluxoEntrada escala={escala} setEscala={setEscala} lerVoz={lerVoz} setLerVoz={setLerVoz}
+            onConcluir={(faceId) => setAcesso({ entrou: true, faceId })} />
+        ) : bloqueado ? (
+          <Bloqueio onDesbloquear={() => setBloqueado(false)} />
+        ) : (<>
+        {!online && <AvisoSemInternet desde={desde} />}
 
         {tab === "inicio" && inicioView === "feed" && (
           <InicioFeed
@@ -245,11 +264,16 @@ function AppSociosPrototype() {
             onOpenBloqueios={() => setOsView("bloqueios")} onOpenProcessos={() => setOsView("processos")} onOpenReclamacoes={() => setOsView("reclamacoes")} />
         )}
         {tab === "os" && osView === "contratos" && (
-          <ContratosOrg orgId={selectedOrg} onBack={() => setOsView("profile")} onOpenContrato={(c) => openContrato(c, "contratos")} />
+          <ContratosOrg orgId={selectedOrg} onBack={() => setOsView("profile")} onOpenContrato={(c) => openContrato(c, "contratos")}
+            onEnviarCliente={() => { setRelatorioOrgao(null); setRelatorioOrigin("contratos"); setOsView("relatorio"); }} />
         )}
         {tab === "os" && osView === "contrato" && selectedContrato && (
           <ContratoDetalhe key={selectedContrato} orgId={selectedOrg} orgao={selectedContrato} onBack={() => setOsView(contratoOrigin)} backLabel={osLabels[contratoOrigin]}
-            onOpenProcesso={(p) => openOsDetalhe("processo", p, "contrato")} onOpenBloqueio={(b) => openOsDetalhe("bloqueio", b, "contrato")} />
+            onOpenProcesso={(p) => openOsDetalhe("processo", p, "contrato")} onOpenBloqueio={(b) => openOsDetalhe("bloqueio", b, "contrato")}
+            onEnviarCliente={() => { setRelatorioOrgao(selectedContrato); setRelatorioOrigin("contrato"); setOsView("relatorio"); }} />
+        )}
+        {tab === "os" && osView === "relatorio" && (
+          <RelatorioCliente key={relatorioOrgao || "todos"} orgId={selectedOrg} orgao={relatorioOrgao} onBack={() => setOsView(relatorioOrigin)} backLabel={osLabels[relatorioOrigin]} />
         )}
         {tab === "os" && osView === "bloqueios" && (
           <BloqueiosOrg orgId={selectedOrg} onBack={() => setOsView("profile")} onOpenContrato={(c) => openContrato(c, "bloqueios")}
@@ -286,13 +310,18 @@ function AppSociosPrototype() {
             onNova={() => { ctlRef.current?.abort(); setConversa(null); setIaView("ask"); }} />
         )}
 
-        {tab === "perfil" && perfilView === "main" && <PerfilUsuaria onOpenNotifPrefs={() => setPerfilView("notif")} onOpenPasta={() => setPerfilView("pasta")} pinnedCount={pinned.length} onOpenGuia={() => setPerfilView("guia")}
+        {tab === "perfil" && perfilView === "main" && <PerfilUsuaria onOpenNotifPrefs={() => setPerfilView("notif")} onOpenSeguranca={() => setPerfilView("seguranca")} onOpenPasta={() => setPerfilView("pasta")} pinnedCount={pinned.length} onOpenGuia={() => setPerfilView("guia")}
             onOpenOrdem={() => setPerfilView("ordem")} foto={foto} setFoto={setFoto} apelido={apelido} setApelido={setApelido}
             escala={escala} setEscala={setEscala} lerVoz={lerVoz} setLerVoz={setLerVoz} />}
         {tab === "perfil" && perfilView === "ordem" && <OrdemClientes ordem={ordem} setOrdem={setOrdem} onBack={() => setPerfilView("main")} />}
         {tab === "perfil" && perfilView === "guia" && <GuiaEstilo onBack={() => setPerfilView("main")} />}
         {tab === "perfil" && perfilView === "pasta" && <PastaRelatorios pinned={pinned} onOpenPinned={(p) => openPinned(p, "pasta")} onBack={() => setPerfilView("main")} />}
         {tab === "perfil" && perfilView === "notif" && <NotifPrefs onBack={() => setPerfilView("main")} />}
+        {tab === "perfil" && perfilView === "seguranca" && (
+          <Seguranca onBack={() => setPerfilView("main")} faceId={acesso.faceId} setFaceId={(v) => setAcesso({ ...acesso, faceId: v })}
+            onBloquear={() => setBloqueado(true)} onSair={() => { setAcesso({ entrou: false, faceId: false }); setBloqueado(false); changeTab("inicio"); }}
+            semInternetSimulado={semInternetSim} setSemInternetSimulado={setSemInternetSim} />
+        )}
 
         {showTabBar && <TabBar active={tab} onChange={changeTab} />}
         {menuVA && (
@@ -301,6 +330,7 @@ function AppSociosPrototype() {
             onAcompanhando={() => { setMenuVA(false); setTab("inicio"); setInicioView("acompanhando"); }}
             onPerfil={() => { setMenuVA(false); changeTab("perfil"); }} />
         )}
+        </>)}
         </div>
         </PrefsContext.Provider>
       </div>

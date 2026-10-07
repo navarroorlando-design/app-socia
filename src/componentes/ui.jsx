@@ -225,7 +225,7 @@ function Toggle({ on, onChange, label }) {
   return (
     <button role="switch" aria-checked={on} aria-label={label} onClick={onChange}
             className="w-[51px] h-[31px] rounded-full p-[2px] flex shrink-0 transition-colors"
-            style={{ background: on ? T.brass : "rgba(31,30,26,0.18)", justifyContent: on ? "flex-end" : "flex-start" }}>
+            style={{ background: on ? S.marca : "rgba(31,30,26,0.18)", justifyContent: on ? "flex-end" : "flex-start" }}>
       <span className="w-[27px] h-[27px] rounded-full bg-white" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }} />
     </button>
   );

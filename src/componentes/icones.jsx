@@ -6,7 +6,7 @@ import { T } from "../estilo/tokens";
 /* Para trocar ou acrescentar, copie o SVG de iconoir/icons/regular.    */
 /* ------------------------------------------------------------------ */
 const Icon = ({ children, size = 20, color = T.ink, strokeWidth = 1.7 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" style={{ color }}
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" style={{ color, flexShrink: 0 }}
        strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     {children}
   </svg>
@@ -32,6 +32,11 @@ const ChartIcon = (p) => <Icon {...p}><path d="M16 16L16 8"/><path d="M12 16L12 
 const SunIcon = (p) => <Icon {...p}><path d="M12 18C15.3137 18 18 15.3137 18 12C18 8.68629 15.3137 6 12 6C8.68629 6 6 8.68629 6 12C6 15.3137 8.68629 18 12 18Z"/><path d="M22 12L23 12"/><path d="M12 2V1"/><path d="M12 23V22"/><path d="M20 20L19 19"/><path d="M20 4L19 5"/><path d="M4 20L5 19"/><path d="M4 4L5 5"/><path d="M1 12L2 12"/></Icon>;
 const SoundIcon = (p) => <Icon {...p}><path d="M1 13.8571V10.1429C1 9.03829 1.89543 8.14286 3 8.14286H5.9C6.09569 8.14286 6.28708 8.08544 6.45046 7.97772L12.4495 4.02228C13.1144 3.5839 14 4.06075 14 4.85714V19.1429C14 19.9392 13.1144 20.4161 12.4495 19.9777L6.45046 16.0223C6.28708 15.9146 6.09569 15.8571 5.9 15.8571H3C1.89543 15.8571 1 14.9617 1 13.8571Z"/><path d="M17.5 7.5C17.5 7.5 19 9 19 11.5C19 14 17.5 15.5 17.5 15.5"/><path d="M20.5 4.5C20.5 4.5 23 7 23 11.5C23 16 20.5 18.5 20.5 18.5"/></Icon>;
 const PauseIcon = (p) => <Icon {...p}><path d="M6 18.4V5.6C6 5.26863 6.26863 5 6.6 5H9.4C9.73137 5 10 5.26863 10 5.6V18.4C10 18.7314 9.73137 19 9.4 19H6.6C6.26863 19 6 18.7314 6 18.4Z"/><path d="M14 18.4V5.6C14 5.26863 14.2686 5 14.6 5H17.4C17.7314 5 18 5.26863 18 5.6V18.4C18 18.7314 17.7314 19 17.4 19H14.6C14.2686 19 14 18.7314 14 18.4Z"/></Icon>;
+const FaceIdIcon = (p) => <Icon {...p}><path d="M7 3H5C3.89543 3 3 3.89543 3 5V7"/><path d="M17 3H19C20.1046 3 21 3.89543 21 5V7"/><path d="M16 8L16 10"/><path d="M8 8L8 10"/><path d="M9 16C9 16 10 17 12 17C14 17 15 16 15 16"/><path d="M12 8L12 13L11 13"/><path d="M7 21H5C3.89543 21 3 20.1046 3 19V17"/><path d="M17 21H19C20.1046 21 21 20.1046 21 19V17"/></Icon>;
+const SemInternetIcon = (p) => <Icon {...p}><path d="M12 19.51L12.01 19.4989"/><path d="M3 3L21 21"/><path d="M2 8C3.18476 7.11143 4.4475 6.39832 5.75742 5.86066M22 8C18.4276 5.32068 14.1461 4.23664 10 4.74787"/><path d="M5 12C6.3333 11 7.8888 10.3333 9.51838 10M19 12C17.7314 11.0486 16.2617 10.3989 14.7183 10.0509"/><path d="M8.5 15.5C10.7504 14.1 13.2498 14.0996 15.5001 15.5"/></Icon>;
+const DownloadIcon = (p) => <Icon {...p}><path d="M6 20L18 20"/><path d="M12 4V16M12 16L15.5 12.5M12 16L8.5 12.5"/></Icon>;
+const SairIcon = (p) => <Icon {...p}><path d="M12 12H19M19 12L16 15M19 12L16 9"/><path d="M19 6V5C19 3.89543 18.1046 3 17 3H7C5.89543 3 5 3.89543 5 5V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V18"/></Icon>;
+const EscudoIcon = (p) => <Icon {...p}><path d="M8.5 11.5L11.5 14.5L16.5 9.5"/><path d="M5 18L3.13036 4.91253C3.05646 4.39524 3.39389 3.91247 3.90398 3.79912L11.5661 2.09641C11.8519 2.03291 12.1481 2.03291 12.4339 2.09641L20.096 3.79912C20.6061 3.91247 20.9435 4.39524 20.8696 4.91252L19 18C18.9293 18.495 18.5 21.5 12 21.5C5.5 21.5 5.07071 18.495 5 18Z"/></Icon>;
 
 const SendIcon = ({ color = T.brass, size = 17 }) => <Icon size={size} color={color} strokeWidth={1.9}><path d="M22.1525 3.55321L11.1772 21.0044L9.50686 12.4078L2.00002 7.89795L22.1525 3.55321Z"/><path d="M9.45557 12.4436L22.1524 3.55321"/></Icon>;
 
@@ -53,4 +58,4 @@ function IconeSem({ tipo, cor, size = 15 }) {
   return <Icon size={size} color={cor} strokeWidth={2.1}>{SEM_ICONE[tipo] || SEM_ICONE.pausa}</Icon>;
 }
 
-export { BackIcon, BellIcon, BuildingIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronIcon, ChevronUpIcon, FlagIcon, FolderIcon, HouseIcon, Icon, IconeSem, LockIcon, PauseIcon, PersonIcon, PinIcon, SearchIcon, SendIcon, SoundIcon, SparkleIcon, StarIcon, SunIcon };
+export { BackIcon, BellIcon, DownloadIcon, EscudoIcon, FaceIdIcon, SairIcon, SemInternetIcon, BuildingIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronIcon, ChevronUpIcon, FlagIcon, FolderIcon, HouseIcon, Icon, IconeSem, LockIcon, PauseIcon, PersonIcon, PinIcon, SearchIcon, SendIcon, SoundIcon, SparkleIcon, StarIcon, SunIcon };
