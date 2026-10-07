@@ -16,7 +16,7 @@ const INITIAL_NOTIFS = [
   { id: "n2", type: "bloqueio", cliente: "AFNE", text: "Bloqueio de R$ 18.400 foi levantado", time: "3 h", group: "Hoje", read: false, target: { kind: "bloqueio", id: "b1" } },
   { id: "n3", type: "relatorio", cliente: "Instituto Gnosis", text: "Relatório fixado de bloqueios ativos foi atualizado", time: "5 h", group: "Hoje", read: false, target: { kind: "report", id: "pin-gnosis" } },
   { id: "n4", type: "resumo", cliente: null, text: "4 movimentações ontem nos processos que você acompanha", time: "8:00", group: "Ontem", read: true, target: { kind: "acompanhando" } },
-  { id: "n5", type: "reclamacao", cliente: "FAS", text: "Nova reclamação constitucional protocolada no STF", time: "ontem", group: "Ontem", read: true, target: { kind: "org", id: "fas" } },
+  { id: "n5", type: "reclamacao", cliente: "FAS", text: "Nova reclamação constitucional protocolada no STF", time: "ontem", group: "Ontem", read: true, target: { kind: "reclamacao", id: "r1" } },
   { id: "n6", type: "movimentacao", cliente: "AFNE", text: "Audiência trabalhista remarcada na ação declaratória", time: "4 dias", group: "Anteriores", read: true, target: { kind: "processo", id: "p4" } },
 ];
 

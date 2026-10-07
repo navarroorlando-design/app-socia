@@ -40,12 +40,13 @@ function PassivoBarra({ passivo, legenda = true }) {
 }
 
 /* Cartão de um contrato de gestão: o passivo é a primeira coisa */
-function ContratoCard({ c, onClick }) {
+function ContratoCard({ c, onClick, comCliente }) {
   return (
     <button onClick={onClick} className="w-full text-left" style={{ ...CARD, padding: 18 }}
             aria-label={`${c.orgao}: passivo estimado ${fmtBRL(c.passivo.total)}, ${c.processos.length} processos`}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
+          {comCliente && <p style={{ fontFamily: F.ui, fontSize: 14, fontWeight: 600, color: S.texto2, marginBottom: 2 }}>{ORGS[c.orgId].name}</p>}
           <p style={{ fontFamily: F.ui, fontSize: 17, fontWeight: 600, color: S.ink, lineHeight: 1.3 }}>{c.orgao}</p>
           <p style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2, marginTop: 2 }}>Vigência {c.vigencia}</p>
         </div>
@@ -228,4 +229,4 @@ function ProcessosOrg({ orgId, onBack, onOpenContrato, onOpenProcesso }) {
   );
 }
 
-export { BloqueiosOrg, ContratoCard, ContratoDetalhe, ContratosOrg, PassivoBarra, ProcessosOrg };
+export { BloqueiosOrg, ContratoCard, ContratoDetalhe, ContratosOrg, NOTA_PASSIVO, PassivoBarra, ProcessosOrg };

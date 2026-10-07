@@ -193,10 +193,27 @@ for (const k of Object.keys(ORGS)) {
   ORGS[k].bloqueadoCurto = fmtBRLCurto(TOTAIS.porCliente[k].bloqueado);
 }
 
-const RECLAMACOES_LISTA = [
-  { cliente: "FAS", desc: "Reclamação constitucional no STF", status: "Em andamento" },
-  { cliente: "Instituto Gnosis", desc: "Reclamação 80.150/RJ", status: "Em andamento" },
-  { cliente: "AFNE", desc: "Reclamação constitucional (ADPF 664)", status: "Julgada" },
+/* Reclamações constitucionais (STF). Os processos de origem são os trabalhistas do cliente com
+   mais valor bloqueado: é contra esses bloqueios que a reclamação costuma ser proposta. */
+const RECLAMACOES_BASE = [
+  { id: "r1", clienteId: "fas", numero: "Rcl 81.204/RJ", status: "Em andamento", liminar: "Pendente",
+    assunto: "Bloqueio de verbas do contrato de gestão para pagar dívida trabalhista",
+    paradigma: "ADPF 664", ato: "Decisão da Vara do Trabalho que determinou bloqueio via SISBAJUD na conta do contrato de gestão.",
+    movs: [["06/10/2026", "Reclamação protocolada no STF"], ["06/10/2026", "Distribuída por prevenção"]] },
+  { id: "r2", clienteId: "gnosis", numero: "Rcl 80.150/RJ", status: "Em andamento", liminar: "Deferida",
+    assunto: "Responsabilidade da OS por verbas trabalhistas de empregados do contrato",
+    paradigma: "ADPF 664", ato: "Acórdão do TRT que manteve a penhora de valores repassados pelo município.",
+    movs: [["18/09/2026", "Liminar deferida para suspender a penhora"], ["02/09/2026", "Informações prestadas pela autoridade reclamada"], ["12/08/2026", "Reclamação protocolada no STF"]] },
+  { id: "r3", clienteId: "afne", numero: "Rcl 77.932/RJ", status: "Julgada", liminar: "Deferida",
+    assunto: "Bloqueio de recursos públicos vinculados ao contrato de gestão",
+    paradigma: "ADPF 664", ato: "Decisão da Vara do Trabalho que bloqueou valores destinados à saúde municipal.",
+    movs: [["14/07/2026", "Reclamação julgada procedente"], ["03/04/2026", "Liminar deferida"], ["11/03/2026", "Reclamação protocolada no STF"]] },
 ];
+const RECLAMACOES_LISTA = RECLAMACOES_BASE.map((r) => {
+  const bloqueadoDe = (p) => BLOQUEIOS_LISTA.filter((b) => b.processoId === p.id && b.status === "Ativo").reduce((s, b) => s + b.valorNum, 0);
+  const origem = PROCESSOS_LISTA.filter((p) => p.clienteId === r.clienteId && p.area === "Trabalhista")
+    .sort((a, b) => bloqueadoDe(b) - bloqueadoDe(a)).slice(0, 2);
+  return { ...r, cliente: CLIENTE_NOME[r.clienteId], desc: r.assunto, processosOrigem: origem.map((p) => p.id), valorDiscutido: origem.reduce((s, p) => s + bloqueadoDe(p), 0) };
+});
 
 export { BLOQUEIOS_LISTA, CLIENTE_NOME, CONTRATOS, ORGS, ORG_ORDER, OUTRAS_ORGS, PROCESSOS_LISTA, RECLAMACOES_LISTA, TOTAIS };

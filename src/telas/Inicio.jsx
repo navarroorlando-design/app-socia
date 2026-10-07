@@ -1,7 +1,7 @@
-import React from "react";
-import { FlagIcon, FolderIcon, LockIcon, SearchIcon, SparkleIcon, StarIcon } from "../componentes/icones";
+import React, { useState } from "react";
+import { ChevronIcon, FlagIcon, FolderIcon, LockIcon, SearchIcon, SparkleIcon, StarIcon } from "../componentes/icones";
 import { Badge, CardRow, Etiqueta, Faixa, LinhaLista, SecLabel } from "../componentes/ui";
-import { BLOQUEIOS_LISTA, PROCESSOS_LISTA, RECLAMACOES_LISTA, TOTAIS } from "../dados/base";
+import { BLOQUEIOS_LISTA, ORGS, ORG_ORDER, PROCESSOS_LISTA, RECLAMACOES_LISTA, TOTAIS } from "../dados/base";
 import { fmtBRL, fmtBRLCurto, fmtData } from "../dados/formato";
 import { CARD, F, S, SEMANTICA, T, semDe } from "../estilo/tokens";
 import { Avatar } from "../preferencias";
@@ -28,7 +28,7 @@ function Anel({ pct, rotulo, size = 92 }) {
     </div>
   );
 }
-function InicioFeed({ onOpenList, onOpenOrg, followedItems, onOpenProcesso, onOpenAcompanhando, onOpenBusca, onOpenMenu, onPerguntar, unreadCount, foto, apelido }) {
+function InicioFeed({ onOpenList, onOpenOrg, followedItems, onOpenProcesso, onOpenBloqueio, onOpenReclamacao, onOpenAcompanhando, onOpenBusca, onOpenMenu, onPerguntar, unreadCount, foto, apelido }) {
   const preview = followedItems.slice(0, 3);
   const parados90 = PROCESSOS_LISTA.filter((p) => p.diasParado >= 90).length;
   const sem = (id) => SEMANTICA.find((x) => x.id === id);
@@ -36,12 +36,14 @@ function InicioFeed({ onOpenList, onOpenOrg, followedItems, onOpenProcesso, onOp
   const hora = agora.getHours();
   const saudacao = hora < 12 ? "Bom dia," : hora < 18 ? "Boa tarde," : "Boa noite,";
   const data = agora.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
-  const novidades = 5;
 
   // Parte do valor bloqueado em 2026 que já foi levantada (anel do cartão principal).
   const levantado = BLOQUEIOS_LISTA.filter((b) => b.status === "Levantado").reduce((s, b) => s + b.valorNum, 0);
   const pctLevantado = Math.round((levantado / (levantado + TOTAIS.bloqueadoAtivo)) * 100);
   const ativos = BLOQUEIOS_LISTA.filter((b) => b.status === "Ativo").length;
+  const passivo = PROCESSOS_LISTA.reduce((soma, p) => soma + p.valorCausa, 0);
+  const nContratos = Object.values(ORGS).reduce((soma, o) => soma + o.contratos.length, 0);
+  const proc = (id) => PROCESSOS_LISTA.find((p) => p.id === id);
 
   // Tons da família neutra: cada atalho num tom, o latão fica só para a IA.
   const TONS_ATALHO = {
@@ -102,8 +104,18 @@ function InicioFeed({ onOpenList, onOpenOrg, followedItems, onOpenProcesso, onOp
 
       {/* atalhos em grade 2×2 */}
       <div className="grid grid-cols-2 gap-3 mt-4">
-        <Atalho rotulo="Bloqueios" detalhe={`${ativos} ativos`} onClick={() => onOpenList("bloqueios")} Icone={LockIcon} tom="oliva" />
-        <Atalho rotulo="Sigo" detalhe={`${followedItems.length} processos`} onClick={onOpenAcompanhando} Icone={StarIcon} tom="osso" />
+        <button onClick={() => onOpenList("carteira")} className="col-span-2 text-left flex items-center gap-3"
+                style={{ ...CARD, background: S.oliva, boxShadow: "none", padding: 16 }}
+                aria-label={`Passivo estimado da carteira: ${fmtBRL(passivo)} em ${nContratos} contratos de gestão`}>
+          <span className="flex-1 min-w-0">
+            <span className="block" style={{ fontFamily: F.ui, fontSize: 15, fontWeight: 600, color: "#FFFFFF" }}>Passivo estimado da carteira</span>
+            <span className="block" style={{ fontFamily: F.ui, fontSize: 26, fontWeight: 600, color: "#FFFFFF", letterSpacing: "-0.02em", marginTop: 4, whiteSpace: "nowrap" }}>{fmtBRL(passivo)}</span>
+            <span className="block" style={{ fontFamily: F.ui, fontSize: 14, color: "#E6E1D6", marginTop: 2 }}>em {nContratos} contratos de gestão</span>
+          </span>
+          <ChevronIcon size={18} color="#FFFFFF" strokeWidth={2} />
+        </button>
+        <Atalho rotulo="Bloqueios" detalhe={`${ativos} ativos`} onClick={() => onOpenList("bloqueios")} Icone={LockIcon} tom="osso" />
+        <Atalho rotulo="Sigo" detalhe={`${followedItems.length} processos`} onClick={onOpenAcompanhando} Icone={StarIcon} />
         <Atalho rotulo="Buscar" detalhe="Processo, cliente ou número" onClick={onOpenBusca} Icone={SearchIcon} />
         <Atalho rotulo="Perguntar" detalhe="Relatórios com a IA" onClick={onPerguntar} Icone={SparkleIcon} tom="ia" />
       </div>
@@ -131,20 +143,20 @@ function InicioFeed({ onOpenList, onOpenOrg, followedItems, onOpenProcesso, onOp
         </>
       )}
 
-      <SecLabel acao={`${novidades} novidades`} onAcao={undefined}>Hoje no escritório</SecLabel>
+      <SecLabel acao="Ver tudo" onAcao={() => onOpenList("movimentacoes")}>Hoje no escritório</SecLabel>
       <div style={CARD}>
-        <FeedItem cliente="Instituto Gnosis" text="Decisão interlocutória publicada na ação cível de cobrança" time="40 min" sem={sem("curso")} tag="Movimentação" onClick={() => onOpenOrg("gnosis")} />
-        <FeedItem cliente="AFNE" text="Bloqueio de R$ 18.400 foi levantado" time="3 h" sem={sem("resolvido")} tag="Levantado" onClick={() => onOpenOrg("afne")} />
-        <FeedItem cliente="FAS" text="Nova reclamação constitucional protocolada no STF" time="ontem" sem={sem("atencao")} tag="Reclamação" onClick={() => onOpenOrg("fas")} />
-        <FeedItem cliente="IGEDES" text="Processo administrativo movimentado" time="2 dias" sem={sem("curso")} tag="Movimentação" onClick={() => onOpenOrg("igedes")} />
-        <FeedItem cliente="AFNE" text="Audiência trabalhista remarcada" time="4 dias" sem={sem("atencao")} tag="Remarcação" onClick={() => onOpenOrg("afne")} last />
+        <FeedItem cliente="Instituto Gnosis" text="Decisão interlocutória publicada na ação cível de cobrança" time="40 min" sem={sem("curso")} tag="Movimentação" onClick={() => onOpenProcesso(proc("p2"), "feed")} />
+        <FeedItem cliente="AFNE" text="Bloqueio de R$ 18.400 foi levantado" time="3 h" sem={sem("resolvido")} tag="Levantado" onClick={() => onOpenBloqueio(BLOQUEIOS_LISTA.find((b) => b.id === "b1"), "feed")} />
+        <FeedItem cliente="FAS" text="Nova reclamação constitucional protocolada no STF" time="ontem" sem={sem("atencao")} tag="Reclamação" onClick={() => onOpenReclamacao(RECLAMACOES_LISTA.find((r) => r.id === "r1"), "feed")} />
+        <FeedItem cliente="IGEDES" text="Processo administrativo disciplinar movimentado" time="2 dias" sem={sem("curso")} tag="Movimentação" onClick={() => onOpenProcesso(proc("p5"), "feed")} />
+        <FeedItem cliente="AFNE" text="Audiência trabalhista remarcada na ação declaratória" time="4 dias" sem={sem("atencao")} tag="Remarcação" onClick={() => onOpenProcesso(proc("p4"), "feed")} last />
       </div>
 
       <SecLabel>Navegar por tipo</SecLabel>
       <div style={CARD}>
         <CardRow icon={<FolderIcon size={20} color={S.ink} />} label="Processos" value={TOTAIS.processos.toLocaleString("pt-BR")} onClick={() => onOpenList("processos")} />
         <CardRow icon={<LockIcon size={20} color={S.ink} />} label="Bloqueios ativos" value={fmtBRLCurto(TOTAIS.bloqueadoAtivo)} onClick={() => onOpenList("bloqueios")} />
-        <CardRow icon={<FlagIcon size={20} color={S.ink} />} label="Reclamações" value="3" onClick={() => onOpenList("reclamacoes")} last />
+        <CardRow icon={<FlagIcon size={20} color={S.ink} />} label="Reclamações no STF" value={String(RECLAMACOES_LISTA.length)} onClick={() => onOpenList("reclamacoes")} last />
       </div>
     </div>
   );
@@ -164,35 +176,81 @@ function FeedItem({ cliente, text, time, sem, tag, onClick, last }) {
   );
 }
 
+/* Lista de processos ou bloqueios com filtros rápidos e ordenação */
+function Chip({ ativo, onClick, children }) {
+  return (
+    <button onClick={onClick} aria-pressed={ativo} className="shrink-0 rounded-full"
+            style={{ height: 40, padding: "0 14px", fontFamily: F.ui, fontSize: 15, fontWeight: ativo ? 600 : 500, whiteSpace: "nowrap",
+                     background: ativo ? S.marca : S.cartao, color: ativo ? "#FFFFFF" : S.ink, boxShadow: ativo ? "none" : CARD.boxShadow }}>
+      {children}
+    </button>
+  );
+}
+const LinhaChips = ({ children }) => <div className="flex gap-2 overflow-x-auto no-scrollbar" style={{ margin: "0 -32px", padding: "4px 32px" }}>{children}</div>;
+
 function ListaGenerica({ tipo, onBack, followed, onOpenProcesso, onOpenBloqueio }) {
-  const config = {
-    processos: { title: "Processos", data: PROCESSOS_LISTA },
-    bloqueios: { title: "Bloqueios", data: BLOQUEIOS_LISTA },
-    reclamacoes: { title: "Reclamações", data: RECLAMACOES_LISTA },
-  }[tipo];
   const isProcessos = tipo === "processos";
+  const [cliente, setCliente] = useState("todos");
+  const [recorte, setRecorte] = useState("todos");
+  const [ordem, setOrdem] = useState(isProcessos ? "recentes" : "recentes");
+  const base = isProcessos ? PROCESSOS_LISTA : BLOQUEIOS_LISTA;
+  const recortes = isProcessos
+    ? [["todos", "Todas as áreas"], ["parados", "Parados 60+ dias"], ["Trabalhista", "Trabalhista"], ["Cível", "Cível"], ["Administrativo", "Administrativo"]]
+    : [["todos", "Todos"], ["Ativo", "Ativos"], ["Levantado", "Levantados"]];
+  const ordens = isProcessos ? [["recentes", "Mais recentes"], ["parados", "Mais parados"], ["valor", "Maior valor"]] : [["recentes", "Mais recentes"], ["valor", "Maior valor"]];
+  const lista = base
+    .filter((x) => cliente === "todos" || x.clienteId === cliente)
+    .filter((x) => recorte === "todos" || (recorte === "parados" ? x.diasParado >= 60 : isProcessos ? x.area === recorte : x.status === recorte))
+    .sort({
+      recentes: isProcessos ? (a, b) => a.diasParado - b.diasParado : (a, b) => b.data - a.data,
+      parados: (a, b) => b.diasParado - a.diasParado,
+      valor: isProcessos ? (a, b) => b.valorCausa - a.valorCausa : (a, b) => b.valorNum - a.valorNum,
+    }[ordem]);
+  const ativosTotal = BLOQUEIOS_LISTA.filter((b) => b.status === "Ativo").length;
 
   return (
-    <>
-      <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 60 }}>
-        <Faixa bleed={32} onBack={onBack} backLabel="Início" titulo={config.title}
-               sub={tipo === "bloqueios" ? `${config.data.filter((b) => b.status === "Ativo").length} ativos de ${config.data.length} na base` : `${config.data.length} na base de exemplo`} />
+    <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 60 }}>
+      <Faixa bleed={32} onBack={onBack} backLabel="Início" titulo={isProcessos ? "Processos" : "Bloqueios"}
+             sub={isProcessos ? `${PROCESSOS_LISTA.length} na base de exemplo` : `${ativosTotal} ativos de ${BLOQUEIOS_LISTA.length} na base`} />
+      <div className="flex flex-col gap-2" role="group" aria-label="Filtros">
+        <LinhaChips>
+          <Chip ativo={cliente === "todos"} onClick={() => setCliente("todos")}>Todos os clientes</Chip>
+          {ORG_ORDER.map((id) => <Chip key={id} ativo={cliente === id} onClick={() => setCliente(id)}>{ORGS[id].name}</Chip>)}
+        </LinhaChips>
+        <LinhaChips>
+          {recortes.map(([id, rot]) => <Chip key={id} ativo={recorte === id} onClick={() => setRecorte(id)}>{rot}</Chip>)}
+        </LinhaChips>
+      </div>
+      <div className="flex items-center justify-between gap-2" style={{ margin: "18px 0 10px" }}>
+        <p role="status" style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2 }}>{lista.length} {isProcessos ? (lista.length === 1 ? "processo" : "processos") : (lista.length === 1 ? "bloqueio" : "bloqueios")}</p>
+        <label className="flex items-center gap-2" style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2 }}>
+          Ordenar
+          <select id={`ordem-${tipo}`} value={ordem} onChange={(e) => setOrdem(e.target.value)}
+                  style={{ height: 40, borderRadius: 12, padding: "0 10px", fontFamily: F.ui, fontSize: 15, fontWeight: 600, color: S.ink, background: S.cartao, boxShadow: CARD.boxShadow, border: "none" }}>
+            {ordens.map(([id, rot]) => <option key={id} value={id}>{rot}</option>)}
+          </select>
+        </label>
+      </div>
+      {lista.length === 0 ? (
+        <p style={{ fontFamily: F.ui, fontSize: 16, color: S.texto2, lineHeight: 1.5 }}>Nada com esses filtros. Toque em "Todos os clientes" ou em outro recorte.</p>
+      ) : (
         <div style={CARD}>
-          {config.data.map((item, i) => {
-            const st = semDe(item.status), last = i === config.data.length - 1;
-            if (tipo === "bloqueios") {
+          {lista.map((item, i) => {
+            const st = semDe(item.status), last = i === lista.length - 1;
+            if (!isProcessos) {
               return <LinhaLista key={item.id} onClick={() => onOpenBloqueio(item, "bloqueios")} last={last} sem={st}
                                  icone={<LockIcon size={18} color={st.cor} />} titulo={<span style={{ fontSize: 17, fontVariantNumeric: "tabular-nums" }}>{item.valor}</span>}
                                  detalhe={`${item.cliente} · ${fmtData(item.data)}`} direita={<Badge text={item.status} />} />;
             }
-            return <LinhaLista key={item.id || i} onClick={isProcessos ? () => onOpenProcesso(item, "processos") : undefined} last={last} sem={st}
-                               icone={isProcessos ? <FolderIcon size={18} color={st.cor} /> : <FlagIcon size={18} color={st.cor} />}
-                               titulo={item.cliente} extra={isProcessos && followed.has(item.id) ? <StarIcon filled size={13} /> : null}
-                               detalhe={item.desc} abaixo={<Badge text={item.status} />} />;
+            return <LinhaLista key={item.id} onClick={() => onOpenProcesso(item, "processos")} last={last} sem={st}
+                               icone={<FolderIcon size={18} color={st.cor} />}
+                               titulo={item.cliente} extra={followed.has(item.id) ? <StarIcon filled size={13} /> : null}
+                               detalhe={`${item.desc} · ${ordem === "valor" ? (item.valorCausa ? fmtBRLCurto(item.valorCausa) : "sem valor") : item.diasParado >= 60 ? `parado há ${item.diasParado} dias` : item.lastUpdate}`}
+                               abaixo={<Badge text={item.status} />} />;
           })}
         </div>
-      </div>
-    </>
+      )}
+    </div>
   );
 }
 

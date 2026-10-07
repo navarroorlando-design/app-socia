@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { StatusBar, TabBar } from "./componentes/ui";
-import { BLOQUEIOS_LISTA, CLIENTE_NOME, ORGS, ORG_ORDER, PROCESSOS_LISTA } from "./dados/base";
+import { BLOQUEIOS_LISTA, CLIENTE_NOME, ORGS, ORG_ORDER, PROCESSOS_LISTA, RECLAMACOES_LISTA } from "./dados/base";
 import { GlobalStyle } from "./estilo/GlobalStyle";
 import { T, tomDeStatus } from "./estilo/tokens";
 import { PINNED_INICIAIS, conversar, erroTexto, useSample } from "./ia/motor";
@@ -13,6 +13,8 @@ import { AcompanhandoLista, InicioFeed, ListaGenerica } from "./telas/Inicio";
 import { INITIAL_NOTIFS, NotifPrefs, NotificacoesCentral } from "./telas/Notificacoes";
 import { OsLista, OsPerfil } from "./telas/Organizacoes";
 import { BloqueiosOrg, ContratoDetalhe, ContratosOrg, ProcessosOrg } from "./telas/OrgMetricas";
+import { Carteira, Movimentacoes } from "./telas/Carteira";
+import { ReclamacaoDetalhe, ReclamacoesTela } from "./telas/Reclamacoes";
 import { MenuVA, OrdemClientes, PerfilUsuaria } from "./telas/Perfil";
 import { ProcessoDetalhe } from "./telas/ProcessoDetalhe";
 
@@ -42,6 +44,8 @@ function AppSociosPrototype() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedBloqueio, setSelectedBloqueio] = useState(null);
   const [bloqueioOrigin, setBloqueioOrigin] = useState("bloqueios");
+  const [selectedReclamacao, setSelectedReclamacao] = useState(null);
+  const [reclamacaoOrigin, setReclamacaoOrigin] = useState("reclamacoes");
 
   const [pinned, setPinned] = useState(PINNED_INICIAIS);
   // Conversa com a IA: { id, clienteId, backTo, backLabel, msgs: [{ role, text, status, progress, error }] }
@@ -62,7 +66,8 @@ function AppSociosPrototype() {
 
   const openProcesso = (item, origin) => { setTab("inicio"); setSelectedProcesso(item); setDetalheOrigin(origin); setInicioView("detalhe"); };
   const openBloqueio = (item, origin) => { setTab("inicio"); setSelectedBloqueio(item); setBloqueioOrigin(origin); setInicioView("bloqueio"); };
-  const backLabels = { feed: "Início", processos: "Processos", bloqueios: "Bloqueios", acompanhando: "Acompanhando", busca: "Busca", bloqueio: "Bloqueio", notificacoes: "Notificações" };
+  const openReclamacao = (item, origin) => { setTab("inicio"); setSelectedReclamacao(item); setReclamacaoOrigin(origin); setInicioView("reclamacao"); };
+  const backLabels = { feed: "Início", processos: "Processos", bloqueios: "Bloqueios", acompanhando: "Acompanhando", busca: "Busca", bloqueio: "Bloqueio", notificacoes: "Notificações", movimentacoes: "Movimentações", reclamacoes: "Reclamações", reclamacao: "Reclamação" };
   const followedItemsFull = PROCESSOS_LISTA.filter((p) => followed.has(p.id));
 
   const changeTab = (t) => {
@@ -78,7 +83,8 @@ function AppSociosPrototype() {
     if (tipo === "processo") setSelectedProcesso(item); else setSelectedBloqueio(item);
     setOsDetalheOrigin(origem); setOsView(tipo);
   };
-  const osLabels = { profile: ORGS[selectedOrg]?.name, contratos: "Contratos de gestão", contrato: selectedContrato, bloqueios: "Bloqueios", processos: "Processos", bloqueio: "Bloqueio" };
+  const osLabels = { profile: ORGS[selectedOrg]?.name, contratos: "Contratos de gestão", contrato: selectedContrato, bloqueios: "Bloqueios", processos: "Processos", bloqueio: "Bloqueio", reclamacoes: "Reclamações", reclamacao: "Reclamação" };
+  const openContratoDe = (orgId, orgao) => { setSelectedOrg(orgId); setTab("os"); setSelectedContrato(orgao); setContratoOrigin("profile"); setOsView("contrato"); };
 
   /* ---- IA: conversa no formato do app do Claude ---- */
   const enviar = async (texto, opts = {}) => {
@@ -142,6 +148,7 @@ function AppSociosPrototype() {
     if (kind === "bloqueio") openBloqueio(BLOQUEIOS_LISTA.find((b) => b.id === id), "notificacoes");
     if (kind === "report") { const p = pinned.find((x) => x.id === id); if (p) openPinned(p, "notificacoes"); }
     if (kind === "org") openOrg(id);
+    if (kind === "reclamacao") openReclamacao(RECLAMACOES_LISTA.find((r) => r.id === id), "notificacoes");
     if (kind === "acompanhando") setInicioView("acompanhando");
   };
 
@@ -175,6 +182,8 @@ function AppSociosPrototype() {
             onOpenOrg={openOrg}
             followedItems={followedItemsFull}
             onOpenProcesso={openProcesso}
+            onOpenBloqueio={openBloqueio}
+            onOpenReclamacao={openReclamacao}
             onOpenAcompanhando={() => setInicioView("acompanhando")}
             onOpenBusca={() => setInicioView("busca")}
             onOpenMenu={() => setMenuVA(true)}
@@ -189,7 +198,20 @@ function AppSociosPrototype() {
             onMarkAll={() => setNotifs((prev) => prev.map((n) => ({ ...n, read: true })))}
             onBack={() => setInicioView("feed")} />
         )}
-        {tab === "inicio" && ["processos", "bloqueios", "reclamacoes"].includes(inicioView) && (
+        {tab === "inicio" && inicioView === "carteira" && (
+          <Carteira onBack={() => setInicioView("feed")} onOpenOrg={openOrg} onOpenContrato={openContratoDe} />
+        )}
+        {tab === "inicio" && inicioView === "movimentacoes" && (
+          <Movimentacoes onBack={() => setInicioView("feed")} onOpenProcesso={(p) => openProcesso(p, "movimentacoes")} onOpenBloqueio={(b) => openBloqueio(b, "movimentacoes")} />
+        )}
+        {tab === "inicio" && inicioView === "reclamacoes" && (
+          <ReclamacoesTela onBack={() => setInicioView("feed")} backLabel="Início" onOpen={(r) => openReclamacao(r, "reclamacoes")} />
+        )}
+        {tab === "inicio" && inicioView === "reclamacao" && selectedReclamacao && (
+          <ReclamacaoDetalhe reclamacao={selectedReclamacao} backLabel={backLabels[reclamacaoOrigin]} onBack={() => setInicioView(reclamacaoOrigin)}
+            onOpenProcesso={(p) => openProcesso(p, "reclamacao")} />
+        )}
+        {tab === "inicio" && ["processos", "bloqueios"].includes(inicioView) && (
           <ListaGenerica tipo={inicioView} onBack={() => setInicioView("feed")} followed={followed}
                          onOpenProcesso={openProcesso} onOpenBloqueio={openBloqueio} />
         )}
@@ -220,7 +242,7 @@ function AppSociosPrototype() {
         {tab === "os" && osView === "profile" && (
           <OsPerfil orgId={selectedOrg} onBack={() => setOsView("list")} sample={sample} onAsk={(q) => enviar(q, { nova: true, clienteId: selectedOrg, backTo: "os", backLabel: ORGS[selectedOrg].name })}
             onOpenContratos={() => setOsView("contratos")} onOpenContrato={(c) => openContrato(c, "profile")}
-            onOpenBloqueios={() => setOsView("bloqueios")} onOpenProcessos={() => setOsView("processos")} />
+            onOpenBloqueios={() => setOsView("bloqueios")} onOpenProcessos={() => setOsView("processos")} onOpenReclamacoes={() => setOsView("reclamacoes")} />
         )}
         {tab === "os" && osView === "contratos" && (
           <ContratosOrg orgId={selectedOrg} onBack={() => setOsView("profile")} onOpenContrato={(c) => openContrato(c, "contratos")} />
@@ -236,6 +258,14 @@ function AppSociosPrototype() {
         {tab === "os" && osView === "processos" && (
           <ProcessosOrg orgId={selectedOrg} onBack={() => setOsView("profile")} onOpenContrato={(c) => openContrato(c, "processos")}
             onOpenProcesso={(p) => openOsDetalhe("processo", p, "processos")} />
+        )}
+        {tab === "os" && osView === "reclamacoes" && (
+          <ReclamacoesTela orgId={selectedOrg} onBack={() => setOsView("profile")} backLabel={ORGS[selectedOrg].name}
+            onOpen={(r) => { setSelectedReclamacao(r); setOsView("reclamacao"); }} />
+        )}
+        {tab === "os" && osView === "reclamacao" && selectedReclamacao && (
+          <ReclamacaoDetalhe reclamacao={selectedReclamacao} backLabel="Reclamações" onBack={() => setOsView("reclamacoes")}
+            onOpenProcesso={(p) => openOsDetalhe("processo", p, "reclamacao")} />
         )}
         {tab === "os" && osView === "processo" && selectedProcesso && (
           <ProcessoDetalhe key={selectedProcesso.id} processo={selectedProcesso} sample={sample}

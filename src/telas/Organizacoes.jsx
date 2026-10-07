@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { ChevronIcon } from "../componentes/icones";
+import { ChevronIcon, FlagIcon } from "../componentes/icones";
 import { Faixa, SecLabel } from "../componentes/ui";
-import { ORGS, ORG_ORDER, OUTRAS_ORGS } from "../dados/base";
+import { ORGS, ORG_ORDER, OUTRAS_ORGS, RECLAMACOES_LISTA } from "../dados/base";
 import { fmtBRL, fmtBRLCurto } from "../dados/formato";
 import { resumoOrg } from "../dados/passivo";
 import { CARD, F, LINK, S, SEMANTICA, T } from "../estilo/tokens";
@@ -53,8 +53,9 @@ function OsLista({ onOpenOrg, ordem = ORG_ORDER }) {
   );
 }
 
-function OsPerfil({ orgId, onBack, sample, onAsk, onOpenContratos, onOpenContrato, onOpenBloqueios, onOpenProcessos }) {
+function OsPerfil({ orgId, onBack, sample, onAsk, onOpenContratos, onOpenContrato, onOpenBloqueios, onOpenProcessos, onOpenReclamacoes }) {
   const o = ORGS[orgId], r = resumoOrg(orgId);
+  const reclamacoes = RECLAMACOES_LISTA.filter((x) => x.clienteId === orgId);
   const [q, setQ] = useState("");
   // Atalho de métrica: contratos (o que o cliente mais pergunta) em destaque, depois bloqueios e processos.
   const Metrica = ({ rotulo, valor, detalhe, onClick, tom, largo }) => {
@@ -84,6 +85,14 @@ function OsPerfil({ orgId, onBack, sample, onAsk, onOpenContratos, onOpenContrat
             <Metrica tom="osso" rotulo="Bloqueios" valor={fmtBRLCurto(r.bloqueadoAtivo)} detalhe={`${r.bloqueiosAtivos} ativos`} onClick={onOpenBloqueios} />
             <Metrica tom="cartao" rotulo="Processos" valor={String(r.processos.length)} detalhe={`${r.processos.filter((p) => p.diasParado >= 60).length} parados há 60+ dias`} onClick={onOpenProcessos} />
           </div>
+          <button onClick={onOpenReclamacoes} className="w-full text-left flex items-center gap-3 mt-3" style={{ ...CARD, padding: "14px 16px" }}>
+            <span className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "#EFEBE2" }}><FlagIcon size={18} color={S.ink} /></span>
+            <span className="flex-1 min-w-0">
+              <span className="block" style={{ fontFamily: F.ui, fontSize: 16, fontWeight: 600, color: S.ink }}>Reclamações no STF</span>
+              <span className="block" style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2 }}>{reclamacoes.length === 0 ? "Nenhuma" : `${reclamacoes.filter((x) => x.status !== "Julgada").length} em andamento · ${reclamacoes.length} no total`}</span>
+            </span>
+            <ChevronIcon size={16} color={S.texto2} strokeWidth={2} />
+          </button>
         </Faixa>
 
         <SecLabel acao="Ver todos" onAcao={onOpenContratos}>Passivo por contrato</SecLabel>
