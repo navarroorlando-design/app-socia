@@ -1,0 +1,12 @@
+{
+  "name": "app-socios",
+  "private": true,
+  "version": "0.8.0",
+  "scripts": {
+    "build:js": "esbuild src/main.jsx --bundle --loader:.jsx=jsx --minify --charset=ascii --define:process.env.NODE_ENV='\"production\"' --outfile=dist/bundle.js",
+    "build:css": "tailwindcss -c tailwind.config.js -i src/tailwind.css -o dist/out.css --minify",
+    "build": "npm run build:js && npm run build:css"
+  },
+  "dependencies": { "react": "18.3.1", "react-dom": "18.3.1" },
+  "devDependencies": { "esbuild": "0.23.1", "tailwindcss": "3.4.13" }
+}
