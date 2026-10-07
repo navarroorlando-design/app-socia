@@ -251,13 +251,15 @@ function ListaGenerica({ tipo, onBack, onAbrirBusca, followed, onOpenProcesso, o
   return (
     <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 60 }}>
       <Faixa bleed={32} onBack={onBack} backLabel="Início" titulo={isProcessos ? "Processos" : "Bloqueios"}
-             sub={isProcessos ? `${PROCESSOS_LISTA.length} na base de exemplo` : `${ativosTotal} ativos de ${BLOQUEIOS_LISTA.length} na base`}
-             direita={isProcessos && onAbrirBusca && (
-               <button onClick={onAbrirBusca} aria-label="Buscar processo, bloqueio ou cliente" className="w-11 h-11 rounded-full flex items-center justify-center shrink-0" style={{ background: "#FFFDF9", boxShadow: CARD.boxShadow }}>
-                 <SearchIcon size={19} color={S.ink} strokeWidth={1.9} />
-               </button>
-             )} />
-      <div className="flex flex-col gap-2" role="group" aria-label="Filtros">
+             sub={isProcessos ? `${PROCESSOS_LISTA.length} na base de exemplo` : `${ativosTotal} ativos de ${BLOQUEIOS_LISTA.length} na base`} />
+      {isProcessos && onAbrirBusca && (
+        <button onClick={onAbrirBusca} aria-label="Buscar processo, bloqueio ou cliente"
+                className="w-full flex items-center gap-2 px-4 rounded-full mt-1" style={{ height: 50, background: S.cartao, boxShadow: CARD.boxShadow }}>
+          <SearchIcon size={20} color={S.texto2} />
+          <span style={{ fontFamily: F.ui, fontSize: 17, color: S.texto2 }}>Cliente, processo ou valor</span>
+        </button>
+      )}
+      <div className="flex flex-col gap-2 mt-3" role="group" aria-label="Filtros">
         <LinhaChips>
           <Chip ativo={cliente === "todos"} onClick={() => setCliente("todos")}>Todos os clientes</Chip>
           {ORG_ORDER.map((id) => <Chip key={id} ativo={cliente === id} onClick={() => setCliente(id)}>{ORGS[id].name}</Chip>)}
@@ -266,7 +268,7 @@ function ListaGenerica({ tipo, onBack, onAbrirBusca, followed, onOpenProcesso, o
           {recortes.map(([id, rot]) => <Chip key={id} ativo={recorte === id} onClick={() => setRecorte(id)}>{rot}</Chip>)}
         </LinhaChips>
       </div>
-      <div className="flex items-center justify-between gap-2" style={{ margin: "18px 0 10px" }}>
+      <div className="flex items-center justify-between gap-2" style={{ margin: "14px 0 10px" }}>
         <p role="status" style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2 }}>{lista.length} {isProcessos ? (lista.length === 1 ? "processo" : "processos") : (lista.length === 1 ? "bloqueio" : "bloqueios")}</p>
         <label className="flex items-center gap-2" style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2 }}>
           Ordenar
