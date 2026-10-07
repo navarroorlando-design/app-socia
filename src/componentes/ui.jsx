@@ -31,7 +31,7 @@ function StatusBar({ tom }) {
 function BackHeader({ label, onBack }) {
   return (
     <div className="flex items-center px-6 pt-3 pb-1 shrink-0">
-      <button onClick={onBack} aria-label={`Voltar para ${label}`} className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: "#FFFFFF" }}>
+      <button onClick={onBack} aria-label={`Voltar para ${label}`} className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: "#FFFDF9" }}>
         <BackIcon size={18} color={S.ink} />
       </button>
       <span className="ml-3" style={{ fontFamily: F.ui, fontSize: 16, color: S.texto2 }}>{label}</span>
@@ -41,7 +41,7 @@ function BackHeader({ label, onBack }) {
 
 function IconBtn({ label, onClick, children }) {
   return (
-    <button onClick={onClick} aria-label={label} className="w-11 h-11 rounded-full flex items-center justify-center relative" style={{ background: "#FFFFFF" }}>
+    <button onClick={onClick} aria-label={label} className="w-11 h-11 rounded-full flex items-center justify-center relative" style={{ background: "#FFFDF9" }}>
       {children}
     </button>
   );
@@ -61,7 +61,7 @@ function SecLabel({ children, acao, onAcao, primeiro }) {
 function CardRow({ icon, label, value, onClick, last }) {
   return (
     <button onClick={onClick} className="flex items-center gap-3 w-full text-left" style={{ padding: "12px 16px", borderBottom: last ? "none" : `1px solid ${S.linha}` }}>
-      <span className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "#EEF1F6" }}>{icon}</span>
+      <span className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "#EFEBE2" }}>{icon}</span>
       <span style={{ fontFamily: F.ui, fontSize: 17, color: S.ink, flex: 1 }}>{label}</span>
       {value && <span style={{ fontFamily: F.ui, fontSize: 16, color: S.texto2, fontVariantNumeric: "tabular-nums" }}>{value}</span>}
       <ChevronIcon size={16} color={S.texto2} strokeWidth={2} />
@@ -77,13 +77,13 @@ function TabBar({ active, onChange }) {
     { id: "perfil", label: "Perfil", Icon: PersonIcon },
   ];
   return (
-    <nav className="absolute bottom-0 left-0 right-0 px-3 pt-2 pb-7" style={{ background: "#FFFFFF", borderTop: `1px solid ${S.linha}` }}>
+    <nav className="absolute bottom-0 left-0 right-0 px-3 pt-2 pb-7" style={{ background: "#FFFDF9", borderTop: `1px solid ${S.linha}` }}>
       <div className="flex items-center justify-between">
         {items.map(({ id, label, Icon: I }) => {
           const isActive = active === id;
           return (
             <button key={id} onClick={() => onChange(id)} aria-current={isActive ? "page" : undefined}
-                    className="flex flex-col items-center gap-1 rounded-2xl" style={{ width: 76, padding: "6px 0", background: isActive ? "#E8EAF0" : "transparent" }}>
+                    className="flex flex-col items-center gap-1 rounded-2xl" style={{ width: 76, padding: "6px 0", background: isActive ? "#EAE6DD" : "transparent" }}>
               <I size={23} color={isActive ? (id === "ia" ? S.iaIcone : S.ink) : S.texto2} strokeWidth={isActive ? 2 : 1.7} />
               <span style={{ fontFamily: F.ui, fontSize: 13, fontWeight: isActive ? 700 : 500, color: isActive ? S.ink : S.texto2 }}>{label}</span>
             </button>
@@ -153,7 +153,7 @@ function Faixa({ tom, bloco, bleed = 24, onBack, backLabel, eyebrow, titulo, tit
       {/* barra fina que aparece ao rolar */}
       <div ref={ref} aria-hidden={!compacto}
            style={{ position: "sticky", top: 0, zIndex: 30, margin: `0 -${bleed}px -56px`, height: 56, padding: `0 ${Math.max(bleed - 10, 12)}px`,
-                    display: "flex", alignItems: "center", gap: 6, background: "rgba(242,243,247,.88)", backdropFilter: "saturate(1.6) blur(14px)", WebkitBackdropFilter: "saturate(1.6) blur(14px)",
+                    display: "flex", alignItems: "center", gap: 6, background: "rgba(242,239,233,.88)", backdropFilter: "saturate(1.6) blur(14px)", WebkitBackdropFilter: "saturate(1.6) blur(14px)",
                     borderBottom: `1px solid ${compacto ? S.linha : "transparent"}`, opacity: compacto ? 1 : 0, pointerEvents: compacto ? "auto" : "none", transition: "opacity .18s ease" }}>
         {onBack && (
           <button onClick={onBack} tabIndex={compacto ? 0 : -1} aria-label={`Voltar para ${backLabel}`} className="w-11 h-11 rounded-full flex items-center justify-center shrink-0">
@@ -169,7 +169,7 @@ function Faixa({ tom, bloco, bleed = 24, onBack, backLabel, eyebrow, titulo, tit
           <div className="flex items-center justify-between gap-3" style={{ marginBottom: 14 }}>
             {onBack ? (
               <button onClick={onBack} aria-label={`Voltar para ${backLabel}`} className="flex items-center gap-2.5 min-w-0">
-                <span className="w-11 h-11 rounded-full flex items-center justify-center shrink-0" style={{ background: "#FFFFFF", boxShadow: "0 1px 3px rgba(17,24,39,.08)" }}>
+                <span className="w-11 h-11 rounded-full flex items-center justify-center shrink-0" style={{ background: "#FFFDF9", boxShadow: "0 1px 3px rgba(31,30,26,.08)" }}>
                   <BackIcon size={18} color={S.ink} />
                 </span>
                 <span style={{ fontFamily: F.ui, fontSize: 16, color: S.texto2 }}>{backLabel}</span>
@@ -179,7 +179,7 @@ function Faixa({ tom, bloco, bleed = 24, onBack, backLabel, eyebrow, titulo, tit
           </div>
         )}
         <div className="flex items-start justify-between gap-3"
-             style={azul ? { background: S.marca, borderRadius: 24, padding: 22, boxShadow: "0 10px 24px rgba(30,58,95,.22)" } : undefined}>
+             style={azul ? { background: S.marca, borderRadius: 24, padding: 22, boxShadow: "0 10px 24px rgba(31,30,26,.22)" } : undefined}>
           <div className="min-w-0">
             {eyebrow && <p style={{ fontFamily: F.ui, fontSize: 16, color: azul ? S.marcaTexto2 : S.texto2, lineHeight: 1.35 }}>{eyebrow}</p>}
             <h1 style={{ fontFamily: F.display, fontSize: tituloSize, fontWeight: 600, lineHeight: 1.1, letterSpacing: "-0.025em", color: azul ? "#FFFFFF" : S.ink, marginTop: eyebrow ? 4 : 0, textWrap: "balance" }}>{titulo}</h1>
@@ -225,7 +225,7 @@ function Toggle({ on, onChange, label }) {
   return (
     <button role="switch" aria-checked={on} aria-label={label} onClick={onChange}
             className="w-[51px] h-[31px] rounded-full p-[2px] flex shrink-0 transition-colors"
-            style={{ background: on ? T.brass : "rgba(27,36,48,0.18)", justifyContent: on ? "flex-end" : "flex-start" }}>
+            style={{ background: on ? T.brass : "rgba(31,30,26,0.18)", justifyContent: on ? "flex-end" : "flex-start" }}>
       <span className="w-[27px] h-[27px] rounded-full bg-white" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }} />
     </button>
   );
@@ -249,7 +249,7 @@ function Botao({ variante = "primario", children, onClick, disabled, loading, fu
     destrutivo: { background: S.cartao, color: S.risco, boxShadow: `inset 0 0 0 1.5px ${S.risco}` },
     ia: { background: S.iaFundo, color: S.ia },
   }[variante];
-  const off = disabled ? { background: "#E5E7E8", color: "#6A7075", boxShadow: "none" } : {};
+  const off = disabled ? { background: "#E5E7E8", color: "#6B675E", boxShadow: "none" } : {};
   return (
     <button onClick={onClick} disabled={disabled || loading} className="guia-btn" style={{ ...base, ...v, ...off }}>
       {loading && <span className="guia-spin" aria-hidden="true" style={{ borderColor: v.color, borderTopColor: "transparent" }} />}
@@ -269,7 +269,7 @@ function Secao({ titulo, nota, children }) {
 }
 
 function Cartao({ children, style }) {
-  return <div style={{ background: S.cartao, borderRadius: 24, padding: 18, boxShadow: "0 1px 2px rgba(22,32,43,.06), 0 4px 14px rgba(22,32,43,.05)", ...style }}>{children}</div>;
+  return <div style={{ background: S.cartao, borderRadius: 24, padding: 18, boxShadow: "0 1px 2px rgba(40,34,24,.06), 0 4px 14px rgba(40,34,24,.05)", ...style }}>{children}</div>;
 }
 
 export { BackHeader, Badge, Botao, CardRow, Cartao, Etiqueta, Faixa, InfoLinha, KPIs, LinhaLista, Row, SecLabel, Secao, Sparkline, StatusBar, TabBar, Toggle };

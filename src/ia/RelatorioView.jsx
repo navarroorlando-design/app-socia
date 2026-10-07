@@ -45,7 +45,7 @@ function BlocoBarras({ b }) {
         {itens.map((it, i) => (
           <div key={i} className="flex items-center gap-3">
             <span className="text-[14px] w-[96px] shrink-0 leading-tight">{it.rotulo}</span>
-            <div className="flex-1 h-2 rounded-full" style={{ background: "rgba(27,36,48,0.08)" }}>
+            <div className="flex-1 h-2 rounded-full" style={{ background: "rgba(31,30,26,0.08)" }}>
               <div className="h-2 rounded-full" style={{ width: `${Math.max(2, ((Number(it.valor) || 0) / max) * 100)}%`, background: i === 0 ? T.brass : T.slate }} />
             </div>
             <span className="text-[14px] w-[84px] text-right whitespace-nowrap" style={{ color: S.ink, fontVariantNumeric: "tabular-nums" }}>{fmtValorCurto(it.valor, b.unidade)}</span>
@@ -84,7 +84,7 @@ function RelatorioView({ spec }) {
         {spec.blocos.map((b, i) => {
           if (b.tipo === "destaque") return (
             <div key={i} style={{ background: S.ink, borderRadius: 20, padding: 20, color: "#FFFFFF" }}>
-              <p style={{ fontFamily: F.ui, fontSize: 15, fontWeight: 600, color: "#C9CED3" }}>{b.rotulo}</p>
+              <p style={{ fontFamily: F.ui, fontSize: 15, fontWeight: 600, color: "#CDC7BB" }}>{b.rotulo}</p>
               <p style={{ fontFamily: F.display, letterSpacing: "-0.02em", fontSize: 40, fontWeight: 600, lineHeight: 1, marginTop: 6, fontVariantNumeric: "tabular-nums" }}>{fmtValor(b.valor, b.unidade)}</p>
             </div>
           );

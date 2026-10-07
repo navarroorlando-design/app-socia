@@ -33,7 +33,7 @@ function NotificacoesCentral({ notifs, onOpen, onMarkAll, onBack }) {
                sub={
                  <div className="flex flex-col items-start gap-2 mt-1">
                    <span>{unread === 0 ? "Tudo lido" : unread === 1 ? "1 não lida" : `${unread} não lidas`}</span>
-                   <div className="flex gap-1 p-1 rounded-full mt-1" style={{ background: "#FFFFFF", boxShadow: "0 1px 3px rgba(17,24,39,.08)" }}>
+                   <div className="flex gap-1 p-1 rounded-full mt-1" style={{ background: "#FFFDF9", boxShadow: "0 1px 3px rgba(31,30,26,.08)" }}>
                      {[["todas", "Todas"], ["nao-lidas", "Não lidas"]].map(([id, label]) => (
                        <button key={id} onClick={() => setFilter(id)} aria-pressed={filter === id} className="text-[15px] px-4 py-2 rounded-full whitespace-nowrap font-semibold"
                                style={filter === id ? { background: S.ink, color: "#FFFFFF" } : { color: S.ink }}>{label}</button>
@@ -110,7 +110,7 @@ function NotifPrefs({ onBack }) {
         {prefs.resumo && (
           <div className="flex items-center justify-between py-4">
             <p className="text-[17px]">Horário</p>
-            <span className="text-[17px] px-3 py-1.5 rounded-lg" style={{ background: "#FFFFFF", fontVariantNumeric: "tabular-nums" }}>8:00</span>
+            <span className="text-[17px] px-3 py-1.5 rounded-lg" style={{ background: "#FFFDF9", fontVariantNumeric: "tabular-nums" }}>8:00</span>
           </div>
         )}
 

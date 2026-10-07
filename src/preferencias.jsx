@@ -29,7 +29,7 @@ function Avatar({ foto, size = 44, badge = 0, claro = false }) {
       )}
       {badge > 0 && (
         <span className="absolute flex items-center justify-center rounded-full"
-              style={{ top: -3, right: -3, minWidth: 22, height: 22, padding: "0 5px", background: S.risco, color: "#FFFFFF", fontFamily: F.ui, fontSize: 12, fontWeight: 700, border: `2px solid ${claro ? "#1E3A5F" : S.papel}` }}>
+              style={{ top: -3, right: -3, minWidth: 22, height: 22, padding: "0 5px", background: S.risco, color: "#FFFFFF", fontFamily: F.ui, fontSize: 12, fontWeight: 700, border: `2px solid ${claro ? "#1F1E1A" : S.papel}` }}>
           {badge}
         </span>
       )}
@@ -54,7 +54,7 @@ function OuvirBtn({ texto }) {
   };
   return (
     <button onClick={alternar} className="mt-3 inline-flex items-center gap-2 rounded-full"
-            style={{ background: "#FFFFFF", color: S.ink, fontFamily: F.ui, fontSize: 15, fontWeight: 600, height: 40, padding: "0 16px" }}>
+            style={{ background: "#FFFDF9", color: S.ink, fontFamily: F.ui, fontSize: 15, fontWeight: 600, height: 40, padding: "0 16px" }}>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={S.ink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         {falando ? <path d="M8 5v14M16 5v14" /> : <><path d="M11 5 6 9H3v6h3l5 4Z" /><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" /></>}
       </svg>

@@ -59,7 +59,7 @@ function OsPerfil({ orgId, onBack, sample, onAsk }) {
       <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 150 }}>
         <Faixa bleed={32} bloco onBack={onBack} backLabel="Organizações"
                eyebrow={`${o.name} · bloqueado hoje`} titulo={o.bloqueado} tituloCompacto={o.name} tituloSize={40} sub={`${o.processos} processos na base`}
-               aside={<span className="w-14 h-14 rounded-full flex items-center justify-center shrink-0" style={{ background: "#FFFFFF", color: S.marca, fontFamily: F.display, fontSize: 18, fontWeight: 600 }}>{o.initials}</span>}>
+               aside={<span className="w-14 h-14 rounded-full flex items-center justify-center shrink-0" style={{ background: "#FFFDF9", color: S.marca, fontFamily: F.display, fontSize: 18, fontWeight: 600 }}>{o.initials}</span>}>
           <KPIs itens={[
             ["Processos", String(o.processos)],
             ["Bloqueios", String(BLOQUEIOS_LISTA.filter((b) => b.clienteId === orgId && b.status === "Ativo").length)],

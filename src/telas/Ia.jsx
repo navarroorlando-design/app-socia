@@ -20,7 +20,7 @@ function AskBar({ value, onChange, onSubmit, placeholder, disabled, scopeLabel }
                className="flex-1 bg-transparent outline-none text-[17px] py-1.5 min-w-0" style={{ color: T.ink }} aria-label="Pergunta para a IA" />
         <button type="submit" disabled={disabled || !value.trim()} aria-label="Enviar pergunta"
                 className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-                style={{ background: value.trim() && !disabled ? T.brass : "rgba(27,36,48,0.08)" }}>
+                style={{ background: value.trim() && !disabled ? T.brass : "rgba(31,30,26,0.08)" }}>
           <SendIcon color={value.trim() && !disabled ? "white" : T.muted} size={16} />
         </button>
       </div>
@@ -140,7 +140,7 @@ function IaReport({ job, isPinned, onTogglePin, onStop, onRetry, onRefresh, onBa
 
       <div className="absolute bottom-0 left-0 right-0 px-6 pb-7 pt-5 flex flex-col gap-2" style={{ background: `linear-gradient(to top, ${T.paper} 70%, transparent)` }}>
         {pensando && (
-          <button onClick={onStop} className="w-full py-3.5 rounded-full text-[16px] font-medium" style={{ background: "#FFFFFF", color: T.ink }}>Parar</button>
+          <button onClick={onStop} className="w-full py-3.5 rounded-full text-[16px] font-medium" style={{ background: "#FFFDF9", color: T.ink }}>Parar</button>
         )}
         {job.status === "done" && (
           <>

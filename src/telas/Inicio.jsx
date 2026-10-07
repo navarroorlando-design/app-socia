@@ -43,16 +43,28 @@ function InicioFeed({ onOpenList, onOpenOrg, followedItems, onOpenProcesso, onOp
   const pctLevantado = Math.round((levantado / (levantado + TOTAIS.bloqueadoAtivo)) * 100);
   const ativos = BLOQUEIOS_LISTA.filter((b) => b.status === "Ativo").length;
 
-  const Atalho = ({ icone, rotulo, detalhe, onClick, ia }) => (
-    <button onClick={onClick} className="flex flex-col items-start text-left min-w-0"
-            style={{ ...CARD, background: ia ? S.iaFundo : S.cartao, boxShadow: ia ? "none" : CARD.boxShadow, padding: 14, gap: 10 }}>
-      <span className="flex items-center justify-center shrink-0" style={{ width: 42, height: 42, borderRadius: 999, background: ia ? "#FFFFFF" : "#EEF1F6" }}>{icone}</span>
-      <span className="min-w-0">
-        <span className="block" style={{ fontFamily: F.ui, fontSize: 17, fontWeight: 600, color: ia ? S.ia : S.ink }}>{rotulo}</span>
-        <span className="block" style={{ fontFamily: F.ui, fontSize: 14, color: ia ? S.ia : S.texto2, marginTop: 2, lineHeight: 1.3 }}>{detalhe}</span>
-      </span>
-    </button>
-  );
+  // Tons da família neutra: cada atalho num tom, o latão fica só para a IA.
+  const TONS_ATALHO = {
+    cartao: { fundo: S.cartao, titulo: S.ink, apoio: S.texto2, circulo: "#EFEBE2", sombra: true },
+    osso: { fundo: S.osso, titulo: S.ink, apoio: S.ossoTexto2, circulo: "rgba(255,253,249,.55)" },
+    oliva: { fundo: S.oliva, titulo: "#FFFFFF", apoio: "#E6E1D6", circulo: "rgba(255,255,255,.14)" },
+    ia: { fundo: S.ia, titulo: "#FFFFFF", apoio: S.iaFundo, circulo: "rgba(255,255,255,.16)" },
+  };
+  const Atalho = ({ Icone, rotulo, detalhe, onClick, tom = "cartao" }) => {
+    const t = TONS_ATALHO[tom];
+    return (
+      <button onClick={onClick} className="flex flex-col items-start text-left min-w-0"
+              style={{ ...CARD, background: t.fundo, boxShadow: t.sombra ? CARD.boxShadow : "none", padding: 14, gap: 10 }}>
+        <span className="flex items-center justify-center shrink-0" style={{ width: 42, height: 42, borderRadius: 999, background: t.circulo }}>
+          <Icone size={22} color={t.titulo} strokeWidth={1.8} />
+        </span>
+        <span className="min-w-0">
+          <span className="block" style={{ fontFamily: F.ui, fontSize: 17, fontWeight: 600, color: t.titulo }}>{rotulo}</span>
+          <span className="block" style={{ fontFamily: F.ui, fontSize: 14, color: t.apoio, marginTop: 2, lineHeight: 1.3 }}>{detalhe}</span>
+        </span>
+      </button>
+    );
+  };
 
   return (
     <div className="flex-1 overflow-y-auto no-scrollbar px-6" style={{ paddingBottom: 120 }}>
@@ -69,7 +81,7 @@ function InicioFeed({ onOpenList, onOpenOrg, followedItems, onOpenProcesso, onOp
       </div>
 
       {/* cartão principal em marinho: valor bloqueado e quanto já foi levantado */}
-      <div className="mt-6" style={{ borderRadius: CARD.borderRadius, background: S.marca, padding: 22, boxShadow: "0 10px 24px rgba(30,58,95,.22)" }}>
+      <div className="mt-6" style={{ borderRadius: CARD.borderRadius, background: S.marca, padding: 22, boxShadow: "0 10px 24px rgba(31,30,26,.22)" }}>
         <p style={{ fontFamily: F.ui, fontSize: 15, color: S.marcaTexto2 }}>Bloqueado hoje, todos os clientes</p>
         <p style={{ fontFamily: F.ui, fontSize: 36, fontWeight: 600, color: "#FFFFFF", letterSpacing: "-0.03em", lineHeight: 1.1, marginTop: 6, fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>{fmtBRL(TOTAIS.bloqueadoAtivo)}</p>
         <div className="flex items-end justify-between gap-3 mt-4">
@@ -90,10 +102,10 @@ function InicioFeed({ onOpenList, onOpenOrg, followedItems, onOpenProcesso, onOp
 
       {/* atalhos em grade 2×2 */}
       <div className="grid grid-cols-2 gap-3 mt-4">
-        <Atalho rotulo="Buscar" detalhe="Processo, cliente ou número" onClick={onOpenBusca} icone={<SearchIcon size={22} color={S.ink} />} />
-        <Atalho rotulo="Sigo" detalhe={`${followedItems.length} processos`} onClick={onOpenAcompanhando} icone={<StarIcon size={21} color={S.ink} />} />
-        <Atalho rotulo="Bloqueios" detalhe={`${ativos} ativos`} onClick={() => onOpenList("bloqueios")} icone={<LockIcon size={22} color={S.ink} />} />
-        <Atalho rotulo="Perguntar" detalhe="Relatórios com a IA" onClick={onPerguntar} ia icone={<SparkleIcon size={22} color={S.ia} strokeWidth={1.9} />} />
+        <Atalho rotulo="Bloqueios" detalhe={`${ativos} ativos`} onClick={() => onOpenList("bloqueios")} Icone={LockIcon} tom="oliva" />
+        <Atalho rotulo="Sigo" detalhe={`${followedItems.length} processos`} onClick={onOpenAcompanhando} Icone={StarIcon} tom="osso" />
+        <Atalho rotulo="Buscar" detalhe="Processo, cliente ou número" onClick={onOpenBusca} Icone={SearchIcon} />
+        <Atalho rotulo="Perguntar" detalhe="Relatórios com a IA" onClick={onPerguntar} Icone={SparkleIcon} tom="ia" />
       </div>
 
       {preview.length > 0 && (

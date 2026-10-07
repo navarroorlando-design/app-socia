@@ -16,7 +16,7 @@ function MenuVA({ unread, followedCount, onClose, onNotificacoes, onAcompanhando
   );
   return (
     <div className="absolute inset-0" style={{ zIndex: 60 }}>
-      <button aria-label="Fechar menu" onClick={onClose} className="absolute inset-0" style={{ background: "rgba(22,32,43,.38)" }} />
+      <button aria-label="Fechar menu" onClick={onClose} className="absolute inset-0" style={{ background: "rgba(40,34,24,.38)" }} />
       <div role="dialog" aria-label="Menu da conta" className="guia-sheet absolute left-0 right-0 bottom-0" style={{ background: S.cartao, borderRadius: "24px 24px 0 0", padding: "10px 24px 36px" }}>
         <div className="mx-auto" style={{ width: 40, height: 5, borderRadius: 3, background: S.linha }} />
         <div className="flex items-center gap-3 mt-4 mb-2">
@@ -70,7 +70,7 @@ function PerfilUsuaria({ onOpenNotifPrefs, onOpenPasta, pinnedCount, onOpenGuia,
       <div className="flex-1 overflow-y-auto no-scrollbar px-6" style={{ paddingBottom: 120 }}>
         <Faixa eyebrow="Sua conta" titulo="Perfil" tituloSize={36}>
         {/* identidade no bloco marinho, como o cartão principal do Início */}
-        <div className="flex items-center gap-4" style={{ background: S.marca, borderRadius: 24, padding: 22, boxShadow: "0 10px 24px rgba(30,58,95,.22)" }}>
+        <div className="flex items-center gap-4" style={{ background: S.marca, borderRadius: 24, padding: 22, boxShadow: "0 10px 24px rgba(31,30,26,.22)" }}>
           <Avatar foto={foto} size={72} claro />
           <div className="min-w-0">
             <p style={{ fontFamily: F.display, letterSpacing: "-0.02em", fontSize: 24, fontWeight: 600, color: "#FFFFFF", lineHeight: 1.15 }}>{apelido || "Sócia"}</p>
@@ -87,9 +87,9 @@ function PerfilUsuaria({ onOpenNotifPrefs, onOpenPasta, pinnedCount, onOpenGuia,
           <label htmlFor="apelido" className="block mt-5" style={rotulo}>Como prefere ser chamada</label>
           <div className="flex gap-2 mt-2">
             <input id="apelido" value={rascunho} onChange={(e) => setRascunho(e.target.value)} placeholder="Ex.: Dra. Vanessa" maxLength={30}
-                   className="flex-1 min-w-0 outline-none" style={{ height: 50, borderRadius: 14, padding: "0 14px", fontFamily: F.ui, fontSize: 17, color: S.ink, background: "#FFFFFF", boxShadow: `inset 0 0 0 1.5px #9CA3AF` }} />
+                   className="flex-1 min-w-0 outline-none" style={{ height: 50, borderRadius: 14, padding: "0 14px", fontFamily: F.ui, fontSize: 17, color: S.ink, background: "#FFFDF9", boxShadow: `inset 0 0 0 1.5px #9A958A` }} />
             <button onClick={salvarApelido} disabled={rascunho.trim() === apelido}
-                    style={{ height: 50, borderRadius: 14, padding: "0 18px", fontFamily: F.ui, fontSize: 17, fontWeight: 600, background: rascunho.trim() === apelido ? "#E5E7E8" : S.ink, color: rascunho.trim() === apelido ? "#6A7075" : "#FFFFFF" }}>
+                    style={{ height: 50, borderRadius: 14, padding: "0 18px", fontFamily: F.ui, fontSize: 17, fontWeight: 600, background: rascunho.trim() === apelido ? "#E6E1D6" : S.ink, color: rascunho.trim() === apelido ? "#6B675E" : "#FFFFFF" }}>
               Salvar
             </button>
           </div>

@@ -38,7 +38,7 @@ function BuscaGlobal({ q, setQ, onBack, onOpenProcesso, onOpenBloqueio, onOpenOr
             <SecLabel>Sugestões</SecLabel>
             <div className="flex flex-wrap gap-2">
               {["AFNE", "Gnosis", "trabalhista", "SISBAJUD", "Niterói"].map((s) => (
-                <button key={s} onClick={() => setQ(s)} className="text-[15px] px-3 py-1.5 rounded-full" style={{ background: "#FFFFFF" }}>{s}</button>
+                <button key={s} onClick={() => setQ(s)} className="text-[15px] px-3 py-1.5 rounded-full" style={{ background: "#FFFDF9" }}>{s}</button>
               ))}
             </div>
           </>

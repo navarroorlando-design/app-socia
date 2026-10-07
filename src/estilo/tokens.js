@@ -3,12 +3,12 @@
 /* Tokens visuais compartilhados por todas as telas                    */
 /* ------------------------------------------------------------------ */
 const T = {
-  ink: "#111827",
-  paper: "#F2F3F7",
+  ink: "#1A1916",
+  paper: "#F2EFE9",
   brass: "#765614",
   slate: "#245476",
-  hairline: "#E3E5EA",
-  muted: "#4B5563",
+  hairline: "#E6E1D6",
+  muted: "#57544C",
   brick: "#9B2A1C",
 };
 
@@ -19,15 +19,15 @@ const STATUS_SEM_ID = {
 
 const semDe = (status) => SEMANTICA.find((x) => x.id === (STATUS_SEM_ID[status] || "inativo"));
 
-const CARD = { background: "#FFFFFF", borderRadius: 24, boxShadow: "0 1px 2px rgba(22,32,43,.06), 0 4px 14px rgba(22,32,43,.05)" };
+const CARD = { background: "#FFFDF9", borderRadius: 24, boxShadow: "0 1px 2px rgba(40,34,24,.06), 0 4px 14px rgba(40,34,24,.05)" };
 
-const LINK = { color: "#111827", fontWeight: 600, textDecoration: "underline", textUnderlineOffset: 4 };
+const LINK = { color: "#1A1916", fontWeight: 600, textDecoration: "underline", textUnderlineOffset: 4 };
 
 /* ------------------------------------------------------------------ */
 /* Faixa do topo: título ancorado numa faixa de cor                    */
 /* ------------------------------------------------------------------ */
 const TONS = {
-  marinho:   { a: "#1E3A5F", b: "#14243A", sub: "#D3DCE8" },
+  marinho:   { a: "#1F1E1A", b: "#14243A", sub: "#D8CFBC" },
   risco:     { a: "#8E2618", b: "#6A1C12", sub: "#F6D9D3" },
   resolvido: { a: "#1F5A3A", b: "#16422B", sub: "#D3EBDD" },
   atencao:   { a: "#7A4A00", b: "#5C3800", sub: "#F6E3C2" },
@@ -42,15 +42,16 @@ const tomDeStatus = (status) => STATUS_SEM_ID[status] || "inativo";
 /* Contrastes medidos pela fórmula WCAG 2.1                            */
 /* ------------------------------------------------------------------ */
 const S = {
-  papel: "#F2F3F7", cartao: "#FFFFFF", linha: "#E3E5EA",
-  ink: "#111827", texto2: "#4B5563",
+  papel: "#F2EFE9", cartao: "#FFFDF9", linha: "#E6E1D6",
+  ink: "#1A1916", texto2: "#57544C",
   ia: "#765614", iaFundo: "#F2E8D3", iaIcone: "#96763A",
   risco: "#9B2A1C", riscoFundo: "#F7E0DA",
   resolvido: "#24603F", resolvidoFundo: "#DCEEE3",
   atencao: "#835000", atencaoFundo: "#F6E6C6",
   curso: "#245476", cursoFundo: "#DBE7F1",
   inativo: "#4F565B", inativoFundo: "#E5E7E8",
-  marca: "#1E3A5F", marcaTexto2: "#D3DCE8", marcaTrilho: "rgba(255,255,255,.18)",
+  marca: "#1F1E1A", marcaTexto2: "#D8CFBC", marcaTrilho: "rgba(255,255,255,.18)",
+  oliva: "#565449", osso: "#D8CFBC", ossoTexto2: "#4A473F",
 };
 
 const F = {

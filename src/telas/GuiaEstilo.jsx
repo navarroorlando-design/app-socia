@@ -104,7 +104,7 @@ function GuiaEstilo({ onBack }) {
         <Secao titulo="Cartões coloridos" nota="A cor do cartão sempre quer dizer algo. Branco é o padrão; os outros três aparecem só quando têm motivo.">
           <div className="flex flex-col gap-3">
             <div style={{ background: S.ink, borderRadius: 20, padding: 20, color: "#FFFFFF" }}>
-              <p style={{ fontFamily: F.ui, fontSize: 15, fontWeight: 600, color: "#C9CED3" }}>Escuro · o número principal da tela</p>
+              <p style={{ fontFamily: F.ui, fontSize: 15, fontWeight: 600, color: "#CDC7BB" }}>Escuro · o número principal da tela</p>
               <p style={{ fontFamily: F.display, letterSpacing: "-0.02em", fontSize: 34, fontWeight: 500, marginTop: 4 }}>3 processos</p>
               <p style={{ fontFamily: F.ui, fontSize: 15, color: "#E4E7EA", marginTop: 4 }}>No máximo um por tela.</p>
             </div>
@@ -246,7 +246,7 @@ function GuiaEstilo({ onBack }) {
       {/* toast */}
       {toast && (
         <div className="absolute left-6 right-6 flex justify-center" style={{ bottom: 36, zIndex: 40 }} role="status" aria-live="polite">
-          <div className="guia-toast inline-flex items-center gap-2" style={{ background: S.ink, color: "#FFFFFF", fontFamily: F.ui, fontSize: 16, fontWeight: 600, padding: "13px 18px", borderRadius: 14, boxShadow: "0 8px 24px rgba(22,32,43,.25)" }}>
+          <div className="guia-toast inline-flex items-center gap-2" style={{ background: S.ink, color: "#FFFFFF", fontFamily: F.ui, fontSize: 16, fontWeight: 600, padding: "13px 18px", borderRadius: 14, boxShadow: "0 8px 24px rgba(40,34,24,.25)" }}>
             <IconeSem tipo="check" cor="#7FD3A4" size={17} />{toast}
           </div>
         </div>
@@ -255,7 +255,7 @@ function GuiaEstilo({ onBack }) {
       {/* bottom sheet */}
       {sheet && (
         <div className="absolute inset-0" style={{ zIndex: 50 }}>
-          <button aria-label="Fechar painel" onClick={() => setSheet(false)} className="absolute inset-0" style={{ background: "rgba(22,32,43,.38)" }} />
+          <button aria-label="Fechar painel" onClick={() => setSheet(false)} className="absolute inset-0" style={{ background: "rgba(40,34,24,.38)" }} />
           <div role="dialog" aria-label="Filtros" className="guia-sheet absolute left-0 right-0 bottom-0" style={{ background: S.cartao, borderRadius: "24px 24px 0 0", padding: "10px 24px 34px" }}>
             <div className="mx-auto" style={{ width: 40, height: 5, borderRadius: 3, background: S.linha }} />
             <h3 style={{ fontFamily: F.display, letterSpacing: "-0.02em", fontSize: 24, fontWeight: 500, color: S.ink, marginTop: 14 }}>Filtrar processos</h3>
