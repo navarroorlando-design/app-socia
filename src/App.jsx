@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { StatusBar, TabBar } from "./componentes/ui";
-import { BLOQUEIOS_LISTA, CLIENTE_NOME, ORG_ORDER, PROCESSOS_LISTA } from "./dados/base";
+import { BLOQUEIOS_LISTA, CLIENTE_NOME, ORGS, ORG_ORDER, PROCESSOS_LISTA } from "./dados/base";
 import { GlobalStyle } from "./estilo/GlobalStyle";
 import { T, tomDeStatus } from "./estilo/tokens";
 import { PINNED_INICIAIS, erroTexto, gerarRelatorio, useSample } from "./ia/motor";
@@ -12,6 +12,7 @@ import { IaAsk, IaReport, PastaRelatorios } from "./telas/Ia";
 import { AcompanhandoLista, InicioFeed, ListaGenerica } from "./telas/Inicio";
 import { INITIAL_NOTIFS, NotifPrefs, NotificacoesCentral } from "./telas/Notificacoes";
 import { OsLista, OsPerfil } from "./telas/Organizacoes";
+import { BloqueiosOrg, ContratoDetalhe, ContratosOrg, ProcessosOrg } from "./telas/OrgMetricas";
 import { MenuVA, OrdemClientes, PerfilUsuaria } from "./telas/Perfil";
 import { ProcessoDetalhe } from "./telas/ProcessoDetalhe";
 
@@ -22,6 +23,10 @@ function AppSociosPrototype() {
   const [inicioView, setInicioView] = useState("feed");
   const [osView, setOsView] = useState("list");
   const [selectedOrg, setSelectedOrg] = useState("afne");
+  // Telas da organização: contratos, contrato, bloqueios, processos e os detalhes abertos a partir delas.
+  const [selectedContrato, setSelectedContrato] = useState(null);
+  const [contratoOrigin, setContratoOrigin] = useState("profile");
+  const [osDetalheOrigin, setOsDetalheOrigin] = useState("profile");
   const [iaView, setIaView] = useState("ask");
   const [perfilView, setPerfilView] = useState(abrirGuia ? "guia" : "main");
 
@@ -67,6 +72,12 @@ function AppSociosPrototype() {
     if (t === "perfil") setPerfilView("main");
   };
   const openOrg = (id) => { setSelectedOrg(id); setTab("os"); setOsView("profile"); };
+  const openContrato = (orgao, origem) => { setSelectedContrato(orgao); setContratoOrigin(origem); setOsView("contrato"); };
+  const openOsDetalhe = (tipo, item, origem) => {
+    if (tipo === "processo") setSelectedProcesso(item); else setSelectedBloqueio(item);
+    setOsDetalheOrigin(origem); setOsView(tipo);
+  };
+  const osLabels = { profile: ORGS[selectedOrg]?.name, contratos: "Contratos de gestão", contrato: selectedContrato, bloqueios: "Bloqueios", processos: "Processos", bloqueio: "Bloqueio" };
 
   /* ---- IA ---- */
   const ask = async (question, clienteId = null, extra = {}) => {
@@ -188,7 +199,33 @@ function AppSociosPrototype() {
 
         {tab === "os" && osView === "list" && <OsLista onOpenOrg={openOrg} ordem={ordem} />}
         {tab === "os" && osView === "profile" && (
-          <OsPerfil orgId={selectedOrg} onBack={() => setOsView("list")} sample={sample} onAsk={(q) => ask(q, selectedOrg)} />
+          <OsPerfil orgId={selectedOrg} onBack={() => setOsView("list")} sample={sample} onAsk={(q) => ask(q, selectedOrg)}
+            onOpenContratos={() => setOsView("contratos")} onOpenContrato={(c) => openContrato(c, "profile")}
+            onOpenBloqueios={() => setOsView("bloqueios")} onOpenProcessos={() => setOsView("processos")} />
+        )}
+        {tab === "os" && osView === "contratos" && (
+          <ContratosOrg orgId={selectedOrg} onBack={() => setOsView("profile")} onOpenContrato={(c) => openContrato(c, "contratos")} />
+        )}
+        {tab === "os" && osView === "contrato" && selectedContrato && (
+          <ContratoDetalhe key={selectedContrato} orgId={selectedOrg} orgao={selectedContrato} onBack={() => setOsView(contratoOrigin)} backLabel={osLabels[contratoOrigin]}
+            onOpenProcesso={(p) => openOsDetalhe("processo", p, "contrato")} onOpenBloqueio={(b) => openOsDetalhe("bloqueio", b, "contrato")} />
+        )}
+        {tab === "os" && osView === "bloqueios" && (
+          <BloqueiosOrg orgId={selectedOrg} onBack={() => setOsView("profile")} onOpenContrato={(c) => openContrato(c, "bloqueios")}
+            onOpenBloqueio={(b) => openOsDetalhe("bloqueio", b, "bloqueios")} />
+        )}
+        {tab === "os" && osView === "processos" && (
+          <ProcessosOrg orgId={selectedOrg} onBack={() => setOsView("profile")} onOpenContrato={(c) => openContrato(c, "processos")}
+            onOpenProcesso={(p) => openOsDetalhe("processo", p, "processos")} />
+        )}
+        {tab === "os" && osView === "processo" && selectedProcesso && (
+          <ProcessoDetalhe key={selectedProcesso.id} processo={selectedProcesso} sample={sample}
+            isFollowing={followed.has(selectedProcesso.id)} onToggleFollow={() => toggleFollow(selectedProcesso.id)}
+            onBack={() => setOsView(osDetalheOrigin)} backLabel={osLabels[osDetalheOrigin]} />
+        )}
+        {tab === "os" && osView === "bloqueio" && selectedBloqueio && (
+          <BloqueioDetalhe bloqueio={selectedBloqueio} backLabel={osLabels[osDetalheOrigin]} onBack={() => setOsView(osDetalheOrigin)}
+            onOpenProcesso={(p) => openOsDetalhe("processo", p, "bloqueio")} />
         )}
 
         {tab === "ia" && iaView === "ask" && <IaAsk onAsk={(q) => ask(q)} sample={sample} />}

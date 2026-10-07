@@ -20,19 +20,19 @@ const ORGS = {
   gnosis: {
     name: "Instituto Gnosis", initials: "IG", processos: 91,
     bloqueado: "R$ 1.240.000", bloqueadoCurto: "R$ 1,24 mi",
-    contratos: [{ orgao: "Município do Rio de Janeiro", vigencia: "2022–2026" }],
+    contratos: [{ orgao: "Município do Rio de Janeiro", vigencia: "2022–2026" }, { orgao: "Município de Duque de Caxias", vigencia: "2023–2027" }],
     feed: [{ text: "Decisão interlocutória publicada", time: "40 min", color: T.brass }],
   },
   fas: {
     name: "FAS", initials: "FA", processos: 91,
     bloqueado: "R$ 640.000", bloqueadoCurto: "R$ 640k",
-    contratos: [{ orgao: "Estado do Rio de Janeiro", vigencia: "2020–2026" }],
+    contratos: [{ orgao: "Estado do Rio de Janeiro", vigencia: "2020–2026" }, { orgao: "Município de São Gonçalo", vigencia: "2019–2024" }],
     feed: [{ text: "Nova reclamação constitucional protocolada no STF", time: "ontem", color: T.brick }],
   },
   igedes: {
     name: "IGEDES", initials: "IGD", processos: 34,
     bloqueado: "R$ 210.000", bloqueadoCurto: "R$ 210k",
-    contratos: [{ orgao: "Município de Niterói", vigencia: "2024–2028" }],
+    contratos: [{ orgao: "Município de Niterói", vigencia: "2024–2028" }, { orgao: "Município de Maricá", vigencia: "2025–2029" }],
     feed: [{ text: "Processo administrativo movimentado", time: "2 dias", color: T.slate }],
   },
 };
@@ -64,9 +64,9 @@ const CLIENTE_NOME = { afne: "AFNE", gnosis: "Instituto Gnosis", fas: "FAS", ige
 
 const CONTRATOS = {
   afne: ["Município de Nova Iguaçu", "Município de Niterói"],
-  gnosis: ["Município do Rio de Janeiro"],
-  fas: ["Estado do Rio de Janeiro"],
-  igedes: ["Município de Niterói"],
+  gnosis: ["Município do Rio de Janeiro", "Município de Duque de Caxias"],
+  fas: ["Estado do Rio de Janeiro", "Município de São Gonçalo"],
+  igedes: ["Município de Niterói", "Município de Maricá"],
 };
 
 const PESO_CLIENTE = [["afne", 14], ["gnosis", 20], ["fas", 16], ["igedes", 8]];
@@ -158,6 +158,18 @@ const BLOQUEIOS_LISTA = [
 
 BLOQUEIOS_LISTA.sort((a, b) => b.data - a.data);
 
+/* Valor em discussão e prognóstico de cada processo (base para o passivo por contrato).
+   Usa um gerador próprio por processo para não alterar a sequência do resto da base.
+   Em produção: "valor da causa" e "prognóstico" do Legal One. */
+const PROGNOSTICOS = [["Provável", 35], ["Possível", 45], ["Remoto", 20]];
+for (const p of PROCESSOS_LISTA) {
+  const r = rng([...p.id].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7));
+  const faixa = { Trabalhista: [15, 180], Cível: [30, 600], Administrativo: [20, 400], Constitucional: null }[p.area];
+  p.valorCausa = faixa ? Math.round((faixa[0] + r() * (faixa[1] - faixa[0])) * 1000 / 100) * 100 : 0;
+  let x = r() * 100;
+  p.prognostico = PROGNOSTICOS.find(([, w]) => (x -= w) < 0)[0];
+}
+
 /* Totais derivados da base, usados nas telas fixas */
 const TOTAIS = (() => {
   const ativo = BLOQUEIOS_LISTA.filter((b) => b.status === "Ativo");
@@ -187,4 +199,4 @@ const RECLAMACOES_LISTA = [
   { cliente: "AFNE", desc: "Reclamação constitucional (ADPF 664)", status: "Julgada" },
 ];
 
-export { BLOQUEIOS_LISTA, CLIENTE_NOME, ORGS, ORG_ORDER, OUTRAS_ORGS, PROCESSOS_LISTA, RECLAMACOES_LISTA, TOTAIS };
+export { BLOQUEIOS_LISTA, CLIENTE_NOME, CONTRATOS, ORGS, ORG_ORDER, OUTRAS_ORGS, PROCESSOS_LISTA, RECLAMACOES_LISTA, TOTAIS };

@@ -1,10 +1,13 @@
 import React, { useState } from "react";
-import { FlagIcon, FolderIcon, LockIcon } from "../componentes/icones";
-import { Etiqueta, Faixa, KPIs, Row, SecLabel } from "../componentes/ui";
-import { BLOQUEIOS_LISTA, ORGS, ORG_ORDER, OUTRAS_ORGS } from "../dados/base";
+import { ChevronIcon } from "../componentes/icones";
+import { Faixa, SecLabel } from "../componentes/ui";
+import { ORGS, ORG_ORDER, OUTRAS_ORGS } from "../dados/base";
+import { fmtBRL, fmtBRLCurto } from "../dados/formato";
+import { resumoOrg } from "../dados/passivo";
 import { CARD, F, LINK, S, SEMANTICA, T } from "../estilo/tokens";
 import { AskBar } from "./Ia";
 import { FeedItem } from "./Inicio";
+import { ContratoCard } from "./OrgMetricas";
 
 /* ------------------------------------------------------------------ */
 /* Telas: OS                                                           */
@@ -22,14 +25,13 @@ function OsLista({ onOpenOrg, ordem = ORG_ORDER }) {
             const o = ORGS[id];
             return (
               <button key={id} onClick={() => onOpenOrg(id)} className="flex flex-col items-start text-left min-w-0"
-                      aria-label={`${o.name}: ${o.bloqueadoCurto} bloqueado, ${o.processos} processos`}
+                      aria-label={`${o.name}: ${o.processos} processos`}
                       style={{ ...CARD, padding: 16, gap: 12 }}>
                 <span className="flex items-center justify-center shrink-0" style={{ width: 44, height: 44, borderRadius: 999, background: S.marca, color: "#FFFFFF", fontFamily: F.display, fontSize: 15, fontWeight: 600 }}>{o.initials}</span>
                 <span className="block min-w-0 w-full">
                   <span className="block" style={{ fontFamily: F.ui, fontSize: 17, fontWeight: 600, color: S.ink, lineHeight: 1.25, minHeight: "2.5em" }}>{o.name}</span>
-                  <span className="block" style={{ fontFamily: F.ui, fontSize: 21, fontWeight: 600, color: S.ink, letterSpacing: "-0.02em", marginTop: 8, fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>{o.bloqueadoCurto}</span>
-                  <span className="block" style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2 }}>bloqueado</span>
-                  <span className="block" style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2, marginTop: 6 }}>{o.processos} processos</span>
+                  <span className="block" style={{ fontFamily: F.ui, fontSize: 28, fontWeight: 600, color: S.ink, letterSpacing: "-0.02em", marginTop: 8, fontVariantNumeric: "tabular-nums" }}>{o.processos}</span>
+                  <span className="block" style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2 }}>processos</span>
                 </span>
               </button>
             );
@@ -51,51 +53,50 @@ function OsLista({ onOpenOrg, ordem = ORG_ORDER }) {
   );
 }
 
-function OsPerfil({ orgId, onBack, sample, onAsk }) {
-  const o = ORGS[orgId];
+function OsPerfil({ orgId, onBack, sample, onAsk, onOpenContratos, onOpenContrato, onOpenBloqueios, onOpenProcessos }) {
+  const o = ORGS[orgId], r = resumoOrg(orgId);
   const [q, setQ] = useState("");
+  // Atalho de métrica: contratos (o que o cliente mais pergunta) em destaque, depois bloqueios e processos.
+  const Metrica = ({ rotulo, valor, detalhe, onClick, tom, largo }) => {
+    const t = { oliva: [S.oliva, "#FFFFFF", "#E6E1D6"], osso: [S.osso, S.ink, S.ossoTexto2], cartao: [S.cartao, S.ink, S.texto2] }[tom];
+    return (
+      <button onClick={onClick} className={`text-left flex flex-col min-w-0 ${largo ? "col-span-2" : ""}`}
+              style={{ ...CARD, background: t[0], boxShadow: tom === "cartao" ? CARD.boxShadow : "none", padding: 16 }}>
+        <span className="flex items-center justify-between gap-2 w-full">
+          <span style={{ fontFamily: F.ui, fontSize: 15, fontWeight: 600, color: t[1] }}>{rotulo}</span>
+          <ChevronIcon size={16} color={t[1]} strokeWidth={2} />
+        </span>
+        <span style={{ fontFamily: F.ui, fontSize: largo ? 28 : 22, fontWeight: 600, color: t[1], letterSpacing: "-0.02em", marginTop: 8, fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>{valor}</span>
+        <span style={{ fontFamily: F.ui, fontSize: 14, color: t[2], marginTop: 2, lineHeight: 1.3 }}>{detalhe}</span>
+      </button>
+    );
+  };
   return (
     <>
       <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 150 }}>
         <Faixa bleed={32} bloco onBack={onBack} backLabel="Organizações"
-               eyebrow={`${o.name} · bloqueado hoje`} titulo={o.bloqueado} tituloCompacto={o.name} tituloSize={40} sub={`${o.processos} processos na base`}
+               eyebrow="Organização social" titulo={o.name} tituloCompacto={o.name} tituloSize={32}
+               sub={`${r.contratos.length} contratos de gestão · ${r.processos.length} processos`}
                aside={<span className="w-14 h-14 rounded-full flex items-center justify-center shrink-0" style={{ background: "#FFFDF9", color: S.marca, fontFamily: F.display, fontSize: 18, fontWeight: 600 }}>{o.initials}</span>}>
-          <KPIs itens={[
-            ["Processos", String(o.processos)],
-            ["Bloqueios", String(BLOQUEIOS_LISTA.filter((b) => b.clienteId === orgId && b.status === "Ativo").length)],
-            ["Contratos", String(o.contratos.length)],
-          ]} />
-          <div className="mt-3" style={CARD}>
-            <p style={{ fontFamily: F.ui, fontSize: 15, fontWeight: 600, color: S.texto2, padding: "14px 18px 0" }}>O que mudou aqui</p>
-            {o.feed.map((f, i) => {
-              const t = /levantad/i.test(f.text) ? ["resolvido", "Levantado"] : /reclama/i.test(f.text) ? ["atencao", "Reclamação"] : /remarcad/i.test(f.text) ? ["atencao", "Remarcação"] : ["curso", "Movimentação"];
-              return <FeedItem key={i} text={f.text} time={f.time} sem={SEMANTICA.find((x) => x.id === t[0])} tag={t[1]} last={i === o.feed.length - 1} />;
-            })}
+          <div className="grid grid-cols-2 gap-3">
+            <Metrica largo tom="oliva" rotulo="Contratos de gestão" valor={fmtBRL(r.passivo.total)}
+                     detalhe={`Passivo estimado em ${r.contratos.length} contratos`} onClick={onOpenContratos} />
+            <Metrica tom="osso" rotulo="Bloqueios" valor={fmtBRLCurto(r.bloqueadoAtivo)} detalhe={`${r.bloqueiosAtivos} ativos`} onClick={onOpenBloqueios} />
+            <Metrica tom="cartao" rotulo="Processos" valor={String(r.processos.length)} detalhe={`${r.processos.filter((p) => p.diasParado >= 60).length} parados há 60+ dias`} onClick={onOpenProcessos} />
           </div>
         </Faixa>
 
-        <SecLabel>Contratos de gestão</SecLabel>
-        <div className="flex flex-col gap-2.5">
-          {o.contratos.map((c, i) => {
-            const fim = Number(String(c.vigencia).split("–")[1]);
-            const st = fim < 2026 ? { s: SEMANTICA.find((x) => x.id === "atencao"), t: `Vigência encerrada em ${fim}` }
-                     : fim === 2026 ? { s: SEMANTICA.find((x) => x.id === "atencao"), t: "Vence este ano" }
-                     : { s: SEMANTICA.find((x) => x.id === "curso"), t: "Vigente" };
-            return (
-              <div key={i} style={{ ...CARD, padding: 18 }}>
-                <p style={{ fontFamily: F.ui, fontSize: 17, fontWeight: 600, color: S.ink }}>{c.orgao}</p>
-                <p style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2, marginTop: 2 }}>Vigência {c.vigencia}</p>
-                <div className="mt-2.5"><Etiqueta s={st.s} texto={st.t} /></div>
-              </div>
-            );
-          })}
+        <SecLabel acao="Ver todos" onAcao={onOpenContratos}>Passivo por contrato</SecLabel>
+        <div className="flex flex-col gap-3">
+          {r.contratos.map((c) => <ContratoCard key={c.orgao} c={c} onClick={() => onOpenContrato(c.orgao)} />)}
         </div>
 
-        <SecLabel>Nesta organização</SecLabel>
+        <SecLabel>O que mudou aqui</SecLabel>
         <div style={CARD}>
-          <Row icon={<FolderIcon size={19} />} label="Processos" value={String(o.processos)} />
-          <Row icon={<LockIcon size={19} />} label="Bloqueios" value={o.bloqueadoCurto} />
-          <Row icon={<FlagIcon size={19} />} label="Reclamações" value="—" last />
+          {o.feed.map((f, i) => {
+            const t = /levantad/i.test(f.text) ? ["resolvido", "Levantado"] : /reclama/i.test(f.text) ? ["atencao", "Reclamação"] : /remarcad/i.test(f.text) ? ["atencao", "Remarcação"] : ["curso", "Movimentação"];
+            return <FeedItem key={i} text={f.text} time={f.time} sem={SEMANTICA.find((x) => x.id === t[0])} tag={t[1]} last={i === o.feed.length - 1} />;
+          })}
         </div>
       </div>
 

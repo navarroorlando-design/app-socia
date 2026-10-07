@@ -36,17 +36,18 @@ const TOOLS_DEF = (onProgress) => [
     inputSchema: {
       type: "object",
       properties: {
-        metrica: { type: "string", enum: ["valor_bloqueado", "quantidade_bloqueios", "quantidade_processos", "processos_parados"] },
-        agrupar_por: { type: "string", enum: ["nenhum", "cliente", "area", "contrato", "status", "mes"], description: "mes = mês do bloqueio (ou da última movimentação, para processos), de Jan até o mês atual de 2026" },
+        metrica: { type: "string", enum: ["valor_bloqueado", "quantidade_bloqueios", "quantidade_processos", "processos_parados", "passivo_estimado"], description: "passivo_estimado = soma do valor em discussão dos processos (o passivo que os clientes perguntam), em BRL" },
+        agrupar_por: { type: "string", enum: ["nenhum", "cliente", "area", "contrato", "status", "prognostico", "mes"], description: "mes = mês do bloqueio (ou da última movimentação, para processos), de Jan até o mês atual de 2026" },
         cliente: { type: "string", description: "AFNE, Instituto Gnosis, FAS ou IGEDES. Omita para a firma toda." },
         area: { type: "string", enum: ["Trabalhista", "Cível", "Administrativo", "Constitucional"] },
         status_bloqueio: { type: "string", enum: ["Ativo", "Levantado", "todos"], description: "Só para métricas de bloqueio. Padrão: Ativo." },
         dias_minimos_parado: { type: "number", description: "Só para processos_parados. Padrão: 60." },
+        prognostico: { type: "string", enum: ["Provável", "Possível", "Remoto"], description: "Só para passivo_estimado." },
       },
       required: ["metrica"],
     },
     execute: (input) => {
-      const rot = { valor_bloqueado: "valor bloqueado", quantidade_bloqueios: "bloqueios", quantidade_processos: "processos", processos_parados: "processos parados" }[input.metrica] || "dados";
+      const rot = { valor_bloqueado: "valor bloqueado", quantidade_bloqueios: "bloqueios", quantidade_processos: "processos", processos_parados: "processos parados", passivo_estimado: "passivo estimado" }[input.metrica] || "dados";
       const por = input.agrupar_por && input.agrupar_por !== "nenhum" ? ` por ${input.agrupar_por === "area" ? "área" : input.agrupar_por === "mes" ? "mês" : input.agrupar_por}` : "";
       onProgress(`Consultando ${rot}${por}${input.cliente ? ` de ${input.cliente}` : ""}`);
       return consultarDados(input);
@@ -76,6 +77,7 @@ function montarPrompt(pergunta, clienteId) {
 Regras:
 - Todo número do relatório tem de vir das funções consultar_dados ou listar_processos. Nunca invente nem estime valores. Você pode calcular percentuais simples a partir dos números que as funções devolverem.
 - A base cobre ${TOTAIS.processos} processos e ${BLOQUEIOS_LISTA.length} bloqueios de 4 clientes (AFNE, Instituto Gnosis, FAS, IGEDES), com dados de 2026 até outubro. Hoje é 06/10/2026.
+- Passivo de um contrato de gestão = consultar_dados com metrica passivo_estimado (agrupe por contrato ou prognostico). É o valor em discussão nos processos, não o valor bloqueado; diga isso quando mostrar.
 - Se a pergunta pedir algo que a base não tem (prazos, honorários, nomes de partes, outros anos), diga isso num bloco de texto e não force um gráfico.
 - Faça poucas consultas: em geral de 1 a 3.
 - Escolha os blocos pela forma do dado: um valor único vira "destaque"; uma série ao longo dos meses vira "linha"; comparação entre poucas categorias (até 8) vira "barras"; lista de processos com várias colunas vira "tabela". Termine sempre com um bloco "texto" de 1 a 2 frases com a conclusão principal, em linguagem simples.

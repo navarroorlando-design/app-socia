@@ -89,6 +89,20 @@ evita ciclos entre módulos.
   Perfil → Relatórios fixados.
 - **Barra de navegação**: Início, IA, OS, Perfil.
 
+## Organizações: contratos de gestão, bloqueios e processos
+
+O que os clientes (OS) sempre perguntam é **o passivo de cada contrato de gestão**. Por isso a tela
+da organização abre pela identidade e pelas três métricas, nesta ordem: **Contratos de gestão**
+(passivo estimado), **Bloqueios**, **Processos**. Cada uma tem tela própria, e cada contrato tem a
+sua (`src/telas/OrgMetricas.jsx`). O cartão da lista de organizações mostra só o número de processos.
+
+- **Passivo estimado** = soma do valor em discussão dos processos do contrato, separada pelo
+  prognóstico (Provável, Possível, Remoto). Bloqueios entram à parte, como o que já saiu da conta.
+  Cálculo em `src/dados/passivo.js`. Em produção: "valor da causa" e "prognóstico" do Legal One.
+  **Definição a validar com o escritório** (pode ser provisão em vez de valor da causa).
+- Na base de exemplo, cada processo ganhou `valorCausa` e `prognostico` (gerador próprio por id,
+  sem mexer na sequência do resto). A IA consulta com `metrica: "passivo_estimado"`.
+
 ## Regra da IA (arquitetura)
 
 A IA **nunca** é a fonte do número. Ela chama `consultar_dados` / `listar_processos`, que calculam

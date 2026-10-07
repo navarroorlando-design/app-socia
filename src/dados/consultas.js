@@ -8,7 +8,7 @@ function normCliente(c) {
   return Object.keys(CLIENTE_NOME).find((k) => s.includes(k) || CLIENTE_NOME[k].toLowerCase().includes(s) || s.includes(CLIENTE_NOME[k].toLowerCase())) || null;
 }
 
-function consultarDados({ metrica, agrupar_por = "nenhum", cliente, area, status_bloqueio = "Ativo", dias_minimos_parado = 60 }) {
+function consultarDados({ metrica, agrupar_por = "nenhum", cliente, area, status_bloqueio = "Ativo", dias_minimos_parado = 60, prognostico }) {
   const cli = normCliente(cliente);
   const areaOk = (x) => !area || x.area.toLowerCase() === String(area).toLowerCase();
   const cliOk = (x) => !cli || x.clienteId === cli;
@@ -17,21 +17,25 @@ function consultarDados({ metrica, agrupar_por = "nenhum", cliente, area, status
     linhas = BLOQUEIOS_LISTA.filter((b) => cliOk(b) && areaOk(b) && (status_bloqueio === "todos" || b.status === status_bloqueio));
     valorDe = metrica === "valor_bloqueado" ? (b) => b.valorNum : () => 1;
     unidade = metrica === "valor_bloqueado" ? "BRL" : "quantidade";
+  } else if (metrica === "passivo_estimado") {
+    linhas = PROCESSOS_LISTA.filter((p) => cliOk(p) && areaOk(p) && (!prognostico || p.prognostico.toLowerCase() === String(prognostico).toLowerCase()));
+    valorDe = (p) => p.valorCausa;
+    unidade = "BRL";
   } else if (metrica === "quantidade_processos" || metrica === "processos_parados") {
     linhas = PROCESSOS_LISTA.filter((p) => cliOk(p) && areaOk(p) && (metrica !== "processos_parados" || p.diasParado >= Number(dias_minimos_parado)));
     valorDe = () => 1;
     unidade = "quantidade";
   } else {
-    throw new Error("Métrica desconhecida. Use valor_bloqueado, quantidade_bloqueios, quantidade_processos ou processos_parados.");
+    throw new Error("Métrica desconhecida. Use valor_bloqueado, quantidade_bloqueios, quantidade_processos, processos_parados ou passivo_estimado.");
   }
   const total = linhas.reduce((s, x) => s + valorDe(x), 0);
   let grupos = [];
   if (agrupar_por && agrupar_por !== "nenhum") {
     const chave = {
-      cliente: (x) => x.cliente, area: (x) => x.area, contrato: (x) => x.contrato, status: (x) => x.status,
+      cliente: (x) => x.cliente, area: (x) => x.area, contrato: (x) => x.contrato, status: (x) => x.status, prognostico: (x) => x.prognostico,
       mes: (x) => (x.mes !== undefined ? MESES[x.mes] : MESES[x.ultimaMov.getMonth()]),
     }[agrupar_por];
-    if (!chave) throw new Error("agrupar_por inválido. Use nenhum, cliente, area, contrato, status ou mes.");
+    if (!chave) throw new Error("agrupar_por inválido. Use nenhum, cliente, area, contrato, status, prognostico ou mes.");
     const mapa = new Map();
     if (agrupar_por === "mes") for (let m = 0; m <= HOJE.getMonth(); m++) mapa.set(MESES[m], 0);
     for (const x of linhas) mapa.set(chave(x), (mapa.get(chave(x)) || 0) + valorDe(x));
@@ -48,7 +52,7 @@ function listarProcessos({ cliente, area, dias_minimos_parado = 0, apenas_com_bl
     .filter((p) => (!cli || p.clienteId === cli) && (!area || p.area.toLowerCase() === String(area).toLowerCase()) && p.diasParado >= Number(dias_minimos_parado) && (!apenas_com_bloqueio_ativo || ativo(p) > 0))
     .sort((a, b) => b.diasParado - a.diasParado)
     .slice(0, Math.min(Number(limite) || 10, 25))
-    .map((p) => ({ numero: p.numero, cliente: p.cliente, area: p.area, descricao: p.desc, status: p.status, dias_parado: p.diasParado, valor_bloqueado_ativo: ativo(p) }));
+    .map((p) => ({ numero: p.numero, cliente: p.cliente, contrato: p.contrato, area: p.area, descricao: p.desc, status: p.status, dias_parado: p.diasParado, valor_em_discussao: p.valorCausa, prognostico: p.prognostico, valor_bloqueado_ativo: ativo(p) }));
 }
 
 export { consultarDados, listarProcessos };
