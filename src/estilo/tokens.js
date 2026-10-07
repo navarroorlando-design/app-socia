@@ -50,6 +50,7 @@ const S = {
   atencao: "#835000", atencaoFundo: "#F6E6C6",
   curso: "#245476", cursoFundo: "#DBE7F1",
   inativo: "#4F565B", inativoFundo: "#E5E7E8",
+  marca: "#1E3A5F", marcaTexto2: "#D3DCE8", marcaTrilho: "rgba(255,255,255,.18)",
 };
 
 const F = {

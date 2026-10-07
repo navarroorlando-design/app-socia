@@ -9,6 +9,26 @@ import { Avatar } from "../preferencias";
 /* ------------------------------------------------------------------ */
 /* Telas: Início                                                       */
 /* ------------------------------------------------------------------ */
+const CARD_INICIO = { ...CARD, borderRadius: 24 };
+
+/* Anel de progresso para fundo escuro: percentual no centro, rótulo embaixo */
+function Anel({ pct, rotulo, size = 92 }) {
+  const r = 38, c = 2 * Math.PI * r;
+  return (
+    <div className="flex flex-col items-center shrink-0" role="img" aria-label={`${pct}% ${rotulo}`}>
+      <div className="relative" style={{ width: size, height: size }}>
+        <svg width={size} height={size} viewBox="0 0 92 92" aria-hidden="true">
+          <circle cx="46" cy="46" r={r} fill="none" stroke={S.marcaTrilho} strokeWidth="8" />
+          <circle cx="46" cy="46" r={r} fill="none" stroke="#FFFFFF" strokeWidth="8" strokeLinecap="round"
+                  strokeDasharray={`${(c * pct) / 100} ${c}`} transform="rotate(-90 46 46)" />
+        </svg>
+        <span className="absolute inset-0 flex items-center justify-center"
+              style={{ fontFamily: F.ui, fontSize: 20, fontWeight: 600, color: "#FFFFFF", fontVariantNumeric: "tabular-nums" }}>{pct}%</span>
+      </div>
+      <span style={{ fontFamily: F.ui, fontSize: 14, color: S.marcaTexto2, marginTop: 6 }}>{rotulo}</span>
+    </div>
+  );
+}
 function InicioFeed({ onOpenList, onOpenOrg, followedItems, onOpenProcesso, onOpenAcompanhando, onOpenBusca, onOpenMenu, onPerguntar, unreadCount, foto, apelido }) {
   const preview = followedItems.slice(0, 3);
   const parados90 = PROCESSOS_LISTA.filter((p) => p.diasParado >= 90).length;
@@ -18,11 +38,21 @@ function InicioFeed({ onOpenList, onOpenOrg, followedItems, onOpenProcesso, onOp
   const saudacao = hora < 12 ? "Bom dia," : hora < 18 ? "Boa tarde," : "Boa noite,";
   const data = agora.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
   const novidades = 5;
+  const CARD = CARD_INICIO;
 
-  const Atalho = ({ icone, rotulo, onClick, ia }) => (
-    <button onClick={onClick} className="flex flex-col items-center gap-2 flex-1 min-w-0">
-      <span className="flex items-center justify-center" style={{ width: 60, height: 60, borderRadius: 18, background: ia ? S.iaFundo : "#FFFFFF", boxShadow: ia ? "none" : "0 1px 3px rgba(17,24,39,.08)" }}>{icone}</span>
-      <span style={{ fontFamily: F.ui, fontSize: 14, fontWeight: 500, color: S.ink }}>{rotulo}</span>
+  // Parte do valor bloqueado em 2026 que já foi levantada (anel do cartão principal).
+  const levantado = BLOQUEIOS_LISTA.filter((b) => b.status === "Levantado").reduce((s, b) => s + b.valorNum, 0);
+  const pctLevantado = Math.round((levantado / (levantado + TOTAIS.bloqueadoAtivo)) * 100);
+  const ativos = BLOQUEIOS_LISTA.filter((b) => b.status === "Ativo").length;
+
+  const Atalho = ({ icone, rotulo, detalhe, onClick, ia }) => (
+    <button onClick={onClick} className="flex flex-col items-start text-left min-w-0"
+            style={{ ...CARD, background: ia ? S.iaFundo : S.cartao, boxShadow: ia ? "none" : CARD.boxShadow, padding: 14, gap: 10 }}>
+      <span className="flex items-center justify-center shrink-0" style={{ width: 42, height: 42, borderRadius: 999, background: ia ? "#FFFFFF" : "#EEF1F6" }}>{icone}</span>
+      <span className="min-w-0">
+        <span className="block" style={{ fontFamily: F.ui, fontSize: 17, fontWeight: 600, color: ia ? S.ia : S.ink }}>{rotulo}</span>
+        <span className="block" style={{ fontFamily: F.ui, fontSize: 14, color: ia ? S.ia : S.texto2, marginTop: 2, lineHeight: 1.3 }}>{detalhe}</span>
+      </span>
     </button>
   );
 
@@ -32,36 +62,40 @@ function InicioFeed({ onOpenList, onOpenOrg, followedItems, onOpenProcesso, onOp
       <div className="flex items-center justify-between gap-3" style={{ paddingTop: 10 }}>
         <div className="min-w-0">
           <p style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2 }}>{data.charAt(0).toUpperCase() + data.slice(1)}</p>
-          <p style={{ fontFamily: F.ui, fontSize: 17, color: S.texto2, marginTop: 6 }}>{saudacao}</p>
-          <p style={{ fontFamily: F.ui, fontSize: 26, fontWeight: 600, color: S.ink, letterSpacing: "-0.02em", lineHeight: 1.15 }}>{apelido || "Sócia"}</p>
+          <p style={{ fontFamily: F.ui, fontSize: 30, fontWeight: 400, color: S.ink, letterSpacing: "-0.02em", lineHeight: 1.1, marginTop: 8 }}>{saudacao.replace(",", "")}</p>
+          <p style={{ fontFamily: F.ui, fontSize: 30, fontWeight: 700, color: S.ink, letterSpacing: "-0.025em", lineHeight: 1.1 }}>{apelido || "Sócia"}</p>
         </div>
         <button onClick={onOpenMenu} aria-label={`Menu da conta${unreadCount ? `, ${unreadCount} notificações novas` : ""}`} className="rounded-full shrink-0">
           <Avatar foto={foto} size={54} badge={unreadCount} />
         </button>
       </div>
 
-      {/* cartão-resumo do dia */}
-      <div className="mt-5" style={{ ...CARD, padding: 20 }}>
-        <p style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2 }}>Bloqueado hoje, todos os clientes</p>
-        <p style={{ fontFamily: F.ui, fontSize: 36, fontWeight: 600, color: S.ink, letterSpacing: "-0.03em", lineHeight: 1.1, marginTop: 4, fontVariantNumeric: "tabular-nums" }}>{fmtBRL(TOTAIS.bloqueadoAtivo)}</p>
-        <div className="flex flex-wrap gap-2 mt-3">
-          {parados90 > 0 && (
-            <button onClick={() => onOpenList("processos")} aria-label={`${parados90} processos parados há mais de 90 dias, ver lista`}>
-              <Etiqueta s={sem("risco")} texto={`${parados90} parados há 90 dias`} />
+      {/* cartão principal em marinho: valor bloqueado e quanto já foi levantado */}
+      <div className="mt-6" style={{ borderRadius: CARD.borderRadius, background: S.marca, padding: 22, boxShadow: "0 10px 24px rgba(30,58,95,.22)" }}>
+        <p style={{ fontFamily: F.ui, fontSize: 15, color: S.marcaTexto2 }}>Bloqueado hoje, todos os clientes</p>
+        <p style={{ fontFamily: F.ui, fontSize: 36, fontWeight: 600, color: "#FFFFFF", letterSpacing: "-0.03em", lineHeight: 1.1, marginTop: 6, fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>{fmtBRL(TOTAIS.bloqueadoAtivo)}</p>
+        <div className="flex items-end justify-between gap-3 mt-4">
+          <div className="min-w-0 flex flex-col items-start gap-2">
+            <p style={{ fontFamily: F.ui, fontSize: 15, color: S.marcaTexto2, marginBottom: 2 }}>{ativos} bloqueios ativos</p>
+            {parados90 > 0 && (
+              <button onClick={() => onOpenList("processos")} aria-label={`${parados90} processos parados há mais de 90 dias, ver lista`}>
+                <Etiqueta s={sem("risco")} texto={`${parados90} parados há 90 dias`} sobreCor />
+              </button>
+            )}
+            <button onClick={onOpenAcompanhando} aria-label={`${followedItems.length} processos acompanhados`}>
+              <Etiqueta s={sem("curso")} texto={`${followedItems.length} que você segue`} sobreCor />
             </button>
-          )}
-          <button onClick={onOpenAcompanhando} aria-label={`${followedItems.length} processos acompanhados`}>
-            <Etiqueta s={sem("curso")} texto={`${followedItems.length} que você segue`} />
-          </button>
+          </div>
+          <Anel pct={pctLevantado} rotulo="já levantado" size={84} />
         </div>
       </div>
 
-      {/* atalhos */}
-      <div className="flex gap-2 mt-5">
-        <Atalho rotulo="Buscar" onClick={onOpenBusca} icone={<SearchIcon size={24} color={S.ink} />} />
-        <Atalho rotulo="Sigo" onClick={onOpenAcompanhando} icone={<StarIcon size={23} color={S.ink} />} />
-        <Atalho rotulo="Bloqueios" onClick={() => onOpenList("bloqueios")} icone={<LockIcon size={24} color={S.ink} />} />
-        <Atalho rotulo="Perguntar" onClick={onPerguntar} ia icone={<SparkleIcon size={24} color={S.ia} strokeWidth={1.9} />} />
+      {/* atalhos em grade 2×2 */}
+      <div className="grid grid-cols-2 gap-3 mt-4">
+        <Atalho rotulo="Buscar" detalhe="Processo, cliente ou número" onClick={onOpenBusca} icone={<SearchIcon size={22} color={S.ink} />} />
+        <Atalho rotulo="Sigo" detalhe={`${followedItems.length} processos`} onClick={onOpenAcompanhando} icone={<StarIcon size={21} color={S.ink} />} />
+        <Atalho rotulo="Bloqueios" detalhe={`${ativos} ativos`} onClick={() => onOpenList("bloqueios")} icone={<LockIcon size={22} color={S.ink} />} />
+        <Atalho rotulo="Perguntar" detalhe="Relatórios com a IA" onClick={onPerguntar} ia icone={<SparkleIcon size={22} color={S.ia} strokeWidth={1.9} />} />
       </div>
 
       {preview.length > 0 && (
