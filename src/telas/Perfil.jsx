@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BellIcon, BuildingIcon, ChevronIcon, FolderIcon, Icon, PersonIcon, SparkleIcon, StarIcon } from "../componentes/icones";
+import { BellIcon, BuildingIcon, ChevronDownIcon, ChevronIcon, ChevronUpIcon, FolderIcon, LockIcon, PersonIcon, SparkleIcon, StarIcon } from "../componentes/icones";
 import { Botao, Faixa, Row, SecLabel, Toggle } from "../componentes/ui";
 import { ORGS } from "../dados/base";
 import { CARD, F, LINK, S } from "../estilo/tokens";
@@ -149,7 +149,7 @@ function PerfilUsuaria({ onOpenNotifPrefs, onOpenPasta, pinnedCount, onOpenGuia,
 
         <SecLabel>Sobre</SecLabel>
         <div style={CARD}>
-          <Row icon={<Icon color={S.ink}><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></Icon>} label="Segurança" />
+          <Row icon={<LockIcon color={S.ink} />} label="Segurança" />
           <Row icon={<SparkleIcon color={S.ink} />} label="Guia de estilo" onClick={onOpenGuia} last />
         </div>
       </div>
@@ -162,10 +162,10 @@ function OrdemClientes({ ordem, setOrdem, onBack }) {
     const j = i + d; if (j < 0 || j >= ordem.length) return;
     const n = [...ordem]; [n[i], n[j]] = [n[j], n[i]]; setOrdem(n);
   };
-  const SetaBtn = ({ label, onClick, disabled, path }) => (
+  const SetaBtn = ({ label, onClick, disabled, Icone }) => (
     <button onClick={onClick} disabled={disabled} aria-label={label} className="w-11 h-11 rounded-full flex items-center justify-center"
             style={{ background: disabled ? "transparent" : S.papel, opacity: disabled ? 0.3 : 1 }}>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={S.ink} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={path} /></svg>
+      <Icone size={20} color={S.ink} strokeWidth={2} />
     </button>
   );
   return (
@@ -178,8 +178,8 @@ function OrdemClientes({ ordem, setOrdem, onBack }) {
               <span style={{ fontFamily: F.dados, fontSize: 15, color: S.texto2, width: 18 }}>{i + 1}</span>
               <span className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: S.ink, color: "#FFFFFF", fontFamily: F.display, letterSpacing: "-0.02em", fontSize: 14 }}>{ORGS[id].initials}</span>
               <span style={{ fontFamily: F.ui, fontSize: 17, color: S.ink, flex: 1, fontWeight: 600 }}>{ORGS[id].name}</span>
-              <SetaBtn label={`Subir ${ORGS[id].name}`} onClick={() => mover(i, -1)} disabled={i === 0} path="M6 15l6-6 6 6" />
-              <SetaBtn label={`Descer ${ORGS[id].name}`} onClick={() => mover(i, 1)} disabled={i === ordem.length - 1} path="M6 9l6 6 6-6" />
+              <SetaBtn label={`Subir ${ORGS[id].name}`} onClick={() => mover(i, -1)} disabled={i === 0} Icone={ChevronUpIcon} />
+              <SetaBtn label={`Descer ${ORGS[id].name}`} onClick={() => mover(i, 1)} disabled={i === ordem.length - 1} Icone={ChevronDownIcon} />
             </div>
           ))}
         </div>

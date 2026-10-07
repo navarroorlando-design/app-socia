@@ -9,7 +9,8 @@ não é detalhe: contraste, tamanho de texto e alvos de toque guiam todas as dec
 
 ## Estado atual (versão 9)
 
-- Versão de trabalho publicada em https://claude.ai/artifact/GFoRKY7Ht8UpAKLsqZCnyj ("App dos Sócios v9").
+- Versão de trabalho publicada em https://claude.ai/artifact/CC5B6mT6EASzhR7H6ktshd ("App dos Sócios Neutro").
+  A versão anterior, em marinho, ficou em https://claude.ai/artifact/GFoRKY7Ht8UpAKLsqZCnyj.
 
 - **App web instalável (PWA) em Next.js 16 + React 19**, a caminho do Vercel (região São Paulo,
   `vercel.json`). Stack escolhida: Next.js no Vercel, servidor próprio chamando a API da Anthropic,
@@ -59,22 +60,29 @@ evita ciclos entre módulos.
 
 - **Fonte única: Lexend.** Hierarquia por tamanho e peso. Mínimo 13pt; leitura em 16–17pt.
   Números de processo em IBM Plex Mono.
-- **Fundo cinza-gelo `#F2F3F7`**, cartões brancos com sombra suave, texto `#111827`
-  (16:1 sobre o fundo), apoio `#4B5563`. Todo texto passa de 4,5:1.
+- **Paleta neutra quente (quiet luxury)**, alinhada aos cinzas da logo: fundo `#F2EFE9`, cartões
+  `#FFFDF9`, texto `#1A1916` (15:1), apoio `#57544C` (6,6:1). Família de tons: carvão `#1F1E1A`
+  (`S.marca`, texto branco), oliva `#565449` (`S.oliva`, texto branco), osso `#D8CFBC` (`S.osso`, texto
+  quase preto). Todo texto passa de 4,5:1; nada de texto branco sobre oliva-claro.
 - **Cor com significado**, sempre com ícone e palavra: Risco `#9B2A1C`, Atenção `#835000`,
   Em curso `#245476`, Resolvido `#24603F`, Inativo `#4F565B`.
 - **Dourado `#765614` é exclusivo da IA.** Status nunca usa dourado.
-- **Marinho `#1E3A5F` é a cor da marca** (token `S.marca`). Usado no cartão principal do Início e no
-  bloco de título das telas de detalhe (processo, bloqueio, organização), com texto branco e apoio
-  `#D3DCE8`. Etiquetas sobre o marinho usam fundo branco (`sobreCor`). Verde e azul ficam só para status.
-- **Topo**: Início com saudação em duas linhas ("Bom dia" + nome em negrito), cartão principal marinho
+- **Carvão é a cor da marca** (`S.marca`): cartão principal do Início, bloco de título das telas de
+  detalhe e identidade no Perfil, com apoio em osso. Etiquetas sobre o carvão usam fundo claro
+  (`sobreCor`). Cor de status só em etiquetas e ícones, nunca no fundo de cartão.
+- **Atalhos do Início em tons**: Bloqueios oliva, Sigo osso, Buscar branco, Perguntar latão sólido
+  (texto branco, 6,7:1). O dourado da IA nunca vai sobre osso (4,4:1, reprova).
+- **Ícones: Iconoir** (MIT), gerados em `src/componentes/icones.jsx`, traço 1,7 (2,1 nas etiquetas).
+  Processo = documento (`page`), OS = `city`. **Sem balança, martelo ou colunas**: clichês vetados.
+- **Títulos em Lexend.** A serifada foi testada e recusada. `F.titulo` segue existindo (cai na Lexend).
+- **Topo**: Início com saudação em duas linhas ("Bom dia" + nome em negrito), cartão principal em carvão
   (valor bloqueado e anel "já levantado") e grade 2×2 de atalhos com detalhe; abas e listas com título
-  grande estilo iOS que encolhe ao rolar; detalhes com o título num bloco marinho arredondado e a
+  grande estilo iOS que encolhe ao rolar; detalhes com o título num bloco carvão arredondado e a
   fileira de números-chave logo abaixo, em cartão branco.
 - **Cartões com cantos de 24px.** Organizações principais em grade 2×2 (todas visíveis, sem rolagem lateral).
 - **Listas dentro de cartão** com `LinhaLista`: ícone num círculo na cor do status, título, detalhe e
   etiqueta. Em listas de processos a etiqueta vai abaixo da descrição (`abaixo`); em bloqueios, à direita.
-- **Perfil** com a identidade no bloco marinho. **Aba IA** com o brilho num círculo dourado e sugestões
+- **Perfil** com a identidade no bloco carvão. **Aba IA** com o brilho num círculo dourado e sugestões
   com ícone dourado.
 - **Subtítulos de seção**: 18pt seminegrito na cor do texto, ação à direita ("Ver todos").
 - **Aba IA** em branco com "Pergunte qualquer coisa!" e sugestões; relatórios fixados ficam em

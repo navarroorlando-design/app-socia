@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { PauseIcon, SoundIcon } from "./componentes/icones";
 import { F, S } from "./estilo/tokens";
 
 /* ------------------------------------------------------------------ */
@@ -55,9 +56,7 @@ function OuvirBtn({ texto }) {
   return (
     <button onClick={alternar} className="mt-3 inline-flex items-center gap-2 rounded-full"
             style={{ background: "#FFFDF9", color: S.ink, fontFamily: F.ui, fontSize: 15, fontWeight: 600, height: 40, padding: "0 16px" }}>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={S.ink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        {falando ? <path d="M8 5v14M16 5v14" /> : <><path d="M11 5 6 9H3v6h3l5 4Z" /><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" /></>}
-      </svg>
+      {falando ? <PauseIcon size={18} color={S.ink} strokeWidth={1.9} /> : <SoundIcon size={18} color={S.ink} strokeWidth={1.9} />}
       {falando ? "Parar leitura" : "Ouvir"}
     </button>
   );

@@ -2,69 +2,55 @@ import React from "react";
 import { T } from "../estilo/tokens";
 
 /* ------------------------------------------------------------------ */
-/* Ícones                                                              */
+/* Ícones: Iconoir (iconoir.com, licença MIT), gerados para JSX.        */
+/* Para trocar ou acrescentar, copie o SVG de iconoir/icons/regular.    */
 /* ------------------------------------------------------------------ */
 const Icon = ({ children, size = 20, color = T.ink, strokeWidth = 1.7 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color}
-       strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" style={{ color }}
+       strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     {children}
   </svg>
 );
 
-const BackIcon = (p) => <Icon {...p}><path d="M19 12H5M12 19l-7-7 7-7" /></Icon>;
+const BackIcon = (p) => <Icon {...p}><path d="M21 12L3 12M3 12L11.5 3.5M3 12L11.5 20.5"/></Icon>;
+const ChevronIcon = (p) => <Icon {...p}><path d="M9 6L15 12L9 18"/></Icon>;
+const ChevronUpIcon = (p) => <Icon {...p}><path d="M6 15L12 9L18 15"/></Icon>;
+const ChevronDownIcon = (p) => <Icon {...p}><path d="M6 9L12 15L18 9"/></Icon>;
+const HouseIcon = (p) => <Icon {...p}><path d="M9 21H7C4.79086 21 3 19.2091 3 17V10.7076C3 9.30887 3.73061 8.01175 4.92679 7.28679L9.92679 4.25649C11.2011 3.48421 12.7989 3.48421 14.0732 4.25649L19.0732 7.28679C20.2694 8.01175 21 9.30887 21 10.7076V17C21 19.2091 19.2091 21 17 21H15M9 21V17C9 15.3431 10.3431 14 12 14V14C13.6569 14 15 15.3431 15 17V21M9 21H15"/></Icon>;
+const SparkleIcon = (p) => <Icon {...p}><path d="M8 15C12.8747 15 15 12.949 15 8C15 12.949 17.1104 15 22 15C17.1104 15 15 17.1104 15 22C15 17.1104 12.8747 15 8 15Z"/><path d="M2 6.5C5.13376 6.5 6.5 5.18153 6.5 2C6.5 5.18153 7.85669 6.5 11 6.5C7.85669 6.5 6.5 7.85669 6.5 11C6.5 7.85669 5.13376 6.5 2 6.5Z"/></Icon>;
+const BuildingIcon = (p) => <Icon {...p}><path d="M7 9.01L7.01 8.99889"/><path d="M11 9.01L11.01 8.99889"/><path d="M7 13.01L7.01 12.9989"/><path d="M11 13.01L11.01 12.9989"/><path d="M7 17.01L7.01 16.9989"/><path d="M11 17.01L11.01 16.9989"/><path d="M15 21H3.6C3.26863 21 3 20.7314 3 20.4V5.6C3 5.26863 3.26863 5 3.6 5H9V3.6C9 3.26863 9.26863 3 9.6 3H14.4C14.7314 3 15 3.26863 15 3.6V9M15 21H20.4C20.7314 21 21 20.7314 21 20.4V9.6C21 9.26863 20.7314 9 20.4 9H15M15 21V17M15 9V13M15 13H17M15 13V17M15 17H17"/></Icon>;
+const PersonIcon = (p) => <Icon {...p}><path d="M5 20V19C5 15.134 8.13401 12 12 12V12C15.866 12 19 15.134 19 19V20"/><path d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z"/></Icon>;
+// processo: documento
+const FolderIcon = (p) => <Icon {...p}><path d="M4 21.4V2.6C4 2.26863 4.26863 2 4.6 2H16.2515C16.4106 2 16.5632 2.06321 16.6757 2.17574L19.8243 5.32426C19.9368 5.43679 20 5.5894 20 5.74853V21.4C20 21.7314 19.7314 22 19.4 22H4.6C4.26863 22 4 21.7314 4 21.4Z"/><path d="M8 10L16 10"/><path d="M8 18L16 18"/><path d="M8 14L12 14"/><path d="M16 2V5.4C16 5.73137 16.2686 6 16.6 6H20"/></Icon>;
+const LockIcon = (p) => <Icon {...p}><path d="M16 12H17.4C17.7314 12 18 12.2686 18 12.6V19.4C18 19.7314 17.7314 20 17.4 20H6.6C6.26863 20 6 19.7314 6 19.4V12.6C6 12.2686 6.26863 12 6.6 12H8M16 12V8C16 6.66667 15.2 4 12 4C8.8 4 8 6.66667 8 8V12M16 12H8"/></Icon>;
+const FlagIcon = (p) => <Icon {...p}><path d="M8 21L8 16M8 16V3.57709C8 3.10699 8.5161 2.81949 8.91581 3.06693L17.7061 8.50854C18.0775 8.73848 18.0866 9.2756 17.7231 9.51793L8 16Z"/></Icon>;
+const PinIcon = (p) => <Icon {...p}><path d="M9.5 14.5L3 21"/><path d="M5.00007 9.48528L14.1925 18.6777L15.8895 16.9806L15.4974 13.1944L21.0065 8.5211L15.1568 2.67141L10.4834 8.18034L6.69713 7.78823L5.00007 9.48528Z"/></Icon>;
+const CheckIcon = (p) => <Icon {...p}><path d="M5 13L9 17L19 7"/></Icon>;
+const SearchIcon = (p) => <Icon {...p}><path d="M17 17L21 21"/><path d="M3 11C3 15.4183 6.58172 19 11 19C13.213 19 15.2161 18.1015 16.6644 16.6493C18.1077 15.2022 19 13.2053 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11Z"/></Icon>;
+const BellIcon = (p) => <Icon {...p}><path d="M18 8.4C18 6.70261 17.3679 5.07475 16.2426 3.87452C15.1174 2.67428 13.5913 2 12 2C10.4087 2 8.88258 2.67428 7.75736 3.87452C6.63214 5.07475 6 6.70261 6 8.4C6 15.8667 3 18 3 18H21C21 18 18 15.8667 18 8.4Z"/><path d="M13.73 21C13.5542 21.3031 13.3019 21.5547 12.9982 21.7295C12.6946 21.9044 12.3504 21.9965 12 21.9965C11.6496 21.9965 11.3054 21.9044 11.0018 21.7295C10.6982 21.5547 10.4458 21.3031 10.27 21"/></Icon>;
+const ChartIcon = (p) => <Icon {...p}><path d="M16 16L16 8"/><path d="M12 16L12 11"/><path d="M8 16L8 13"/><path d="M3 20.4V3.6C3 3.26863 3.26863 3 3.6 3H20.4C20.7314 3 21 3.26863 21 3.6V20.4C21 20.7314 20.7314 21 20.4 21H3.6C3.26863 21 3 20.7314 3 20.4Z"/></Icon>;
+const SunIcon = (p) => <Icon {...p}><path d="M12 18C15.3137 18 18 15.3137 18 12C18 8.68629 15.3137 6 12 6C8.68629 6 6 8.68629 6 12C6 15.3137 8.68629 18 12 18Z"/><path d="M22 12L23 12"/><path d="M12 2V1"/><path d="M12 23V22"/><path d="M20 20L19 19"/><path d="M20 4L19 5"/><path d="M4 20L5 19"/><path d="M4 4L5 5"/><path d="M1 12L2 12"/></Icon>;
+const SoundIcon = (p) => <Icon {...p}><path d="M1 13.8571V10.1429C1 9.03829 1.89543 8.14286 3 8.14286H5.9C6.09569 8.14286 6.28708 8.08544 6.45046 7.97772L12.4495 4.02228C13.1144 3.5839 14 4.06075 14 4.85714V19.1429C14 19.9392 13.1144 20.4161 12.4495 19.9777L6.45046 16.0223C6.28708 15.9146 6.09569 15.8571 5.9 15.8571H3C1.89543 15.8571 1 14.9617 1 13.8571Z"/><path d="M17.5 7.5C17.5 7.5 19 9 19 11.5C19 14 17.5 15.5 17.5 15.5"/><path d="M20.5 4.5C20.5 4.5 23 7 23 11.5C23 16 20.5 18.5 20.5 18.5"/></Icon>;
+const PauseIcon = (p) => <Icon {...p}><path d="M6 18.4V5.6C6 5.26863 6.26863 5 6.6 5H9.4C9.73137 5 10 5.26863 10 5.6V18.4C10 18.7314 9.73137 19 9.4 19H6.6C6.26863 19 6 18.7314 6 18.4Z"/><path d="M14 18.4V5.6C14 5.26863 14.2686 5 14.6 5H17.4C17.7314 5 18 5.26863 18 5.6V18.4C18 18.7314 17.7314 19 17.4 19H14.6C14.2686 19 14 18.7314 14 18.4Z"/></Icon>;
 
-const ChevronIcon = (p) => <Icon {...p}><path d="M9 6l6 6-6 6" /></Icon>;
-
-const HouseIcon = (p) => <Icon {...p}><path d="M4 11.5 12 4l8 7.5" /><path d="M6 10v9a1 1 0 0 0 1 1h3v-5h4v5h3a1 1 0 0 0 1-1v-9" /></Icon>;
-
-const SparkleIcon = (p) => <Icon {...p}><path d="M12 2 13.5 9 21 12 13.5 15 12 22 10.5 15 3 12 10.5 9Z" /></Icon>;
-
-const BuildingIcon = (p) => <Icon {...p}><rect x="5" y="3" width="14" height="18" rx="1" /><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2" /><path d="M9 21v-3h6v3" /></Icon>;
-
-const PersonIcon = (p) => <Icon {...p}><circle cx="12" cy="8" r="3.5" /><path d="M5 20c0-4 3-6 7-6s7 2 7 6" /></Icon>;
-
-const FolderIcon = (p) => <Icon {...p}><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" /></Icon>;
-
-const LockIcon = (p) => <Icon {...p}><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></Icon>;
-
-const FlagIcon = (p) => <Icon {...p}><path d="M5 3v18" /><path d="M5 4h11l-2 4 2 4H5" /></Icon>;
-
-const SendIcon = ({ color = T.brass, size = 17 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill={color}><path d="M3 11l18-8-8 18-2-8-8-2Z" /></svg>
-);
-
-const PinIcon = (p) => <Icon {...p}><path d="M12 17v5M8 13l4-9 4 9M5 13h14l-1.5 3h-11Z" /></Icon>;
-
-const CheckIcon = (p) => <Icon {...p}><path d="M5 12l5 5 9-11" /></Icon>;
+const SendIcon = ({ color = T.brass, size = 17 }) => <Icon size={size} color={color} strokeWidth={1.9}><path d="M22.1525 3.55321L11.1772 21.0044L9.50686 12.4078L2.00002 7.89795L22.1525 3.55321Z"/><path d="M9.45557 12.4436L22.1524 3.55321"/></Icon>;
 
 const StarIcon = ({ filled, size = 18, color = T.brass }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill={filled ? color : "none"} stroke={color}
-       strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 3l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.1-5.4 3.1 1.3-6-4.6-4.1 6.1-.6Z" />
-  </svg>
+  filled
+    ? <svg width={size} height={size} viewBox="0 0 24 24" style={{ color }} aria-hidden="true"><path d="M8.58737 8.23597L11.1849 3.00376C11.5183 2.33208 12.4817 2.33208 12.8151 3.00376L15.4126 8.23597L21.2215 9.08017C21.9668 9.18848 22.2638 10.0994 21.7243 10.6219L17.5217 14.6918L18.5135 20.4414C18.6409 21.1798 17.8614 21.7428 17.1945 21.3941L12 18.678L6.80547 21.3941C6.1386 21.7428 5.35909 21.1798 5.48645 20.4414L6.47825 14.6918L2.27575 10.6219C1.73617 10.0994 2.03322 9.18848 2.77852 9.08017L8.58737 8.23597Z" fill="currentColor"/></svg>
+    : <Icon size={size} color={color}><path d="M8.58737 8.23597L11.1849 3.00376C11.5183 2.33208 12.4817 2.33208 12.8151 3.00376L15.4126 8.23597L21.2215 9.08017C21.9668 9.18848 22.2638 10.0994 21.7243 10.6219L17.5217 14.6918L18.5135 20.4414C18.6409 21.1798 17.8614 21.7428 17.1945 21.3941L12 18.678L6.80547 21.3941C6.1386 21.7428 5.35909 21.1798 5.48645 20.4414L6.47825 14.6918L2.27575 10.6219C1.73617 10.0994 2.03322 9.18848 2.77852 9.08017L8.58737 8.23597Z"/></Icon>
 );
 
-/* ------------------------------------------------------------------ */
-/* Tela: Busca global                                                  */
-/* ------------------------------------------------------------------ */
-const SearchIcon = (p) => <Icon {...p}><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></Icon>;
-
-/* ------------------------------------------------------------------ */
-/* Notificações                                                        */
-/* ------------------------------------------------------------------ */
-const BellIcon = (p) => <Icon {...p}><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15Z" /><path d="M10 20a2 2 0 0 0 4 0" /></Icon>;
-
-const ChartIcon = (p) => <Icon {...p}><rect x="4" y="12" width="4" height="8" rx="0.5" /><rect x="10" y="7" width="4" height="13" rx="0.5" /><rect x="16" y="3" width="4" height="17" rx="0.5" /></Icon>;
-
-const SunIcon = (p) => <Icon {...p}><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></Icon>;
-
+/* Ícones das etiquetas de status: traço mais grosso para ler em tamanho pequeno */
+const SEM_ICONE = {
+  alerta: <><path d="M20.0429 21H3.95705C2.41902 21 1.45658 19.3364 2.22324 18.0031L10.2662 4.01533C11.0352 2.67792 12.9648 2.67791 13.7338 4.01532L21.7768 18.0031C22.5434 19.3364 21.581 21 20.0429 21Z"/><path d="M12 9V13"/><path d="M12 17.01L12.01 16.9989"/></>,
+  relogio: <><path d="M12 6L12 12L18 12"/><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"/></>,
+  seta: <><path d="M3 12L21 12M21 12L12.5 3.5M21 12L12.5 20.5"/></>,
+  check: <><path d="M5 13L9 17L19 7"/></>,
+  pausa: <><path d="M6 18.4V5.6C6 5.26863 6.26863 5 6.6 5H9.4C9.73137 5 10 5.26863 10 5.6V18.4C10 18.7314 9.73137 19 9.4 19H6.6C6.26863 19 6 18.7314 6 18.4Z"/><path d="M14 18.4V5.6C14 5.26863 14.2686 5 14.6 5H17.4C17.7314 5 18 5.26863 18 5.6V18.4C18 18.7314 17.7314 19 17.4 19H14.6C14.2686 19 14 18.7314 14 18.4Z"/></>,
+};
 function IconeSem({ tipo, cor, size = 15 }) {
-  const p = { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: cor, strokeWidth: 2.2, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": true };
-  if (tipo === "alerta") return <svg {...p}><path d="M12 3 2 20h20Z" /><path d="M12 10v4M12 17h.01" /></svg>;
-  if (tipo === "relogio") return <svg {...p}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>;
-  if (tipo === "seta") return <svg {...p}><path d="M5 12h14M13 6l6 6-6 6" /></svg>;
-  if (tipo === "check") return <svg {...p}><path d="M5 12l5 5 9-11" /></svg>;
-  return <svg {...p}><path d="M9 5v14M15 5v14" /></svg>;
+  return <Icon size={size} color={cor} strokeWidth={2.1}>{SEM_ICONE[tipo] || SEM_ICONE.pausa}</Icon>;
 }
 
-export { BackIcon, BellIcon, BuildingIcon, ChartIcon, CheckIcon, ChevronIcon, FlagIcon, FolderIcon, HouseIcon, Icon, IconeSem, LockIcon, PersonIcon, PinIcon, SearchIcon, SendIcon, SparkleIcon, StarIcon, SunIcon };
+export { BackIcon, BellIcon, BuildingIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronIcon, ChevronUpIcon, FlagIcon, FolderIcon, HouseIcon, Icon, IconeSem, LockIcon, PauseIcon, PersonIcon, PinIcon, SearchIcon, SendIcon, SoundIcon, SparkleIcon, StarIcon, SunIcon };
