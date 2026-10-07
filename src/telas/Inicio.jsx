@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ChartIcon, ChevronIcon, FlagIcon, FolderIcon, LockIcon, SearchIcon, StarIcon } from "../componentes/icones";
+import { ChartIcon, ChevronIcon, FlagIcon, FolderIcon, LockIcon, SearchIcon } from "../componentes/icones";
 import { Badge, Etiqueta, Faixa, LinhaLista, SecLabel } from "../componentes/ui";
 import { BLOQUEIOS_LISTA, ORGS, ORG_ORDER, PROCESSOS_LISTA, RECLAMACOES_LISTA, TOTAIS } from "../dados/base";
 import { fmtBRL, fmtBRLCurto, fmtData } from "../dados/formato";
@@ -228,38 +228,43 @@ function Chip({ ativo, onClick, children }) {
 }
 const LinhaChips = ({ children }) => <div className="flex gap-2 overflow-x-auto no-scrollbar" style={{ margin: "0 -32px", padding: "4px 32px" }}>{children}</div>;
 
-function ListaGenerica({ tipo, onBack, onAbrirBusca, followed, onOpenProcesso, onOpenBloqueio, recorteInicial = "todos" }) {
-  const isProcessos = tipo === "processos";
+// Processos: a lista com filtros foi substituída pela busca (junta processo, bloqueio e cliente
+// no mesmo resultado — a mesma BuscaGlobal de sempre). A tela fica só com o título e o campo.
+function ProcessosTela({ onBack, onAbrirBusca }) {
+  return (
+    <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 60 }}>
+      <Faixa bleed={32} onBack={onBack} backLabel="Início" titulo="Processos" sub={`${PROCESSOS_LISTA.length} na base de exemplo`} />
+      <button onClick={onAbrirBusca} aria-label="Buscar processo, bloqueio ou cliente"
+              className="w-full flex items-center gap-2 px-4 rounded-full mt-1" style={{ height: 50, background: S.cartao, boxShadow: CARD.boxShadow }}>
+        <SearchIcon size={20} color={S.texto2} />
+        <span style={{ fontFamily: F.ui, fontSize: 17, color: S.texto2 }}>Cliente, processo ou valor</span>
+      </button>
+      <p style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2, lineHeight: 1.45, marginTop: 14 }}>
+        Busque por cliente, processo ou valor para ver os processos e os bloqueios dele juntos.
+      </p>
+    </div>
+  );
+}
+
+function ListaGenerica({ tipo, onBack, onAbrirBusca, followed, onOpenProcesso, onOpenBloqueio }) {
+  if (tipo === "processos") return <ProcessosTela onBack={onBack} onAbrirBusca={onAbrirBusca} />;
+
   const [cliente, setCliente] = useState("todos");
-  const [recorte, setRecorte] = useState(recorteInicial);
-  const [ordem, setOrdem] = useState(isProcessos ? "recentes" : "recentes");
-  const base = isProcessos ? PROCESSOS_LISTA : BLOQUEIOS_LISTA;
-  const recortes = isProcessos
-    ? [["todos", "Todas as áreas"], ["parados", "Parados 60+ dias"], ["Trabalhista", "Trabalhista"], ["Cível", "Cível"], ["Administrativo", "Administrativo"]]
-    : [["todos", "Todos"], ["Ativo", "Ativos"], ["Levantado", "Levantados"]];
-  const ordens = isProcessos ? [["recentes", "Mais recentes"], ["parados", "Mais parados"], ["valor", "Maior valor"]] : [["recentes", "Mais recentes"], ["valor", "Maior valor"]];
-  const lista = base
+  const [recorte, setRecorte] = useState("todos");
+  const [ordem, setOrdem] = useState("recentes");
+  const recortes = [["todos", "Todos"], ["Ativo", "Ativos"], ["Levantado", "Levantados"]];
+  const ordens = [["recentes", "Mais recentes"], ["valor", "Maior valor"]];
+  const lista = BLOQUEIOS_LISTA
     .filter((x) => cliente === "todos" || x.clienteId === cliente)
-    .filter((x) => recorte === "todos" || (recorte === "parados" ? x.diasParado >= 60 : isProcessos ? x.area === recorte : x.status === recorte))
-    .sort({
-      recentes: isProcessos ? (a, b) => a.diasParado - b.diasParado : (a, b) => b.data - a.data,
-      parados: (a, b) => b.diasParado - a.diasParado,
-      valor: isProcessos ? (a, b) => b.valorCausa - a.valorCausa : (a, b) => b.valorNum - a.valorNum,
-    }[ordem]);
+    .filter((x) => recorte === "todos" || x.status === recorte)
+    .sort({ recentes: (a, b) => b.data - a.data, valor: (a, b) => b.valorNum - a.valorNum }[ordem]);
   const ativosTotal = BLOQUEIOS_LISTA.filter((b) => b.status === "Ativo").length;
 
   return (
     <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 60 }}>
-      <Faixa bleed={32} onBack={onBack} backLabel="Início" titulo={isProcessos ? "Processos" : "Bloqueios"}
-             sub={isProcessos ? `${PROCESSOS_LISTA.length} na base de exemplo` : `${ativosTotal} ativos de ${BLOQUEIOS_LISTA.length} na base`} />
-      {isProcessos && onAbrirBusca && (
-        <button onClick={onAbrirBusca} aria-label="Buscar processo, bloqueio ou cliente"
-                className="w-full flex items-center gap-2 px-4 rounded-full mt-1" style={{ height: 50, background: S.cartao, boxShadow: CARD.boxShadow }}>
-          <SearchIcon size={20} color={S.texto2} />
-          <span style={{ fontFamily: F.ui, fontSize: 17, color: S.texto2 }}>Cliente, processo ou valor</span>
-        </button>
-      )}
-      <div className="flex flex-col gap-2 mt-3" role="group" aria-label="Filtros">
+      <Faixa bleed={32} onBack={onBack} backLabel="Início" titulo="Bloqueios"
+             sub={`${ativosTotal} ativos de ${BLOQUEIOS_LISTA.length} na base`} />
+      <div className="flex flex-col gap-2" role="group" aria-label="Filtros">
         <LinhaChips>
           <Chip ativo={cliente === "todos"} onClick={() => setCliente("todos")}>Todos os clientes</Chip>
           {ORG_ORDER.map((id) => <Chip key={id} ativo={cliente === id} onClick={() => setCliente(id)}>{ORGS[id].name}</Chip>)}
@@ -268,8 +273,8 @@ function ListaGenerica({ tipo, onBack, onAbrirBusca, followed, onOpenProcesso, o
           {recortes.map(([id, rot]) => <Chip key={id} ativo={recorte === id} onClick={() => setRecorte(id)}>{rot}</Chip>)}
         </LinhaChips>
       </div>
-      <div className="flex items-center justify-between gap-2" style={{ margin: "14px 0 10px" }}>
-        <p role="status" style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2 }}>{lista.length} {isProcessos ? (lista.length === 1 ? "processo" : "processos") : (lista.length === 1 ? "bloqueio" : "bloqueios")}</p>
+      <div className="flex items-center justify-between gap-2" style={{ margin: "18px 0 10px" }}>
+        <p role="status" style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2 }}>{lista.length} {lista.length === 1 ? "bloqueio" : "bloqueios"}</p>
         <label className="flex items-center gap-2" style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2 }}>
           Ordenar
           <select id={`ordem-${tipo}`} value={ordem} onChange={(e) => setOrdem(e.target.value)}
@@ -282,19 +287,11 @@ function ListaGenerica({ tipo, onBack, onAbrirBusca, followed, onOpenProcesso, o
         <p style={{ fontFamily: F.ui, fontSize: 16, color: S.texto2, lineHeight: 1.5 }}>Nada com esses filtros. Toque em "Todos os clientes" ou em outro recorte.</p>
       ) : (
         <div style={CARD}>
-          {lista.map((item, i) => {
-            const st = semDe(item.status), last = i === lista.length - 1;
-            if (!isProcessos) {
-              return <LinhaLista key={item.id} onClick={() => onOpenBloqueio(item, "bloqueios")} last={last} sem={st}
-                                 icone={<LockIcon size={18} color={st.cor} />} titulo={<span style={{ fontSize: 17, fontVariantNumeric: "tabular-nums" }}>{item.valor}</span>}
-                                 detalhe={`${item.cliente} · ${fmtData(item.data)}`} direita={<Badge text={item.status} />} />;
-            }
-            return <LinhaLista key={item.id} onClick={() => onOpenProcesso(item, "processos")} last={last} sem={st}
-                               icone={<FolderIcon size={18} color={st.cor} />}
-                               titulo={item.cliente} extra={followed.has(item.id) ? <StarIcon filled size={13} /> : null}
-                               detalhe={`${item.desc} · ${ordem === "valor" ? (item.valorCausa ? fmtBRLCurto(item.valorCausa) : "sem valor") : item.diasParado >= 60 ? `parado há ${item.diasParado} dias` : item.lastUpdate}`}
-                               abaixo={<Badge text={item.status} />} />;
-          })}
+          {lista.map((item, i) => (
+            <LinhaLista key={item.id} onClick={() => onOpenBloqueio(item, "bloqueios")} last={i === lista.length - 1} sem={semDe(item.status)}
+                        icone={<LockIcon size={18} color={semDe(item.status).cor} />} titulo={<span style={{ fontSize: 17, fontVariantNumeric: "tabular-nums" }}>{item.valor}</span>}
+                        detalhe={`${item.cliente} · ${fmtData(item.data)}`} direita={<Badge text={item.status} />} />
+          ))}
         </div>
       )}
     </div>

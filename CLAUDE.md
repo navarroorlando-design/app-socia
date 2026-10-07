@@ -83,8 +83,11 @@ evita ciclos entre módulos.
 - **Atalhos do Início** (bloco "Atalhos", `src/telas/Inicio.jsx`): só 4, sem repetir destino nenhum (cada um
   é a única porta para aquela tela): Processos, Bloqueios, Reclamação constitucional e Escritório. "Sigo" e
   "Perguntar" foram tirados por já existirem como bloco próprio ("Processos que você segue") e aba da navbar
-  (IA); "Buscar" virou um ícone de lupa dentro da própria tela de Processos (`onAbrirBusca`), e abre a mesma
-  busca global de sempre (`BuscaGlobal`).
+  (IA).
+- **Tela Processos** (`ProcessosTela`, dentro de `src/telas/Inicio.jsx`): não tem filtro nem lista — só o
+  título e um campo de busca, que abre a `BuscaGlobal` de sempre (processo, bloqueio e cliente juntos,
+  a forma que a sócia prefere de achar as coisas). Bloqueios continua com os filtros e a lista de antes;
+  só Processos foi simplificada.
 - **Identidade das OS** (`src/componentes/MarcaOrg.jsx`, `marcas.js` gerado por `python3 scripts/marcas.py` a partir de
   `marcas/originais/`): na aba OS, o logo inteiro numa placa branca com um fio na cor da OS e o cartão num tom bem
   claro dessa cor (`tomOrg`); nas outras telas, o símbolo num círculo branco. A cor da OS **nunca** vai em texto
