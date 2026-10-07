@@ -14,7 +14,8 @@ import { MeusAlertas, PersonalizarInicio, PessoalContext, TIPOS_ALERTA, mesmoAlv
 import { INITIAL_NOTIFS, NotifPrefs, NotificacoesCentral } from "./telas/Notificacoes";
 import { OsLista, OsPerfil } from "./telas/Organizacoes";
 import { BloqueiosOrg, ContratoDetalhe, ContratosOrg, ProcessosOrg } from "./telas/OrgMetricas";
-import { Carteira, Movimentacoes } from "./telas/Carteira";
+import { Movimentacoes } from "./telas/Carteira";
+import { Escritorio } from "./telas/Escritorio";
 import { ReclamacaoDetalhe, ReclamacoesTela } from "./telas/Reclamacoes";
 import { RelatorioCliente } from "./telas/RelatorioCliente";
 import { AvisoSemInternet, Bloqueio, FluxoEntrada, Seguranca, useConexao } from "./telas/Entrada";
@@ -79,7 +80,9 @@ function AppSociosPrototype() {
   const [alertas, setAlertasS] = useState(() => lerPref("alertas", []));
   const [ordemInicio, setOrdemInicioS] = useState(() => {
     const o = lerPref("inicio", INICIO_PADRAO);
-    return Array.isArray(o) && INICIO_PADRAO.every((p) => o.some((x) => x.id === p.id)) ? o : INICIO_PADRAO;
+    // limpa blocos antigos que não existem mais (ex.: "navegar por tipo", removido)
+    const limpo = Array.isArray(o) ? o.filter((x) => INICIO_BLOCOS[x.id]) : [];
+    return INICIO_PADRAO.every((p) => limpo.some((x) => x.id === p.id)) ? limpo : INICIO_PADRAO;
   });
   // Tutorial: tour de boas-vindas (uma vez) e dicas de primeira vez em cada tela
   const [tourAberto, setTourAberto] = useState(() => !!acesso.entrou && !lerPref("tourVisto", false));
@@ -172,7 +175,7 @@ function AppSociosPrototype() {
   // "Me leve lá" das perguntas comuns
   const irPara = (destino) => {
     const perfil = { alertas: "alertas", personalizar: "personalizar", seguranca: "seguranca", perfil: "main" };
-    const inicio = { carteira: "carteira", acompanhando: "acompanhando", busca: "busca" };
+    const inicio = { escritorio: "escritorio", acompanhando: "acompanhando", busca: "busca" };
     if (perfil[destino]) { setTab("perfil"); setPerfilView(perfil[destino]); }
     else if (inicio[destino]) { setTab("inicio"); setInicioView(inicio[destino]); }
     else if (destino === "org") openOrg(ordem[0]);
@@ -295,9 +298,7 @@ function AppSociosPrototype() {
             onOpenBloqueio={openBloqueio}
             onOpenReclamacao={openReclamacao}
             onOpenAcompanhando={() => setInicioView("acompanhando")}
-            onOpenBusca={() => setInicioView("busca")}
             onOpenMenu={() => setMenuVA(true)}
-            onPerguntar={() => changeTab("ia")}
             unreadCount={unreadCount}
             ordem={ordemInicio}
             foto={foto}
@@ -309,8 +310,8 @@ function AppSociosPrototype() {
             onMarkAll={() => setNotifs((prev) => prev.map((n) => ({ ...n, read: true })))}
             onBack={() => setInicioView("feed")} />
         )}
-        {tab === "inicio" && inicioView === "carteira" && (
-          <Carteira onBack={() => setInicioView("feed")} onOpenOrg={openOrg} onOpenContrato={openContratoDe} />
+        {tab === "inicio" && inicioView === "escritorio" && (
+          <Escritorio onBack={() => setInicioView("feed")} onOpenOrg={openOrg} onOpenContrato={openContratoDe} />
         )}
         {tab === "inicio" && inicioView === "movimentacoes" && (
           <Movimentacoes onBack={() => setInicioView("feed")} onOpenProcesso={(p) => openProcesso(p, "movimentacoes")} onOpenBloqueio={(b) => openBloqueio(b, "movimentacoes")} />
@@ -324,7 +325,7 @@ function AppSociosPrototype() {
         )}
         {tab === "inicio" && ["processos", "bloqueios"].includes(inicioView) && (
           <ListaGenerica key={inicioView + recorteLista} tipo={inicioView} recorteInicial={recorteLista} onBack={() => setInicioView("feed")} followed={followed}
-                         onOpenProcesso={openProcesso} onOpenBloqueio={openBloqueio} />
+                         onOpenProcesso={openProcesso} onOpenBloqueio={openBloqueio} onAbrirBusca={() => setInicioView("busca")} />
         )}
         {tab === "inicio" && inicioView === "busca" && (
           <BuscaGlobal q={searchQuery} setQ={setSearchQuery}

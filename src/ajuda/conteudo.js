@@ -49,7 +49,7 @@ const PERGUNTAS = [
     id: "passivo",
     pergunta: "O que é o passivo estimado?",
     resposta: "É a soma do valor em discussão nos processos ativos de um contrato de gestão, separada pelo prognóstico do escritório: provável, possível e remoto. Os bloqueios aparecem à parte, porque são dinheiro que já saiu da conta.",
-    destino: "carteira", rotuloDestino: "Ver o passivo da carteira",
+    destino: "escritorio", rotuloDestino: "Ver o passivo da carteira",
   },
   {
     id: "contrato",

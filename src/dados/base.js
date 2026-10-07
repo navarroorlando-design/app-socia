@@ -186,16 +186,26 @@ for (const p of PROCESSOS_LISTA) {
 const ENCERRADOS_2026 = [];
 {
   const r = rng(20260);
-  const MOTIVOS = ["Acordo homologado", "Pedido julgado improcedente", "Extinção sem resolução do mérito", "Desistência da parte autora"];
+  // motivo: como o processo terminou. resultado: o que isso significou para o escritório/cliente
+  // (Favorável = não pagamos nada ou o pedido contra o cliente caiu; Desfavorável = tivemos que pagar).
+  const MOTIVOS = [
+    ["Acordo homologado", "Acordo", 0.28],
+    ["Pedido julgado improcedente", "Favorável", 0.27],
+    ["Extinção sem resolução do mérito", "Favorável", 0.13],
+    ["Desistência da parte autora", "Favorável", 0.09],
+    ["Pedido julgado procedente", "Desfavorável", 0.23],
+  ];
   for (const [clienteId, o] of Object.entries(ORGS)) {
     for (const c of o.contratos) {
       const n = Math.floor(r() * 3);
       for (let i = 0; i < n; i++) {
         let x = r() * 100;
+        let y = r();
+        const [motivo, resultado] = MOTIVOS.find(([, , w]) => (y -= w) < 0) || MOTIVOS[0];
         ENCERRADOS_2026.push({
           id: `enc-${clienteId}-${ENCERRADOS_2026.length}`, clienteId, cliente: CLIENTE_NOME[clienteId], contrato: c.orgao,
           area: r() < 0.7 ? "Trabalhista" : "Cível", valorCausa: Math.round((25 + r() * 160) * 10) * 100,
-          prognostico: PROGNOSTICOS.find(([, w]) => (x -= w) < 0)[0], entradaMes: -1, saiuMes: 1 + Math.floor(r() * 9), motivo: MOTIVOS[Math.floor(r() * MOTIVOS.length)],
+          prognostico: PROGNOSTICOS.find(([, w]) => (x -= w) < 0)[0], entradaMes: -1, saiuMes: 1 + Math.floor(r() * 9), motivo, resultado,
         });
       }
     }

@@ -71,8 +71,8 @@ evita ciclos entre módulos.
 - **Carvão é a cor da marca** (`S.marca`): cartão principal do Início, bloco de título das telas de
   detalhe e identidade no Perfil, com apoio em osso. Etiquetas sobre o carvão usam fundo claro
   (`sobreCor`). Cor de status só em etiquetas e ícones, nunca no fundo de cartão.
-- **Atalhos do Início em tons**: Bloqueios oliva, Sigo osso, Buscar branco, Perguntar latão sólido
-  (texto branco, 6,7:1). O dourado da IA nunca vai sobre osso (4,4:1, reprova).
+- **Atalhos do Início em tons**: Processos branco, Bloqueios osso, Reclamação constitucional branco,
+  Escritório oliva (texto branco, 6,7:1). O tom "ia" (dourado) é exclusivo da aba IA, nunca de um atalho.
 - **Ícones: Iconoir** (MIT), gerados em `src/componentes/icones.jsx`, traço 1,7 (2,1 nas etiquetas).
   Processo = documento (`page`), OS = `city`. **Sem balança, martelo ou colunas**: clichês vetados.
 - **Títulos em Lexend.** A serifada foi testada e recusada. `F.titulo` segue existindo (cai na Lexend).
@@ -80,6 +80,11 @@ evita ciclos entre módulos.
   (valor bloqueado e anel "já levantado") e grade 2×2 de atalhos com detalhe; abas e listas com título
   grande estilo iOS que encolhe ao rolar; detalhes com o título num bloco carvão arredondado e a
   fileira de números-chave logo abaixo, em cartão branco.
+- **Atalhos do Início** (bloco "Atalhos", `src/telas/Inicio.jsx`): só 4, sem repetir destino nenhum (cada um
+  é a única porta para aquela tela): Processos, Bloqueios, Reclamação constitucional e Escritório. "Sigo" e
+  "Perguntar" foram tirados por já existirem como bloco próprio ("Processos que você segue") e aba da navbar
+  (IA); "Buscar" virou um ícone de lupa dentro da própria tela de Processos (`onAbrirBusca`), e abre a mesma
+  busca global de sempre (`BuscaGlobal`).
 - **Identidade das OS** (`src/componentes/MarcaOrg.jsx`, `marcas.js` gerado por `python3 scripts/marcas.py` a partir de
   `marcas/originais/`): na aba OS, o logo inteiro numa placa branca com um fio na cor da OS e o cartão num tom bem
   claro dessa cor (`tomOrg`); nas outras telas, o símbolo num círculo branco. A cor da OS **nunca** vai em texto
@@ -130,6 +135,11 @@ sua (`src/telas/OrgMetricas.jsx`). O cartão da lista de organizações mostra s
 - **Relatório para o cliente** (`src/telas/RelatorioCliente.jsx`): prévia do passivo por contrato,
   conferência obrigatória e PDF (jsPDF). No claude.ai o arquivo sai pela capacidade `downloads`
   (declarar `capabilities: {sample: {}, downloads: true}` ao publicar); fora dele, baixa direto.
+- **Escritório** (`src/telas/Escritorio.jsx`, aberta pelo atalho "Escritório"): visão de todos os clientes,
+  em duas abas. **Passivo** é a antiga tela Carteira (passivo por cliente, contratos com maior passivo).
+  **Desempenho** é o resultado dos processos encerrados em 2026 (`ENCERRADOS_2026`, campo `resultado`:
+  Favorável, Acordo ou Desfavorável), por quantidade de processos — **a unidade (quantidade × valor) e os
+  nomes das categorias ainda precisam ser validados com o escritório.**
 
 ## Funções pessoais da sócia (`src/pessoal.jsx`)
 

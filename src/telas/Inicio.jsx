@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ChevronIcon, FlagIcon, FolderIcon, LockIcon, SearchIcon, SparkleIcon, StarIcon } from "../componentes/icones";
+import { ChartIcon, ChevronIcon, FlagIcon, FolderIcon, LockIcon, SearchIcon, StarIcon } from "../componentes/icones";
 import { Badge, Etiqueta, Faixa, LinhaLista, SecLabel } from "../componentes/ui";
 import { BLOQUEIOS_LISTA, ORGS, ORG_ORDER, PROCESSOS_LISTA, RECLAMACOES_LISTA, TOTAIS } from "../dados/base";
 import { fmtBRL, fmtBRLCurto, fmtData } from "../dados/formato";
@@ -30,10 +30,10 @@ function Anel({ pct, rotulo, size = 92, claro }) {
   );
 }
 const NATUREZAS = ["Trabalhista", "Cível", "Administrativo"];
-const INICIO_BLOCOS = { resumo: "Bloqueado hoje", atalhos: "Passivo e atalhos", ativos: "Processos ativos", seguidos: "Processos que você segue", hoje: "Hoje no escritório", navegar: "Navegar por tipo" };
+const INICIO_BLOCOS = { resumo: "Bloqueado hoje", atalhos: "Atalhos", ativos: "Processos ativos", seguidos: "Processos que você segue", hoje: "Hoje no escritório" };
 const INICIO_PADRAO = Object.keys(INICIO_BLOCOS).map((id) => ({ id, visivel: true }));
 
-function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onOpenProcesso, onOpenBloqueio, onOpenReclamacao, onOpenAcompanhando, onOpenBusca, onOpenMenu, onPerguntar, unreadCount, foto, apelido, ordem = INICIO_PADRAO }) {
+function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onOpenProcesso, onOpenBloqueio, onOpenReclamacao, onOpenAcompanhando, onOpenMenu, unreadCount, foto, apelido, ordem = INICIO_PADRAO }) {
   const preview = followedItems.slice(0, 3);
   const parados90 = PROCESSOS_LISTA.filter((p) => p.diasParado >= 90).length;
   const sem = (id) => SEMANTICA.find((x) => x.id === id);
@@ -47,7 +47,6 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onO
   const pctLevantado = Math.round((levantado / (levantado + TOTAIS.bloqueadoAtivo)) * 100);
   const ativos = BLOQUEIOS_LISTA.filter((b) => b.status === "Ativo").length;
   const passivo = PROCESSOS_LISTA.reduce((soma, p) => soma + p.valorCausa, 0);
-  const nContratos = Object.values(ORGS).reduce((soma, o) => soma + o.contratos.length, 0);
   const proc = (id) => PROCESSOS_LISTA.find((p) => p.id === id);
   // "Ativo" = não arquivado nem baixado. Na base de exemplo, todos estão ativos.
   const ativosProc = PROCESSOS_LISTA.filter((p) => !["Arquivado", "Baixado"].includes(p.status));
@@ -60,14 +59,13 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onO
     ? { escuro: true, fundo: S.marca, texto: "#FFFFFF", apoio: S.marcaTexto2, linha: "rgba(255,255,255,.16)", trilho: S.marcaTrilho, barra: S.osso, circulo: "rgba(255,255,255,.12)", sombra: "0 10px 24px rgba(31,30,26,.22)" }
     : { escuro: false, fundo: S.cartao, texto: S.ink, apoio: S.texto2, linha: S.linha, trilho: S.linha, barra: S.oliva, circulo: "#EFEBE2", sombra: CARD.boxShadow });
   const caixa = (t) => ({ ...CARD, background: t.fundo, boxShadow: t.sombra });
-  const tResumo = tema("resumo"), tAtalhos = tema("atalhos"), tAtivos = tema("ativos"), tSeguidos = tema("seguidos"), tHoje = tema("hoje"), tNavegar = tema("navegar");
+  const tResumo = tema("resumo"), tAtivos = tema("ativos"), tSeguidos = tema("seguidos"), tHoje = tema("hoje");
 
   // Tons da família neutra: cada atalho num tom, o latão fica só para a IA.
   const TONS_ATALHO = {
     cartao: { fundo: S.cartao, titulo: S.ink, apoio: S.texto2, circulo: "#EFEBE2", sombra: true },
     osso: { fundo: S.osso, titulo: S.ink, apoio: S.ossoTexto2, circulo: "rgba(255,253,249,.55)" },
     oliva: { fundo: S.oliva, titulo: "#FFFFFF", apoio: "#E6E1D6", circulo: "rgba(255,255,255,.14)" },
-    ia: { fundo: S.ia, titulo: "#FFFFFF", apoio: S.iaFundo, circulo: "rgba(255,255,255,.16)" },
   };
   const Atalho = ({ Icone, rotulo, detalhe, onClick, tom = "cartao" }) => {
     const t = TONS_ATALHO[tom];
@@ -109,22 +107,12 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onO
       </div>
     </>),
     atalhos: (<>
-      {/* atalhos em grade 2×2 */}
+      {/* atalhos em grade 2×2: 4 tipos, sempre o mesmo tamanho */}
       <div className="grid grid-cols-2 gap-3 mt-4">
-        <button onClick={() => onOpenList("carteira")} className="col-span-2 text-left flex items-center gap-3"
-                style={{ ...CARD, background: tAtalhos.escuro ? S.marca : S.oliva, boxShadow: tAtalhos.escuro ? tAtalhos.sombra : "none", padding: 16 }}
-                aria-label={`Passivo estimado da carteira: ${fmtBRL(passivo)} em ${nContratos} contratos de gestão`}>
-          <span className="flex-1 min-w-0">
-            <span className="block" style={{ fontFamily: F.ui, fontSize: 15, fontWeight: 600, color: "#FFFFFF" }}>Passivo estimado da carteira</span>
-            <span className="block" style={{ fontFamily: F.ui, fontSize: 26, fontWeight: 600, color: "#FFFFFF", letterSpacing: "-0.02em", marginTop: 4, whiteSpace: "nowrap" }}>{fmtBRL(passivo)}</span>
-            <span className="block" style={{ fontFamily: F.ui, fontSize: 14, color: "#E6E1D6", marginTop: 2 }}>em {nContratos} contratos de gestão</span>
-          </span>
-          <ChevronIcon size={18} color="#FFFFFF" strokeWidth={2} />
-        </button>
+        <Atalho rotulo="Processos" detalhe={`${PROCESSOS_LISTA.length} no total`} onClick={() => onOpenList("processos")} Icone={FolderIcon} tom="cartao" />
         <Atalho rotulo="Bloqueios" detalhe={`${ativos} ativos`} onClick={() => onOpenList("bloqueios")} Icone={LockIcon} tom="osso" />
-        <Atalho rotulo="Sigo" detalhe={`${followedItems.length} processos`} onClick={onOpenAcompanhando} Icone={StarIcon} />
-        <Atalho rotulo="Buscar" detalhe="Processo, cliente ou número" onClick={onOpenBusca} Icone={SearchIcon} />
-        <Atalho rotulo="Perguntar" detalhe="Relatórios com a IA" onClick={onPerguntar} Icone={SparkleIcon} tom="ia" />
+        <Atalho rotulo="Reclamação constitucional" detalhe={`${RECLAMACOES_LISTA.length} no STF`} onClick={() => onOpenList("reclamacoes")} Icone={FlagIcon} tom="cartao" />
+        <Atalho rotulo="Escritório" detalhe={`${fmtBRLCurto(passivo)} de passivo`} onClick={() => onOpenList("escritorio")} Icone={ChartIcon} tom="oliva" />
       </div>
     </>),
     ativos: (<>
@@ -188,14 +176,6 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onO
         <FeedItem cliente="AFNE" text="Audiência trabalhista remarcada na ação declaratória" time="4 dias" sem={sem("atencao")} tag="Remarcação" onClick={() => onOpenProcesso(proc("p4"), "feed")} last t={tHoje} />
       </div>
     </>),
-    navegar: (<>
-      <SecLabel>Navegar por tipo</SecLabel>
-      <div style={caixa(tNavegar)}>
-        <LinhaNav t={tNavegar} Icone={FolderIcon} label="Processos" value={TOTAIS.processos.toLocaleString("pt-BR")} onClick={() => onOpenList("processos")} />
-        <LinhaNav t={tNavegar} Icone={LockIcon} label="Bloqueios ativos" value={fmtBRLCurto(TOTAIS.bloqueadoAtivo)} onClick={() => onOpenList("bloqueios")} />
-        <LinhaNav t={tNavegar} Icone={FlagIcon} label="Reclamações no STF" value={String(RECLAMACOES_LISTA.length)} onClick={() => onOpenList("reclamacoes")} last />
-      </div>
-    </>),
   };
 
   return (
@@ -218,17 +198,6 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onO
   );
 }
 
-/* Linha de "Navegar por tipo", no tom do bloco (claro ou carvão) */
-function LinhaNav({ t, Icone, label, value, onClick, last }) {
-  return (
-    <button onClick={onClick} className="flex items-center gap-3 w-full text-left" style={{ padding: "12px 16px", borderBottom: last ? "none" : `1px solid ${t.linha}` }}>
-      <span className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: t.circulo }}><Icone size={20} color={t.texto} /></span>
-      <span style={{ fontFamily: F.ui, fontSize: 17, color: t.texto, flex: 1 }}>{label}</span>
-      {value && <span style={{ fontFamily: F.ui, fontSize: 16, color: t.apoio, fontVariantNumeric: "tabular-nums" }}>{value}</span>}
-      <ChevronIcon size={16} color={t.apoio} strokeWidth={2} />
-    </button>
-  );
-}
 
 function FeedItem({ cliente, text, time, sem, tag, onClick, last, t }) {
   return (
@@ -259,7 +228,7 @@ function Chip({ ativo, onClick, children }) {
 }
 const LinhaChips = ({ children }) => <div className="flex gap-2 overflow-x-auto no-scrollbar" style={{ margin: "0 -32px", padding: "4px 32px" }}>{children}</div>;
 
-function ListaGenerica({ tipo, onBack, followed, onOpenProcesso, onOpenBloqueio, recorteInicial = "todos" }) {
+function ListaGenerica({ tipo, onBack, onAbrirBusca, followed, onOpenProcesso, onOpenBloqueio, recorteInicial = "todos" }) {
   const isProcessos = tipo === "processos";
   const [cliente, setCliente] = useState("todos");
   const [recorte, setRecorte] = useState(recorteInicial);
@@ -282,7 +251,12 @@ function ListaGenerica({ tipo, onBack, followed, onOpenProcesso, onOpenBloqueio,
   return (
     <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 60 }}>
       <Faixa bleed={32} onBack={onBack} backLabel="Início" titulo={isProcessos ? "Processos" : "Bloqueios"}
-             sub={isProcessos ? `${PROCESSOS_LISTA.length} na base de exemplo` : `${ativosTotal} ativos de ${BLOQUEIOS_LISTA.length} na base`} />
+             sub={isProcessos ? `${PROCESSOS_LISTA.length} na base de exemplo` : `${ativosTotal} ativos de ${BLOQUEIOS_LISTA.length} na base`}
+             direita={isProcessos && onAbrirBusca && (
+               <button onClick={onAbrirBusca} aria-label="Buscar processo, bloqueio ou cliente" className="w-11 h-11 rounded-full flex items-center justify-center shrink-0" style={{ background: "#FFFDF9", boxShadow: CARD.boxShadow }}>
+                 <SearchIcon size={19} color={S.ink} strokeWidth={1.9} />
+               </button>
+             )} />
       <div className="flex flex-col gap-2" role="group" aria-label="Filtros">
         <LinhaChips>
           <Chip ativo={cliente === "todos"} onClick={() => setCliente("todos")}>Todos os clientes</Chip>
