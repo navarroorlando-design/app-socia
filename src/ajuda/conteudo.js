@@ -9,7 +9,7 @@ const PASSOS_TOUR = [
   {
     id: "inicio",
     titulo: "Tudo começa no Início",
-    texto: "O cartão escuro mostra quanto está bloqueado hoje em todos os clientes. Logo abaixo ficam o passivo da carteira e quatro atalhos: Bloqueios, Sigo, Buscar e Perguntar.",
+    texto: "O cartão escuro mostra quanto está bloqueado hoje em todos os clientes. Logo abaixo ficam quatro atalhos: Processos, Bloqueios, Reclamação constitucional e Escritório.",
   },
   {
     id: "os",
@@ -102,8 +102,8 @@ const PERGUNTAS = [
   {
     id: "buscar",
     pergunta: "Como acho um processo pelo número?",
-    resposta: "No Início, toque em Buscar e digite parte do número, o nome do cliente ou uma palavra da descrição.",
-    destino: "busca", rotuloDestino: "Abrir a busca",
+    resposta: "Toque no atalho Processos, no Início, e digite parte do número, o nome do cliente ou uma palavra da descrição.",
+    destino: "processos", rotuloDestino: "Abrir Processos",
   },
   {
     id: "seguranca",

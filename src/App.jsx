@@ -6,7 +6,6 @@ import { T, tomDeStatus } from "./estilo/tokens";
 import { PINNED_INICIAIS, conversar, erroTexto, useSample } from "./ia/motor";
 import { PrefsContext, gravarPref, lerPref } from "./preferencias";
 import { BloqueioDetalhe } from "./telas/BloqueioDetalhe";
-import { BuscaGlobal } from "./telas/BuscaGlobal";
 import { GuiaEstilo } from "./telas/GuiaEstilo";
 import { IaAsk, IaConversa, PastaRelatorios } from "./telas/Ia";
 import { AcompanhandoLista, INICIO_BLOCOS, INICIO_PADRAO, InicioFeed, ListaGenerica } from "./telas/Inicio";
@@ -47,7 +46,6 @@ function AppSociosPrototype() {
     return next;
   });
 
-  const [searchQuery, setSearchQuery] = useState("");
   const [selectedBloqueio, setSelectedBloqueio] = useState(null);
   const [bloqueioOrigin, setBloqueioOrigin] = useState("bloqueios");
   const [selectedReclamacao, setSelectedReclamacao] = useState(null);
@@ -175,7 +173,7 @@ function AppSociosPrototype() {
   // "Me leve lá" das perguntas comuns
   const irPara = (destino) => {
     const perfil = { alertas: "alertas", personalizar: "personalizar", seguranca: "seguranca", perfil: "main" };
-    const inicio = { escritorio: "escritorio", acompanhando: "acompanhando", busca: "busca" };
+    const inicio = { escritorio: "escritorio", acompanhando: "acompanhando", processos: "processos" };
     if (perfil[destino]) { setTab("perfil"); setPerfilView(perfil[destino]); }
     else if (inicio[destino]) { setTab("inicio"); setInicioView(inicio[destino]); }
     else if (destino === "org") openOrg(ordem[0]);
@@ -257,7 +255,6 @@ function AppSociosPrototype() {
     tab === "ia" ? null :
     tab === "perfil" ? (perfilView === "guia" ? null : "marinho") :
     tab === "os" ? "marinho" :
-    inicioView === "busca" ? null :
     inicioView === "detalhe" && selectedProcesso ? tomDeStatus(selectedProcesso.status) :
     inicioView === "bloqueio" && selectedBloqueio ? tomDeStatus(selectedBloqueio.status) :
     "marinho";
@@ -325,14 +322,7 @@ function AppSociosPrototype() {
         )}
         {tab === "inicio" && ["processos", "bloqueios"].includes(inicioView) && (
           <ListaGenerica key={inicioView + recorteLista} tipo={inicioView} recorteInicial={recorteLista} onBack={() => setInicioView("feed")} followed={followed}
-                         onOpenProcesso={openProcesso} onOpenBloqueio={openBloqueio} onAbrirBusca={() => setInicioView("busca")} />
-        )}
-        {tab === "inicio" && inicioView === "busca" && (
-          <BuscaGlobal q={searchQuery} setQ={setSearchQuery}
-            onBack={() => { setSearchQuery(""); setInicioView("feed"); }}
-            onOpenProcesso={(p) => openProcesso(p, "busca")}
-            onOpenBloqueio={(b) => openBloqueio(b, "busca")}
-            onOpenOrg={openOrg} />
+                         onOpenProcesso={openProcesso} onOpenBloqueio={openBloqueio} onOpenOrg={openOrg} />
         )}
         {tab === "inicio" && inicioView === "bloqueio" && selectedBloqueio && (
           <BloqueioDetalhe bloqueio={selectedBloqueio} backLabel={backLabels[bloqueioOrigin]}

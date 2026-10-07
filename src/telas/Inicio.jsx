@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import { ChartIcon, ChevronIcon, FlagIcon, FolderIcon, LockIcon, SearchIcon } from "../componentes/icones";
 import { Badge, Etiqueta, Faixa, LinhaLista, SecLabel } from "../componentes/ui";
 import { BLOQUEIOS_LISTA, ORGS, ORG_ORDER, PROCESSOS_LISTA, RECLAMACOES_LISTA, TOTAIS } from "../dados/base";
-import { fmtBRL, fmtBRLCurto, fmtData } from "../dados/formato";
-import { CARD, F, S, SEMANTICA, T, semDe } from "../estilo/tokens";
+import { fmtBRL, fmtBRLCurto, fmtData, norm } from "../dados/formato";
+import { CARD, F, LINK, S, SEMANTICA, T, semDe } from "../estilo/tokens";
 import { Avatar } from "../preferencias";
 import { Dica } from "../ajuda/Dica";
+import { MarcaOrg } from "../componentes/MarcaOrg";
 
 /* ------------------------------------------------------------------ */
 /* Telas: Início                                                       */
@@ -228,26 +229,86 @@ function Chip({ ativo, onClick, children }) {
 }
 const LinhaChips = ({ children }) => <div className="flex gap-2 overflow-x-auto no-scrollbar" style={{ margin: "0 -32px", padding: "4px 32px" }}>{children}</div>;
 
-// Processos: a lista com filtros foi substituída pela busca (junta processo, bloqueio e cliente
-// no mesmo resultado — a mesma BuscaGlobal de sempre). A tela fica só com o título e o campo.
-function ProcessosTela({ onBack, onAbrirBusca }) {
+// Processos: não tem mais filtro nem lista estática. É uma página só — o campo de busca já
+// mostra, ao digitar, organizações, processos e bloqueios juntos (a mesma lógica de sempre).
+const SecaoBusca = ({ title, children }) => (
+  <>
+    <SecLabel>{title}</SecLabel>
+    <div style={CARD}>{children}</div>
+  </>
+);
+
+function ProcessosTela({ onBack, onOpenProcesso, onOpenBloqueio, onOpenOrg }) {
+  const [q, setQ] = useState("");
+  const term = norm(q.trim());
+  const orgs = term ? ORG_ORDER.filter((id) => norm(ORGS[id].name).includes(term)) : [];
+  const processos = term ? PROCESSOS_LISTA.filter((p) => norm(`${p.cliente} ${p.desc}`).includes(term)) : [];
+  const bloqueios = term ? BLOQUEIOS_LISTA.filter((b) => norm(`${b.cliente} ${b.valor} ${b.contrato}`).includes(term)) : [];
+  const total = orgs.length + processos.length + bloqueios.length;
   return (
     <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 60 }}>
       <Faixa bleed={32} onBack={onBack} backLabel="Início" titulo="Processos" sub={`${PROCESSOS_LISTA.length} na base de exemplo`} />
-      <button onClick={onAbrirBusca} aria-label="Buscar processo, bloqueio ou cliente"
-              className="w-full flex items-center gap-2 px-4 rounded-full mt-1" style={{ height: 50, background: S.cartao, boxShadow: CARD.boxShadow }}>
+      <div className="busca-campo flex items-center gap-2 px-4 rounded-full" style={{ height: 50, background: S.cartao, boxShadow: CARD.boxShadow }}>
         <SearchIcon size={20} color={S.texto2} />
-        <span style={{ fontFamily: F.ui, fontSize: 17, color: S.texto2 }}>Cliente, processo ou valor</span>
-      </button>
-      <p style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2, lineHeight: 1.45, marginTop: 14 }}>
-        Busque por cliente, processo ou valor para ver os processos e os bloqueios dele juntos.
-      </p>
+        <input id="busca" aria-label="Buscar" value={q} onChange={(e) => setQ(e.target.value)}
+               placeholder="Cliente, processo ou valor"
+               className="flex-1 bg-transparent outline-none text-[17px]" style={{ color: S.ink, fontFamily: F.ui }} />
+        {q && <button onClick={() => setQ("")} aria-label="Limpar busca" style={LINK}>Limpar</button>}
+      </div>
+
+      <div className="mt-4">
+        {!term && (
+          <>
+            <SecLabel>Sugestões</SecLabel>
+            <div className="flex flex-wrap gap-2">
+              {["AFNE", "Gnosis", "trabalhista", "SISBAJUD", "Niterói"].map((s) => (
+                <button key={s} onClick={() => setQ(s)} className="rounded-full" style={{ background: S.cartao, boxShadow: CARD.boxShadow, fontFamily: F.ui, fontSize: 16, color: S.ink, padding: "8px 14px" }}>{s}</button>
+              ))}
+            </div>
+          </>
+        )}
+
+        {term && total === 0 && (
+          <p style={{ fontFamily: F.ui, fontSize: 16, color: S.texto2, lineHeight: 1.45 }}>Nada encontrado para "{q}". Tente o nome do cliente ou o tipo de ação.</p>
+        )}
+
+        {orgs.length > 0 && (
+          <SecaoBusca title="Organizações">
+            {orgs.map((id, i) => (
+              <button key={id} onClick={() => onOpenOrg(id)} className="flex items-center gap-3 w-full text-left" style={{ padding: "12px 16px", borderBottom: i === orgs.length - 1 ? "none" : `1px solid ${S.linha}` }}>
+                <MarcaOrg id={id} iniciais={ORGS[id].initials} size={40} />
+                <span className="flex-1" style={{ fontFamily: F.ui, fontSize: 16, fontWeight: 600, color: S.ink }}>{ORGS[id].name}</span>
+                <ChevronIcon size={16} color={S.texto2} strokeWidth={2} />
+              </button>
+            ))}
+          </SecaoBusca>
+        )}
+
+        {processos.length > 0 && (
+          <SecaoBusca title="Processos">
+            {processos.map((p, i) => (
+              <LinhaLista key={p.id} onClick={() => onOpenProcesso(p, "processos")} last={i === processos.length - 1} sem={semDe(p.status)}
+                          icone={<FolderIcon size={18} color={semDe(p.status).cor} />} titulo={p.cliente} detalhe={p.desc} abaixo={<Badge text={p.status} />} />
+            ))}
+          </SecaoBusca>
+        )}
+
+        {bloqueios.length > 0 && (
+          <SecaoBusca title="Bloqueios">
+            {bloqueios.map((b, i) => (
+              <LinhaLista key={b.id} onClick={() => onOpenBloqueio(b, "processos")} last={i === bloqueios.length - 1} sem={semDe(b.status)}
+                          icone={<LockIcon size={18} color={semDe(b.status).cor} />} titulo={<span style={{ fontSize: 17, fontVariantNumeric: "tabular-nums" }}>{b.valor}</span>}
+                          detalhe={b.cliente} direita={<Badge text={b.status} />} />
+            ))}
+          </SecaoBusca>
+        )}
+      </div>
     </div>
   );
 }
 
-function ListaGenerica({ tipo, onBack, onAbrirBusca, followed, onOpenProcesso, onOpenBloqueio }) {
-  if (tipo === "processos") return <ProcessosTela onBack={onBack} onAbrirBusca={onAbrirBusca} />;
+function ListaGenerica({ tipo, onBack, onOpenOrg, followed, onOpenProcesso, onOpenBloqueio }) {
+  if (tipo === "processos") return <ProcessosTela onBack={onBack} onOpenProcesso={onOpenProcesso} onOpenBloqueio={onOpenBloqueio} onOpenOrg={onOpenOrg} />;
 
   const [cliente, setCliente] = useState("todos");
   const [recorte, setRecorte] = useState("todos");

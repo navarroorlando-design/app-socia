@@ -84,10 +84,11 @@ evita ciclos entre módulos.
   é a única porta para aquela tela): Processos, Bloqueios, Reclamação constitucional e Escritório. "Sigo" e
   "Perguntar" foram tirados por já existirem como bloco próprio ("Processos que você segue") e aba da navbar
   (IA).
-- **Tela Processos** (`ProcessosTela`, dentro de `src/telas/Inicio.jsx`): não tem filtro nem lista — só o
-  título e um campo de busca, que abre a `BuscaGlobal` de sempre (processo, bloqueio e cliente juntos,
-  a forma que a sócia prefere de achar as coisas). Bloqueios continua com os filtros e a lista de antes;
-  só Processos foi simplificada.
+- **Tela Processos** (`ProcessosTela`, dentro de `src/telas/Inicio.jsx`): página única, sem navegar para
+  lugar nenhum. É só o título e um campo de busca; ao digitar, aparecem organizações, processos e
+  bloqueios juntos (a mesma lógica da antiga `BuscaGlobal`, removida — a busca por trecho de texto é
+  de propósito, mesmo quando "casa" com o nome do cliente). Bloqueios continua com os filtros e a
+  lista de antes; só Processos foi simplificada.
 - **Identidade das OS** (`src/componentes/MarcaOrg.jsx`, `marcas.js` gerado por `python3 scripts/marcas.py` a partir de
   `marcas/originais/`): na aba OS, o logo inteiro numa placa branca com um fio na cor da OS e o cartão num tom bem
   claro dessa cor (`tomOrg`); nas outras telas, o símbolo num círculo branco. A cor da OS **nunca** vai em texto
