@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { CheckIcon, ChevronIcon, PinIcon, SendIcon, SparkleIcon } from "../componentes/icones";
+import { ChartIcon, CheckIcon, ChevronIcon, FolderIcon, LockIcon, PinIcon, SendIcon, SparkleIcon } from "../componentes/icones";
 import { BackHeader, Faixa, Sparkline } from "../componentes/ui";
 import { CLIENTE_NOME } from "../dados/base";
 import { CARD, F, LINK, S, T } from "../estilo/tokens";
@@ -30,11 +30,17 @@ function AskBar({ value, onChange, onSubmit, placeholder, disabled, scopeLabel }
 
 function IaAsk({ onAsk, sample }) {
   const [q, setQ] = useState("");
-  const sugestoes = ["Como evoluíram os bloqueios da AFNE em 2026?", "Quais processos trabalhistas estão parados há mais de 90 dias?", "Compare o valor bloqueado entre os 4 clientes"];
+  const sugestoes = [
+    ["Como evoluíram os bloqueios da AFNE em 2026?", ChartIcon],
+    ["Quais processos trabalhistas estão parados há mais de 90 dias?", FolderIcon],
+    ["Compare o valor bloqueado entre os 4 clientes", LockIcon],
+  ];
   return (
     <div className="flex-1 flex flex-col min-h-0 overflow-y-auto no-scrollbar" style={{ paddingBottom: 96 }}>
       <div className="flex-1 flex flex-col items-center justify-center px-10 text-center" style={{ minHeight: 220, paddingTop: 16, paddingBottom: 16 }}>
-        <SparkleIcon size={30} color={S.iaIcone} strokeWidth={1.6} />
+        <span className="flex items-center justify-center" style={{ width: 72, height: 72, borderRadius: 999, background: S.iaFundo }}>
+          <SparkleIcon size={32} color={S.ia} strokeWidth={1.7} />
+        </span>
         <h1 style={{ fontFamily: F.display, letterSpacing: "-0.02em", fontSize: 34, fontWeight: 600, lineHeight: 1.1, color: S.ink, marginTop: 14, textWrap: "balance" }}>Pergunte qualquer coisa!</h1>
         <p style={{ fontFamily: F.ui, fontSize: 16, color: S.texto2, lineHeight: 1.45, marginTop: 10, maxWidth: 290 }}>
           Sobre processos, bloqueios e clientes. A IA monta o relatório com os números do escritório.
@@ -45,9 +51,10 @@ function IaAsk({ onAsk, sample }) {
           <p className="mb-2 text-center" style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2 }}>A IA responde quando este app é aberto no Claude.</p>
         )}
         <div className="flex flex-col gap-2 mb-3">
-          {sugestoes.map((sg) => (
+          {sugestoes.map(([sg, Ic]) => (
             <button key={sg} onClick={() => onAsk(sg)} disabled={!sample} className="text-left flex items-center gap-3"
-                    style={{ ...CARD, borderRadius: 16, padding: "12px 16px", opacity: sample ? 1 : 0.55, fontFamily: F.ui, fontSize: 15, color: S.ink, lineHeight: 1.35 }}>
+                    style={{ ...CARD, borderRadius: 20, padding: "12px 14px", opacity: sample ? 1 : 0.55, fontFamily: F.ui, fontSize: 15, color: S.ink, lineHeight: 1.35 }}>
+              <span className="flex items-center justify-center shrink-0" style={{ width: 38, height: 38, borderRadius: 999, background: S.iaFundo }}><Ic size={18} color={S.ia} /></span>
               <span className="flex-1">{sg}</span>
               <ChevronIcon size={16} color={S.texto2} strokeWidth={2} />
             </button>

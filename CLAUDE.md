@@ -72,6 +72,10 @@ evita ciclos entre módulos.
   grande estilo iOS que encolhe ao rolar; detalhes com o título num bloco marinho arredondado e a
   fileira de números-chave logo abaixo, em cartão branco.
 - **Cartões com cantos de 24px.** Organizações principais em grade 2×2 (todas visíveis, sem rolagem lateral).
+- **Listas dentro de cartão** com `LinhaLista`: ícone num círculo na cor do status, título, detalhe e
+  etiqueta. Em listas de processos a etiqueta vai abaixo da descrição (`abaixo`); em bloqueios, à direita.
+- **Perfil** com a identidade no bloco marinho. **Aba IA** com o brilho num círculo dourado e sugestões
+  com ícone dourado.
 - **Subtítulos de seção**: 18pt seminegrito na cor do texto, ação à direita ("Ver todos").
 - **Aba IA** em branco com "Pergunte qualquer coisa!" e sugestões; relatórios fixados ficam em
   Perfil → Relatórios fixados.

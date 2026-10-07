@@ -69,16 +69,17 @@ function PerfilUsuaria({ onOpenNotifPrefs, onOpenPasta, pinnedCount, onOpenGuia,
     <>
       <div className="flex-1 overflow-y-auto no-scrollbar px-6" style={{ paddingBottom: 120 }}>
         <Faixa eyebrow="Sua conta" titulo="Perfil" tituloSize={36}>
-        <div style={{ ...CARD, padding: 20 }}>
-          <div className="flex items-center gap-4">
-            <Avatar foto={foto} size={72} />
-            <div className="min-w-0">
-              <p style={{ fontFamily: F.display, letterSpacing: "-0.02em", fontSize: 24, fontWeight: 500, color: S.ink, lineHeight: 1.15 }}>{apelido || "Sócia"}</p>
-              <p style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2, marginTop: 2 }}>Azevedo dos Reis Advogados &amp; Associados</p>
-            </div>
+        {/* identidade no bloco marinho, como o cartão principal do Início */}
+        <div className="flex items-center gap-4" style={{ background: S.marca, borderRadius: 24, padding: 22, boxShadow: "0 10px 24px rgba(30,58,95,.22)" }}>
+          <Avatar foto={foto} size={72} claro />
+          <div className="min-w-0">
+            <p style={{ fontFamily: F.display, letterSpacing: "-0.02em", fontSize: 24, fontWeight: 600, color: "#FFFFFF", lineHeight: 1.15 }}>{apelido || "Sócia"}</p>
+            <p style={{ fontFamily: F.ui, fontSize: 15, color: S.marcaTexto2, marginTop: 4, lineHeight: 1.35 }}>Azevedo dos Reis Advogados &amp; Associados</p>
           </div>
+        </div>
+        <div className="mt-3" style={{ ...CARD, padding: 20 }}>
           <input ref={fileRef} id="foto-perfil" type="file" accept="image/*" className="hidden" onChange={escolherFoto} />
-          <div className="flex gap-2 mt-4">
+          <div className="flex gap-2">
             <div className="flex-1"><Botao variante="secundario" onClick={() => fileRef.current?.click()}>{foto ? "Trocar foto" : "Adicionar foto"}</Botao></div>
             {foto && <div className="flex-1"><Botao variante="terciario" onClick={() => { setFoto(null); setAviso("Foto removida. As iniciais voltaram."); }}>Remover</Botao></div>}
           </div>

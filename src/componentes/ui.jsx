@@ -114,6 +114,25 @@ function InfoLinha({ icone, fundo, rotulo, valor, last }) {
   );
 }
 
+/* Linha de lista dentro de cartão: ícone num círculo na cor do status, texto, etiqueta à direita */
+function LinhaLista({ icone, sem, titulo, extra, detalhe, direita, abaixo, onClick, last }) {
+  const Tag = onClick ? "button" : "div";
+  return (
+    <Tag onClick={onClick} className="w-full text-left flex items-start gap-3"
+         style={{ padding: "14px 16px", borderBottom: last ? "none" : `1px solid ${S.linha}` }}>
+      <span className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: sem.fundo }}>{icone}</span>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-start justify-between gap-2">
+          <p className="flex items-center gap-1.5 min-w-0" style={{ fontFamily: F.ui, fontSize: 16, fontWeight: 600, color: S.ink, lineHeight: 1.3, paddingTop: 2 }}>{titulo}{extra}</p>
+          {direita}
+        </div>
+        {detalhe && <p style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2, marginTop: 3, lineHeight: 1.35 }}>{detalhe}</p>}
+        {abaixo && <div style={{ marginTop: 8 }}>{abaixo}</div>}
+      </div>
+    </Tag>
+  );
+}
+
 function Faixa({ tom, bloco, bleed = 24, onBack, backLabel, eyebrow, titulo, tituloCompacto, tituloSize = 34, sub, direita, aside, children }) {
   const ref = React.useRef(null);
   const [compacto, setCompacto] = useState(false);
@@ -253,4 +272,4 @@ function Cartao({ children, style }) {
   return <div style={{ background: S.cartao, borderRadius: 24, padding: 18, boxShadow: "0 1px 2px rgba(22,32,43,.06), 0 4px 14px rgba(22,32,43,.05)", ...style }}>{children}</div>;
 }
 
-export { BackHeader, Badge, Botao, CardRow, Cartao, Etiqueta, Faixa, InfoLinha, KPIs, Row, SecLabel, Secao, Sparkline, StatusBar, TabBar, Toggle };
+export { BackHeader, Badge, Botao, CardRow, Cartao, Etiqueta, Faixa, InfoLinha, KPIs, LinhaLista, Row, SecLabel, Secao, Sparkline, StatusBar, TabBar, Toggle };

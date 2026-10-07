@@ -1,8 +1,8 @@
 import React from "react";
 import { FlagIcon, FolderIcon, LockIcon, SearchIcon, SparkleIcon, StarIcon } from "../componentes/icones";
-import { Badge, CardRow, Etiqueta, Faixa, SecLabel } from "../componentes/ui";
+import { Badge, CardRow, Etiqueta, Faixa, LinhaLista, SecLabel } from "../componentes/ui";
 import { BLOQUEIOS_LISTA, PROCESSOS_LISTA, RECLAMACOES_LISTA, TOTAIS } from "../dados/base";
-import { fmtBRL, fmtBRLCurto } from "../dados/formato";
+import { fmtBRL, fmtBRLCurto, fmtData } from "../dados/formato";
 import { CARD, F, S, SEMANTICA, T, semDe } from "../estilo/tokens";
 import { Avatar } from "../preferencias";
 
@@ -165,35 +165,20 @@ function ListaGenerica({ tipo, onBack, followed, onOpenProcesso, onOpenBloqueio 
       <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 60 }}>
         <Faixa bleed={32} onBack={onBack} backLabel="Início" titulo={config.title}
                sub={tipo === "bloqueios" ? `${config.data.filter((b) => b.status === "Ativo").length} ativos de ${config.data.length} na base` : `${config.data.length} na base de exemplo`} />
-        {config.data.map((item, i) => {
-          const border = { borderBottom: i === config.data.length - 1 ? "none" : `1px solid ${T.hairline}` };
-          const inner = (
-            <>
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-1.5">
-                  <p className="text-[16px] font-medium">{item.cliente}</p>
-                  {isProcessos && followed.has(item.id) && <StarIcon filled size={12} />}
-                </div>
-                <Badge text={item.status} />
-              </div>
-              <p className="text-[15px] mt-1" style={{ color: T.muted }}>{item.desc || item.valor}</p>
-            </>
-          );
-          if (tipo === "bloqueios") {
-            return (
-              <button key={item.id} onClick={() => onOpenBloqueio(item, "bloqueios")} className="w-full text-left py-3.5" style={border}>
-                {inner}
-              </button>
-            );
-          }
-          return isProcessos ? (
-            <button key={item.id} onClick={() => onOpenProcesso(item, "processos")} className="w-full text-left py-3.5" style={border}>
-              {inner}
-            </button>
-          ) : (
-            <div key={i} className="py-3.5" style={border}>{inner}</div>
-          );
-        })}
+        <div style={CARD}>
+          {config.data.map((item, i) => {
+            const st = semDe(item.status), last = i === config.data.length - 1;
+            if (tipo === "bloqueios") {
+              return <LinhaLista key={item.id} onClick={() => onOpenBloqueio(item, "bloqueios")} last={last} sem={st}
+                                 icone={<LockIcon size={18} color={st.cor} />} titulo={<span style={{ fontSize: 17, fontVariantNumeric: "tabular-nums" }}>{item.valor}</span>}
+                                 detalhe={`${item.cliente} · ${fmtData(item.data)}`} direita={<Badge text={item.status} />} />;
+            }
+            return <LinhaLista key={item.id || i} onClick={isProcessos ? () => onOpenProcesso(item, "processos") : undefined} last={last} sem={st}
+                               icone={isProcessos ? <FolderIcon size={18} color={st.cor} /> : <FlagIcon size={18} color={st.cor} />}
+                               titulo={item.cliente} extra={isProcessos && followed.has(item.id) ? <StarIcon filled size={13} /> : null}
+                               detalhe={item.desc} abaixo={<Badge text={item.status} />} />;
+          })}
+        </div>
       </div>
     </>
   );
@@ -209,16 +194,15 @@ function AcompanhandoLista({ items, onOpen, onBack }) {
           <p className="text-[15px] mt-4" style={{ color: T.muted }}>
             Nenhum processo acompanhado ainda. Toque na estrela dentro de um processo pra começar.
           </p>
-        ) : items.map((item, i) => (
-          <button key={item.id} onClick={() => onOpen(item)} className="w-full text-left py-3.5"
-                  style={{ borderBottom: i === items.length - 1 ? "none" : `1px solid ${T.hairline}` }}>
-            <div className="flex items-center justify-between gap-2">
-              <p className="text-[16px] font-medium">{item.cliente}</p>
-              <Badge text={item.status} />
-            </div>
-            <p className="text-[15px] mt-1" style={{ color: T.muted }}>{item.desc}</p>
-          </button>
-        ))}
+        ) : (
+          <div style={CARD}>
+            {items.map((item, i) => (
+              <LinhaLista key={item.id} onClick={() => onOpen(item)} last={i === items.length - 1} sem={semDe(item.status)}
+                          icone={<FolderIcon size={18} color={semDe(item.status).cor} />} titulo={item.cliente}
+                          detalhe={item.desc} abaixo={<Badge text={item.status} />} />
+            ))}
+          </div>
+        )}
       </div>
     </>
   );
