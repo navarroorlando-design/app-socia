@@ -10,6 +10,7 @@ import { FeedItem } from "./Inicio";
 import { ContratoCard } from "./OrgMetricas";
 import { Anotacao } from "../pessoal";
 import { Dica } from "../ajuda/Dica";
+import { MarcaOrg } from "../componentes/MarcaOrg";
 
 /* ------------------------------------------------------------------ */
 /* Telas: OS                                                           */
@@ -30,7 +31,7 @@ function OsLista({ onOpenOrg, ordem = ORG_ORDER }) {
               <button key={id} onClick={() => onOpenOrg(id)} className="flex flex-col items-start text-left min-w-0"
                       aria-label={`${o.name}: ${o.processos} processos`}
                       style={{ ...CARD, padding: 16, gap: 12 }}>
-                <span className="flex items-center justify-center shrink-0" style={{ width: 44, height: 44, borderRadius: 999, background: S.marca, color: "#FFFFFF", fontFamily: F.display, fontSize: 15, fontWeight: 600 }}>{o.initials}</span>
+                <MarcaOrg id={id} iniciais={o.initials} size={44} />
                 <span className="block min-w-0 w-full">
                   <span className="block" style={{ fontFamily: F.ui, fontSize: 17, fontWeight: 600, color: S.ink, lineHeight: 1.25, minHeight: "2.5em" }}>{o.name}</span>
                   <span className="block" style={{ fontFamily: F.ui, fontSize: 28, fontWeight: 600, color: S.ink, letterSpacing: "-0.02em", marginTop: 8, fontVariantNumeric: "tabular-nums" }}>{o.processos}</span>
@@ -81,7 +82,7 @@ function OsPerfil({ orgId, onBack, sample, onAsk, onOpenContratos, onOpenContrat
         <Faixa bleed={32} bloco onBack={onBack} backLabel="Organizações"
                eyebrow="Organização social" titulo={o.name} tituloCompacto={o.name} tituloSize={32}
                sub={`${r.contratos.length} contratos de gestão · ${r.processos.length} processos`}
-               aside={<span className="w-14 h-14 rounded-full flex items-center justify-center shrink-0" style={{ background: "#FFFDF9", color: S.marca, fontFamily: F.display, fontSize: 18, fontWeight: 600 }}>{o.initials}</span>}>
+               aside={<MarcaOrg id={orgId} iniciais={o.initials} size={56} claro />}>
           <div className="grid grid-cols-2 gap-3">
             <Metrica largo tom="oliva" rotulo="Contratos de gestão" valor={fmtBRL(r.passivo.total)}
                      detalhe={`Passivo estimado em ${r.contratos.length} contratos`} onClick={onOpenContratos} />

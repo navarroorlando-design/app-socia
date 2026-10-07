@@ -4,6 +4,7 @@ import { Badge, LinhaLista, SecLabel } from "../componentes/ui";
 import { BLOQUEIOS_LISTA, ORGS, ORG_ORDER, PROCESSOS_LISTA } from "../dados/base";
 import { norm } from "../dados/formato";
 import { CARD, F, LINK, S, T, semDe } from "../estilo/tokens";
+import { MarcaOrg } from "../componentes/MarcaOrg";
 
 function BuscaGlobal({ q, setQ, onBack, onOpenProcesso, onOpenBloqueio, onOpenOrg }) {
   const term = norm(q.trim());
@@ -54,7 +55,7 @@ function BuscaGlobal({ q, setQ, onBack, onOpenProcesso, onOpenBloqueio, onOpenOr
           <Section title="Organizações">
             {orgs.map((id, i) => (
               <button key={id} onClick={() => onOpenOrg(id)} className="flex items-center gap-3 w-full text-left" style={{ padding: "12px 16px", borderBottom: i === orgs.length - 1 ? "none" : `1px solid ${S.linha}` }}>
-                <span className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: S.marca, color: "#FFFFFF", fontFamily: F.display, fontSize: 14, fontWeight: 600 }}>{ORGS[id].initials}</span>
+                <MarcaOrg id={id} iniciais={ORGS[id].initials} size={40} />
                 <span className="flex-1" style={{ fontFamily: F.ui, fontSize: 16, fontWeight: 600, color: S.ink }}>{ORGS[id].name}</span>
                 <ChevronIcon size={16} color={S.texto2} strokeWidth={2} />
               </button>

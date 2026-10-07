@@ -6,6 +6,7 @@ import { diasEntre, fmtBRL, fmtBRLCurto, fmtData, HOJE } from "../dados/formato"
 import { resumoOrg, somaPassivo } from "../dados/passivo";
 import { CARD, F, S, SEMANTICA, semDe } from "../estilo/tokens";
 import { ContratoCard, NOTA_PASSIVO, PassivoBarra } from "./OrgMetricas";
+import { MarcaOrg } from "../componentes/MarcaOrg";
 
 /* ------------------------------------------------------------------ */
 /* Carteira: passivo de todos os clientes (visão de sócio)             */
@@ -31,7 +32,7 @@ function Carteira({ onBack, onOpenOrg, onOpenContrato }) {
         {orgs.map((o, i) => (
           <button key={o.id} onClick={() => onOpenOrg(o.id)} className="w-full text-left flex items-center gap-3"
                   style={{ padding: "14px 16px", borderBottom: i === orgs.length - 1 ? "none" : `1px solid ${S.linha}` }}>
-            <span className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: S.marca, color: "#FFFFFF", fontFamily: F.display, fontSize: 14, fontWeight: 600 }}>{ORGS[o.id].initials}</span>
+            <MarcaOrg id={o.id} iniciais={ORGS[o.id].initials} size={40} />
             <span className="flex-1 min-w-0">
               <span className="flex items-baseline justify-between gap-2">
                 <span style={{ fontFamily: F.ui, fontSize: 16, fontWeight: 600, color: S.ink }}>{ORGS[o.id].name}</span>

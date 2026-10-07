@@ -4,6 +4,7 @@ import { Botao, Faixa, Row, SecLabel, Toggle } from "../componentes/ui";
 import { ORGS } from "../dados/base";
 import { CARD, F, LINK, S } from "../estilo/tokens";
 import { Avatar, ESCALAS, INICIAIS } from "../preferencias";
+import { MarcaOrg } from "../componentes/MarcaOrg";
 
 function MenuVA({ unread, followedCount, onClose, onNotificacoes, onAcompanhando, onPerfil, foto, apelido }) {
   const Item = ({ icon, label, value, onClick, last }) => (
@@ -179,7 +180,7 @@ function OrdemClientes({ ordem, setOrdem, onBack }) {
           {ordem.map((id, i) => (
             <div key={id} className="flex items-center gap-3" style={{ padding: "12px 14px 12px 18px", borderBottom: i === ordem.length - 1 ? "none" : `1px solid ${S.linha}` }}>
               <span style={{ fontFamily: F.dados, fontSize: 15, color: S.texto2, width: 18 }}>{i + 1}</span>
-              <span className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: S.ink, color: "#FFFFFF", fontFamily: F.display, letterSpacing: "-0.02em", fontSize: 14 }}>{ORGS[id].initials}</span>
+              <MarcaOrg id={id} iniciais={ORGS[id].initials} size={40} />
               <span style={{ fontFamily: F.ui, fontSize: 17, color: S.ink, flex: 1, fontWeight: 600 }}>{ORGS[id].name}</span>
               <SetaBtn label={`Subir ${ORGS[id].name}`} onClick={() => mover(i, -1)} disabled={i === 0} Icone={ChevronUpIcon} />
               <SetaBtn label={`Descer ${ORGS[id].name}`} onClick={() => mover(i, 1)} disabled={i === ordem.length - 1} Icone={ChevronDownIcon} />
