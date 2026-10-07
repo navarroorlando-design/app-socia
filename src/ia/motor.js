@@ -38,7 +38,7 @@ const TOOLS_DEF = (onProgress) => [
       type: "object",
       properties: {
         metrica: { type: "string", enum: ["valor_bloqueado", "quantidade_bloqueios", "quantidade_processos", "processos_parados", "passivo_estimado"], description: "passivo_estimado = soma do valor em discussão dos processos (o passivo que os clientes perguntam), em BRL" },
-        agrupar_por: { type: "string", enum: ["nenhum", "cliente", "area", "contrato", "status", "prognostico", "mes"], description: "mes = mês do bloqueio (ou da última movimentação, para processos), de Jan até o mês atual de 2026" },
+        agrupar_por: { type: "string", enum: ["nenhum", "cliente", "area", "contrato", "status", "prognostico", "mes"], description: "mes = mês do bloqueio (ou da última movimentação, para processos), de Jan até o mês atual de 2026. Com passivo_estimado, mes devolve a EVOLUÇÃO: o passivo no fim de cada mês (inclui processos encerrados no ano até saírem)." },
         cliente: { type: "string", description: "AFNE, Instituto Gnosis, FAS ou IGEDES. Omita para a firma toda." },
         area: { type: "string", enum: ["Trabalhista", "Cível", "Administrativo", "Constitucional"] },
         status_bloqueio: { type: "string", enum: ["Ativo", "Levantado", "todos"], description: "Só para métricas de bloqueio. Padrão: Ativo." },
@@ -101,6 +101,7 @@ function regras(clienteId) {
 DADOS
 - A base cobre ${TOTAIS.processos} processos e ${BLOQUEIOS_LISTA.length} bloqueios SISBAJUD de 4 clientes (AFNE, Instituto Gnosis, FAS, IGEDES), cada um com contratos de gestão, com dados de 2026 até outubro. Hoje é 06/10/2026. São dados de exemplo.
 - Todo número que você escrever tem de vir das funções consultar_dados, consultar_cruzado ou listar_processos. Nunca invente nem estime. Pode calcular percentuais e diferenças a partir do que as funções devolverem.
+- Para "o passivo subiu ou caiu?", use passivo_estimado com agrupar_por "mes" (evolução mês a mês) e desenhe em "linha" ou "empilhado" com dividir_por "prognostico".
 - Passivo de um contrato de gestão = metrica passivo_estimado (valor em discussão nos processos, por prognóstico Provável/Possível/Remoto). Não confunda com valor bloqueado (o que já saiu da conta).
 - Se pedirem algo que a base não tem (prazos, honorários, partes, outros anos), diga com clareza e ofereça o que dá para mostrar.
 - Faça quantas consultas precisar, em geral de 3 a 8.

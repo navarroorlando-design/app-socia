@@ -168,6 +168,38 @@ for (const p of PROCESSOS_LISTA) {
   p.valorCausa = faixa ? Math.round((faixa[0] + r() * (faixa[1] - faixa[0])) * 1000 / 100) * 100 : 0;
   let x = r() * 100;
   p.prognostico = PROGNOSTICOS.find(([, w]) => (x -= w) < 0)[0];
+  // Histórico de 2026 (para a evolução do passivo). Sorteado depois, para não mudar valor nem prognóstico.
+  // entradaMes: mês em que entrou na carteira (0 = jan; -1 = já estava antes de 2026).
+  // prognosticoAntes / valorAntes: o que era antes de uma reclassificação ou atualização no mês `mes`.
+  p.entradaMes = r() < 0.55 ? -1 : Math.floor(r() * 10);
+  if (r() < 0.15 && p.entradaMes < 8) {
+    const outros = PROGNOSTICOS.map(([n]) => n).filter((n) => n !== p.prognostico);
+    p.prognosticoAntes = { mes: Math.max(p.entradaMes + 1, 1 + Math.floor(r() * 9)), era: outros[Math.floor(r() * outros.length)] };
+  }
+  if (r() < 0.12 && p.entradaMes < 8 && p.valorCausa) {
+    p.valorAntes = { mes: Math.max(p.entradaMes + 1, 1 + Math.floor(r() * 9)), era: Math.round(p.valorCausa * (0.7 + r() * 0.2) / 100) * 100 };
+  }
+}
+
+/* Processos encerrados em 2026 (acordo, improcedência, extinção): já não estão na carteira ativa,
+   mas contam na evolução do passivo até o mês em que saíram. Gerador próprio, por contrato. */
+const ENCERRADOS_2026 = [];
+{
+  const r = rng(20260);
+  const MOTIVOS = ["Acordo homologado", "Pedido julgado improcedente", "Extinção sem resolução do mérito", "Desistência da parte autora"];
+  for (const [clienteId, o] of Object.entries(ORGS)) {
+    for (const c of o.contratos) {
+      const n = Math.floor(r() * 3);
+      for (let i = 0; i < n; i++) {
+        let x = r() * 100;
+        ENCERRADOS_2026.push({
+          id: `enc-${clienteId}-${ENCERRADOS_2026.length}`, clienteId, cliente: CLIENTE_NOME[clienteId], contrato: c.orgao,
+          area: r() < 0.7 ? "Trabalhista" : "Cível", valorCausa: Math.round((25 + r() * 160) * 10) * 100,
+          prognostico: PROGNOSTICOS.find(([, w]) => (x -= w) < 0)[0], entradaMes: -1, saiuMes: 1 + Math.floor(r() * 9), motivo: MOTIVOS[Math.floor(r() * MOTIVOS.length)],
+        });
+      }
+    }
+  }
 }
 
 /* Totais derivados da base, usados nas telas fixas */
@@ -216,4 +248,4 @@ const RECLAMACOES_LISTA = RECLAMACOES_BASE.map((r) => {
   return { ...r, cliente: CLIENTE_NOME[r.clienteId], desc: r.assunto, processosOrigem: origem.map((p) => p.id), valorDiscutido: origem.reduce((s, p) => s + bloqueadoDe(p), 0) };
 });
 
-export { BLOQUEIOS_LISTA, CLIENTE_NOME, CONTRATOS, ORGS, ORG_ORDER, OUTRAS_ORGS, PROCESSOS_LISTA, RECLAMACOES_LISTA, TOTAIS };
+export { BLOQUEIOS_LISTA, CLIENTE_NOME, CONTRATOS, ENCERRADOS_2026, ORGS, ORG_ORDER, OUTRAS_ORGS, PROCESSOS_LISTA, RECLAMACOES_LISTA, TOTAIS };

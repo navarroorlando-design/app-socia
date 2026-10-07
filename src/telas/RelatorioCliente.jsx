@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { CheckIcon, DownloadIcon } from "../componentes/icones";
 import { Faixa, SecLabel } from "../componentes/ui";
 import { ORGS } from "../dados/base";
-import { fmtBRL, fmtData, HOJE } from "../dados/formato";
-import { ORDEM_PROGNOSTICO, resumoContrato, resumoOrg } from "../dados/passivo";
+import { fmtBRL, fmtBRLCurto, fmtData, HOJE } from "../dados/formato";
+import { ORDEM_PROGNOSTICO, encerradosDe, historicoPassivo, resumoContrato, resumoOrg } from "../dados/passivo";
+
+import { GraficoColunas } from "../ia/Graficos";
 import { CARD, F, S } from "../estilo/tokens";
 import { salvarArquivo } from "../arquivos";
 
@@ -18,7 +20,9 @@ function dadosDoRelatorio(orgId, orgao) {
   const r = resumoOrg(orgId);
   const contratos = orgao ? [resumoContrato(orgId, orgao)] : r.contratos;
   const soma = (k) => contratos.reduce((s, c) => s + (k === "total" ? c.passivo.total : k === "bloq" ? c.bloqueadoAtivo : k === "proc" ? c.processos.length : c.passivo[k]), 0);
-  return { cliente: ORGS[orgId].name, orgao, contratos, total: soma("total"), bloq: soma("bloq"), proc: soma("proc"), por: Object.fromEntries(ORDEM_PROGNOSTICO.map((k) => [k, soma(k)])) };
+  // Evolução no ano: fotografia do fim de cada mês, dos contratos do relatório
+  const hist = historicoPassivo(contratos.flatMap((c) => c.processos), contratos.flatMap((c) => encerradosDe(orgId, c.orgao)));
+  return { hist, cliente: ORGS[orgId].name, orgao, contratos, total: soma("total"), bloq: soma("bloq"), proc: soma("proc"), por: Object.fromEntries(ORDEM_PROGNOSTICO.map((k) => [k, soma(k)])) };
 }
 
 async function gerarPdf(d) {
@@ -70,6 +74,34 @@ async function gerarPdf(d) {
     doc.text(`Vigência ${c.vigencia} · ${c.processos.length} processos · ${fmtBRL(c.bloqueadoAtivo)} bloqueado`, M + 2, y); doc.setTextColor(26, 25, 22);
     y += 4; doc.setDrawColor(230, 225, 214); doc.line(M, y, M + W, y); y += 6;
   }
+  // Evolução do passivo no ano: colunas empilhadas por prognóstico
+  if (d.hist.length > 1) {
+    if (y > 200) { doc.addPage(); y = 22; }
+    const ini = d.hist[0].total, fim = d.hist[d.hist.length - 1].total, pct = ini ? Math.round(((fim - ini) / ini) * 100) : 0;
+    y += 2;
+    linha("Evolução do passivo em 2026", { tam: 11, negrito: true, esp: 5.5 });
+    linha(`De ${fmtBRL(ini)} no fim de janeiro para ${fmtBRL(fim)} hoje (${pct > 0 ? "+" : ""}${pct}%). Valor no último dia de cada mês.`, { tam: 9, cor: [87, 84, 76], esp: 4.5 });
+    y += 3;
+    const CORES = { Provável: [155, 42, 28], Possível: [131, 80, 0], Remoto: [79, 86, 91] };
+    const altura = 42, topo = y, max = Math.max(...d.hist.map((h) => h.total), 1);
+    const larg = W / d.hist.length, bw = Math.min(9, larg * 0.6);
+    doc.setDrawColor(230, 225, 214); doc.line(M, topo + altura, M + W, topo + altura);
+    d.hist.forEach((h, i) => {
+      const cx = M + larg * i + larg / 2;
+      let acc = 0;
+      for (const k of ORDEM_PROGNOSTICO) {
+        const hh = (h[k] / max) * altura; if (hh <= 0) continue;
+        doc.setFillColor(...CORES[k]); doc.rect(cx - bw / 2, topo + altura - acc - hh, bw, Math.max(0.2, hh - 0.4), "F"); acc += hh;
+      }
+      doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(87, 84, 76);
+      doc.text(h.mes, cx, topo + altura + 4.5, { align: "center" });
+      if (i === 0 || i === d.hist.length - 1) { doc.setTextColor(26, 25, 22); doc.text(fmtBRLCurto(h.total), cx, topo + altura - acc - 1.5, { align: "center" }); }
+    });
+    y = topo + altura + 10;
+    let lx = M;
+    ORDEM_PROGNOSTICO.forEach((k) => { doc.setFillColor(...CORES[k]); doc.rect(lx, y - 2.6, 3, 3, "F"); doc.setTextColor(26, 25, 22); doc.text(k, lx + 4.5, y); lx += 26; });
+    y += 8;
+  }
   y += 4;
   linha("Como ler este relatório", { tam: 10, negrito: true });
   linha(METODO, { tam: 9, cor: [87, 84, 76], esp: 4.5 });
@@ -93,7 +125,7 @@ function RelatorioCliente({ orgId, orgao, onBack, backLabel }) {
   return (
     <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 60 }}>
       <Faixa bleed={32} onBack={onBack} backLabel={backLabel} titulo="Relatório para o cliente" tituloSize={30}
-             sub="Confira a prévia. O PDF traz os mesmos valores, em tabela." />
+             sub="Confira a prévia. O PDF traz os mesmos valores, em tabela, e a evolução no ano." />
 
       {/* prévia do documento */}
       <div style={{ ...CARD, borderRadius: 16, padding: 20 }}>
@@ -125,6 +157,16 @@ function RelatorioCliente({ orgId, orgao, onBack, backLabel }) {
             </div>
           ))}
         </div>
+        {d.hist.length > 1 && (
+          <div style={{ borderTop: `1px solid ${S.linha}`, paddingTop: 12 }}>
+            <p style={{ fontFamily: F.ui, fontSize: 15, fontWeight: 600, color: S.ink }}>Evolução do passivo em 2026</p>
+            <p style={{ fontFamily: F.ui, fontSize: 13, color: S.texto2, marginTop: 2 }}>De {fmtBRLCurto(d.hist[0].total)} em janeiro para {fmtBRLCurto(d.hist[d.hist.length - 1].total)} hoje</p>
+            <div style={{ marginTop: 8 }}>
+              <GraficoColunas semMoldura titulo="Evolução do passivo" rotulos={d.hist.map((h) => h.mes)} partes={ORDEM_PROGNOSTICO}
+                              valores={d.hist.map((h) => ORDEM_PROGNOSTICO.map((k) => h[k]))} unidade="BRL" />
+            </div>
+          </div>
+        )}
         <p style={{ fontFamily: F.ui, fontSize: 13, color: S.texto2, lineHeight: 1.5, marginTop: 14 }}>{METODO}</p>
       </div>
 

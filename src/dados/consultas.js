@@ -1,5 +1,6 @@
-import { BLOQUEIOS_LISTA, CLIENTE_NOME, PROCESSOS_LISTA } from "./base";
+import { BLOQUEIOS_LISTA, CLIENTE_NOME, ENCERRADOS_2026, PROCESSOS_LISTA } from "./base";
 import { HOJE, MESES } from "./formato";
+import { ORDEM_PROGNOSTICO, historicoPassivo } from "./passivo";
 
 /* ---------------------- Funções de consulta ------------------------ */
 function normCliente(c) {
@@ -49,9 +50,27 @@ function agrupar(linhas, valorDe, agrupar_por) {
   return grupos;
 }
 
+/* Passivo por mês = evolução: o passivo no fim de cada mês de 2026 (não o mês da última movimentação).
+   Inclui os processos encerrados no ano até o mês em que saíram. O filtro de prognóstico escolhe a parte
+   da fotografia de cada mês (um processo pode ter mudado de prognóstico no ano). */
+function evolucaoPassivo(params) {
+  const { linhas, cli } = selecionar({ ...params, prognostico: undefined });
+  const enc = ENCERRADOS_2026.filter((e) => (!cli || e.clienteId === cli)
+    && (!params.area || e.area.toLowerCase() === String(params.area).toLowerCase())
+    && (!params.contrato || e.contrato.toLowerCase().includes(String(params.contrato).toLowerCase())));
+  const hist = historicoPassivo(linhas, enc);
+  const parte = ORDEM_PROGNOSTICO.find((p) => params.prognostico && p.toLowerCase() === String(params.prognostico).toLowerCase()) || "total";
+  return { hist, parte, cli };
+}
+
 function consultarDados(params) {
   const { metrica, agrupar_por = "nenhum", area, status_bloqueio = "Ativo" } = params;
   const { linhas, valorDe, unidade, cli } = selecionar(params);
+  if (metrica === "passivo_estimado" && agrupar_por === "mes") {
+    const { hist, parte } = evolucaoPassivo(params);
+    return { metrica, unidade, observacao: "passivo no fim de cada mês (evolução)", filtros: { cliente: cli ? CLIENTE_NOME[cli] : "todos", area: area || "todas" },
+             total: hist[hist.length - 1][parte], grupos: hist.map((h) => ({ rotulo: h.mes, valor: h[parte] })) };
+  }
   const total = linhas.reduce((s, x) => s + valorDe(x), 0);
   const grupos = agrupar_por && agrupar_por !== "nenhum" ? agrupar(linhas, valorDe, agrupar_por) : [];
   return { metrica, unidade, filtros: { cliente: cli ? CLIENTE_NOME[cli] : "todos", area: area || "todas", status_bloqueio }, total, grupos };
@@ -62,6 +81,11 @@ function consultarCruzado(params) {
   const { agrupar_por, dividir_por } = params;
   if (!agrupar_por || agrupar_por === "nenhum" || !dividir_por) throw new Error("Informe agrupar_por e dividir_por.");
   const { linhas, valorDe, unidade } = selecionar(params);
+  if (params.metrica === "passivo_estimado" && agrupar_por === "mes" && dividir_por === "prognostico") {
+    const { hist } = evolucaoPassivo(params);
+    return { metrica: params.metrica, unidade, observacao: "passivo no fim de cada mês (evolução)", partes: ORDEM_PROGNOSTICO,
+             grupos: hist.map((h) => ({ rotulo: h.mes, total: h.total, valores: ORDEM_PROGNOSTICO.map((p) => h[p]) })) };
+  }
   const grupos = agrupar(linhas, valorDe, agrupar_por);
   const partes = dividir_por === "prognostico" ? ["Provável", "Possível", "Remoto"] : agrupar(linhas, valorDe, dividir_por).map((g) => g.rotulo);
   return {

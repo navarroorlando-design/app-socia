@@ -101,6 +101,11 @@ sua (`src/telas/OrgMetricas.jsx`). O cartão da lista de organizações mostra s
   prognóstico (Provável, Possível, Remoto). Bloqueios entram à parte, como o que já saiu da conta.
   Cálculo em `src/dados/passivo.js`. Em produção: "valor da causa" e "prognóstico" do Legal One.
   **Definição a validar com o escritório** (pode ser provisão em vez de valor da causa).
+- **Evolução do passivo** (contrato e organização, e no PDF para o cliente): colunas por mês, por prognóstico,
+  e "o que mudou desde janeiro" (novos, encerrados, valores atualizados, reclassificações). Cálculo em
+  `historicoPassivo`/`motivosVariacao` (`src/dados/passivo.js`). Na base de exemplo vem de `entradaMes`,
+  `prognosticoAntes`, `valorAntes` e `ENCERRADOS_2026`; em produção, da tabela `passivo_mensal` (fotografia gravada
+  a cada importação, porque o Legal One só traz o valor de hoje). A IA consulta com `passivo_estimado` + `agrupar_por: "mes"`.
 - Na base de exemplo, cada processo ganhou `valorCausa` e `prognostico` (gerador próprio por id,
   sem mexer na sequência do resto). A IA consulta com `metrica: "passivo_estimado"`.
 

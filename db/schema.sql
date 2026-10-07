@@ -123,6 +123,20 @@ from contratos_gestao c
 left join processos p on p.contrato_id = c.id and p.ativo
 group by c.id;
 
+-- Fotografia do passivo no fim de cada mês, por contrato (base do gráfico "Evolução do passivo").
+-- O relatório do Legal One só traz o valor de hoje: a cada importação, o mês corrente é regravado;
+-- quando o mês vira, a última fotografia fica guardada. O histórico começa no dia em que o app entra no ar.
+create table passivo_mensal (
+  contrato_id     bigint not null references contratos_gestao(id),
+  mes             date not null,                  -- primeiro dia do mês
+  provavel        numeric(14,2) not null default 0,
+  possivel        numeric(14,2) not null default 0,
+  remoto          numeric(14,2) not null default 0,
+  processos       integer not null default 0,
+  gravado_em      timestamptz not null default now(),
+  primary key (contrato_id, mes)
+);
+
 -- Dias sem movimentação de cada processo ativo
 create view processos_parados as
 select id, cliente_id, contrato_id, area, descricao,

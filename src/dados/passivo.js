@@ -1,4 +1,5 @@
-import { BLOQUEIOS_LISTA, ORGS, PROCESSOS_LISTA } from "./base";
+import { BLOQUEIOS_LISTA, ENCERRADOS_2026, ORGS, PROCESSOS_LISTA } from "./base";
+import { HOJE, MESES } from "./formato";
 
 /* ------------------------------------------------------------------ */
 /* Passivo por contrato de gestão                                      */
@@ -50,4 +51,42 @@ function resumoOrg(orgId) {
   };
 }
 
-export { ORDEM_PROGNOSTICO, resumoContrato, resumoOrg, somaPassivo, statusVigencia };
+/* Evolução do passivo: a "fotografia" no fim de cada mês de 2026, até o mês atual.
+   Em produção, essas fotografias são gravadas a cada importação (tabela passivo_mensal),
+   porque o relatório do Legal One só traz o valor de hoje. O último mês é igual ao passivo atual. */
+function historicoPassivo(processos, encerrados = []) {
+  const meses = [];
+  for (let m = 0; m <= HOJE.getMonth(); m++) {
+    const r = { mes: MESES[m], total: 0, Provável: 0, Possível: 0, Remoto: 0 };
+    const somar = (valor, prog) => { r.total += valor; r[prog] += valor; };
+    for (const p of processos) {
+      if (p.entradaMes > m) continue;
+      const prog = p.prognosticoAntes && m < p.prognosticoAntes.mes ? p.prognosticoAntes.era : p.prognostico;
+      const valor = p.valorAntes && m < p.valorAntes.mes ? p.valorAntes.era : p.valorCausa;
+      somar(valor, prog);
+    }
+    for (const e of encerrados) if (e.entradaMes <= m && m < e.saiuMes) somar(e.valorCausa, e.prognostico);
+    meses.push(r);
+  }
+  return meses;
+}
+
+/* O que explica a diferença entre janeiro e hoje, para a frase de leitura do gráfico. */
+function motivosVariacao(processos, encerrados = []) {
+  const ate = HOJE.getMonth();
+  const novos = processos.filter((p) => p.entradaMes > 0);
+  const saidas = encerrados.filter((e) => e.saiuMes <= ate);
+  const reclass = processos.filter((p) => p.prognosticoAntes && p.prognosticoAntes.mes > 0);
+  const atualiz = processos.filter((p) => p.valorAntes && p.valorAntes.mes > 0);
+  const soma = (xs, f = (x) => x.valorCausa) => xs.reduce((s, x) => s + f(x), 0);
+  return {
+    novos: { n: novos.length, valor: soma(novos) },
+    saidas: { n: saidas.length, valor: soma(saidas), lista: saidas },
+    reclassificados: { n: reclass.length, paraProvavel: reclass.filter((p) => p.prognostico === "Provável").length },
+    atualizados: { n: atualiz.length, valor: soma(atualiz, (p) => p.valorCausa - p.valorAntes.era) },
+  };
+}
+
+const encerradosDe = (orgId, orgao) => ENCERRADOS_2026.filter((e) => e.clienteId === orgId && (!orgao || e.contrato === orgao));
+
+export { ORDEM_PROGNOSTICO, encerradosDe, historicoPassivo, motivosVariacao, resumoContrato, resumoOrg, somaPassivo, statusVigencia };

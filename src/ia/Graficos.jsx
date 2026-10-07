@@ -160,6 +160,59 @@ function GraficoLinha({ titulo, sub, rotulos, series, unidade }) {
   );
 }
 
+/* Colunas empilhadas ao longo dos meses (ex.: passivo no fim de cada mês, por prognóstico).
+   Toque numa coluna mostra o mês; o último mês começa selecionado. */
+function GraficoColunas({ titulo, sub, rotulos, partes, valores, unidade, semMoldura }) {
+  const n = rotulos.length;
+  const [sel, setSel] = useState(n - 1);
+  const totais = valores.map((v) => v.reduce((s, x) => s + x, 0));
+  const W = 320, H = 200, esq = 50, dir = 6, topo = 10, base = 26;
+  const tk = ticks(Math.max(...totais, 1));
+  const yMax = tk[tk.length - 1];
+  const larg = (W - esq - dir) / n, bw = Math.min(20, larg * 0.62);
+  const y = (v) => topo + (1 - v / yMax) * (H - topo - base);
+  const passoRot = n > 8 ? 2 : 1;
+  const conteudo = (
+    <>
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: "auto" }} role="img"
+           aria-label={`${titulo || "Colunas por mês"}. ${rotulos.map((r, i) => `${r} ${fmtCurto(totais[i], unidade)}`).join(", ")}`}>
+        {tk.map((t) => (
+          <g key={t}>
+            <line x1={esq} x2={W - dir} y1={y(t)} y2={y(t)} stroke={S.linha} strokeWidth="1" />
+            <text x={esq - 6} y={y(t) + 4} textAnchor="end" fontSize="12.5" fill={S.texto2} fontFamily={F.ui}>{fmtCurto(t, unidade).replace("R$ ", "")}</text>
+          </g>
+        ))}
+        {rotulos.map((r, i) => {
+          const cx = esq + larg * i + larg / 2;
+          let acc = 0;
+          return (
+            <g key={r + i} onClick={() => setSel(i)} style={{ cursor: "pointer" }} opacity={sel === i ? 1 : 0.55}>
+              <rect x={cx - larg / 2} y={topo} width={larg} height={H - topo - base} fill="transparent" />
+              {partes.map((p, pi) => {
+                const v = valores[i][pi]; if (!v) return null;
+                const y0 = y(acc), y1 = y(acc + v); acc += v;
+                return <rect key={p} x={cx - bw / 2} y={y1} width={bw} height={Math.max(0, y0 - y1 - 1.5)} fill={corDaParte(p, pi)} rx="2" />;
+              })}
+              {(i % passoRot === 0 || i === n - 1 || i === sel) && (
+                <text x={cx} y={H - 7} textAnchor="middle" fontSize="12.5" fill={sel === i ? S.ink : S.texto2} fontWeight={sel === i ? 600 : 400} fontFamily={F.ui}>{r}</text>
+              )}
+            </g>
+          );
+        })}
+      </svg>
+      <div className="flex flex-wrap gap-1.5 mt-2" role="group" aria-label="Escolher o mês">
+        {rotulos.map((r, i) => (
+          <button key={r + i} onClick={() => setSel(i)} aria-pressed={sel === i} className="rounded-full"
+                  style={{ minWidth: 44, height: 36, padding: "0 8px", fontFamily: F.ui, fontSize: 14, fontWeight: sel === i ? 600 : 500, background: sel === i ? S.marca : S.papel, color: sel === i ? "#FFFFFF" : S.ink }}>{r}</button>
+        ))}
+      </div>
+      <Dica><strong>{rotulos[sel]}: {fmt(totais[sel], unidade)}</strong>{partes.map((p, i) => ` · ${p} ${fmtCurto(valores[sel][i], unidade)}`).join("")}</Dica>
+    </>
+  );
+  if (semMoldura) return conteudo;
+  return <Moldura titulo={titulo} sub={sub} legenda={partes.map((p, i) => [p, corDaParte(p, i)])}>{conteudo}</Moldura>;
+}
+
 /* Números-chave com variação. A seta diz a direção; a cor diz se é bom ou ruim para o escritório. */
 function Indicadores({ itens }) {
   return (
@@ -210,4 +263,4 @@ function TabelaProcessos({ titulo, linhas }) {
   );
 }
 
-export { CORES_SERIES, GraficoBarras, GraficoEmpilhado, GraficoLinha, Indicadores, TabelaProcessos, fmt, fmtCurto };
+export { CORES_SERIES, GraficoBarras, GraficoEmpilhado, GraficoLinha, Indicadores, TabelaProcessos, fmt, fmtCurto, GraficoColunas };

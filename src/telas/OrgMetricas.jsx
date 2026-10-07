@@ -3,7 +3,8 @@ import { ChevronIcon, DownloadIcon, FolderIcon, LockIcon } from "../componentes/
 import { Badge, Etiqueta, Faixa, KPIs, LinhaLista, SecLabel } from "../componentes/ui";
 import { ORGS } from "../dados/base";
 import { fmtBRL, fmtBRLCurto, fmtData } from "../dados/formato";
-import { ORDEM_PROGNOSTICO, resumoContrato, resumoOrg } from "../dados/passivo";
+import { ORDEM_PROGNOSTICO, encerradosDe, historicoPassivo, motivosVariacao, resumoContrato, resumoOrg } from "../dados/passivo";
+import { GraficoColunas } from "../ia/Graficos";
 import { CARD, F, S, SEMANTICA, semDe } from "../estilo/tokens";
 import { Anotacao, BotaoAlerta } from "../pessoal";
 import { Dica } from "../ajuda/Dica";
@@ -112,6 +113,64 @@ function PorContrato({ linhas, onOpenContrato }) {
   );
 }
 
+/* Evolução do passivo no ano: colunas por mês (por prognóstico) e o que explica a diferença desde janeiro */
+function EvolucaoPassivo({ processos, encerrados }) {
+  const hist = historicoPassivo(processos, encerrados);
+  if (hist.length < 2) return null;
+  const ini = hist[0].total, fim = hist[hist.length - 1].total, dif = fim - ini;
+  const pct = ini ? Math.round((Math.abs(dif) / ini) * 100) : 0;
+  const mv = motivosVariacao(processos, encerrados);
+  const etiqueta = dif > 0 ? { s: sem("atencao"), t: `Subiu ${pct}% no ano` } : dif < 0 ? { s: sem("resolvido"), t: `Caiu ${pct}% no ano` } : { s: sem("inativo"), t: "Igual a janeiro" };
+  const plural = (n, um, varios) => `${n} ${n === 1 ? um : varios}`;
+  const motivos = [
+    mv.novos.n > 0 && [`+ ${fmtBRLCurto(mv.novos.valor)}`, `${plural(mv.novos.n, "processo novo", "processos novos")} desde janeiro`],
+    mv.saidas.n > 0 && [`− ${fmtBRLCurto(mv.saidas.valor)}`, `${plural(mv.saidas.n, "processo encerrado", "processos encerrados")} (${[...new Set(mv.saidas.lista.map((e) => e.motivo.split(" ")[0].toLowerCase()))].join(", ")})`],
+    mv.atualizados.n > 0 && [`+ ${fmtBRLCurto(mv.atualizados.valor)}`, `${plural(mv.atualizados.n, "valor da causa atualizado", "valores da causa atualizados")}`],
+    mv.reclassificados.n > 0 && ["", `${plural(mv.reclassificados.n, "processo mudou", "processos mudaram")} de prognóstico${mv.reclassificados.paraProvavel ? ` (${mv.reclassificados.paraProvavel} para provável)` : ""}`],
+  ].filter(Boolean);
+  return (
+    <>
+      <SecLabel>Evolução do passivo</SecLabel>
+      <div style={{ ...CARD, padding: 18 }}>
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div>
+            <p style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2 }}>Janeiro <span aria-hidden="true">→</span> hoje</p>
+            <p style={{ fontFamily: F.ui, fontSize: 20, fontWeight: 600, color: S.ink, fontVariantNumeric: "tabular-nums", marginTop: 2 }}>
+              {fmtBRLCurto(ini)} <span style={{ color: S.texto2, fontWeight: 400 }} aria-label="para">→</span> {fmtBRLCurto(fim)}
+            </p>
+          </div>
+          <Etiqueta s={etiqueta.s} texto={etiqueta.t} />
+        </div>
+        <div className="flex flex-wrap gap-x-4 gap-y-1.5" style={{ marginTop: 12 }}>
+          {ORDEM_PROGNOSTICO.map((p) => (
+            <span key={p} className="inline-flex items-center gap-1.5" style={{ fontFamily: F.ui, fontSize: 14, color: S.ink }}>
+              <span style={{ width: 10, height: 10, borderRadius: 3, background: SEM_PROGNOSTICO[p].cor }} />{p}
+            </span>
+          ))}
+        </div>
+        <div style={{ marginTop: 8 }}>
+          <GraficoColunas semMoldura titulo="Passivo no fim de cada mês" rotulos={hist.map((h) => h.mes)} partes={ORDEM_PROGNOSTICO}
+                          valores={hist.map((h) => ORDEM_PROGNOSTICO.map((p) => h[p]))} unidade="BRL" />
+        </div>
+        {motivos.length > 0 && (
+          <div className="mt-4 pt-3" style={{ borderTop: `1px solid ${S.linha}` }}>
+            <p style={{ fontFamily: F.ui, fontSize: 15, fontWeight: 600, color: S.ink }}>O que mudou desde janeiro</p>
+            <div className="flex flex-col gap-2 mt-2">
+              {motivos.map(([v, t]) => (
+                <div key={t} className="flex items-baseline gap-3">
+                  <span style={{ fontFamily: F.ui, fontSize: 15, fontWeight: 600, color: S.ink, minWidth: 104, whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>{v}</span>
+                  <span style={{ fontFamily: F.ui, fontSize: 15, color: S.ink, lineHeight: 1.4 }}>{t}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        <p style={{ fontFamily: F.ui, fontSize: 13, color: S.texto2, marginTop: 12, lineHeight: 1.45 }}>Fotografia do passivo no último dia de cada mês. No app real, ela é guardada a cada atualização dos dados do Legal One.</p>
+      </div>
+    </>
+  );
+}
+
 /* ---------------- Tela: contratos de gestão da organização ---------------- */
 function ContratosOrg({ orgId, onBack, onOpenContrato, onEnviarCliente }) {
   const o = ORGS[orgId], r = resumoOrg(orgId);
@@ -126,6 +185,7 @@ function ContratosOrg({ orgId, onBack, onOpenContrato, onEnviarCliente }) {
       <div className="flex flex-col gap-3">
         {r.contratos.map((c) => <ContratoCard key={c.orgao} c={c} onClick={() => onOpenContrato(c.orgao)} />)}
       </div>
+      <EvolucaoPassivo processos={r.processos} encerrados={encerradosDe(orgId)} />
       {onEnviarCliente && (
         <button onClick={onEnviarCliente} className="w-full inline-flex items-center justify-center gap-2 mt-4"
                 style={{ height: 52, borderRadius: 14, fontFamily: F.ui, fontSize: 17, fontWeight: 600, background: S.cartao, color: S.ink, boxShadow: `inset 0 0 0 1.5px ${S.ink}` }}>
@@ -169,6 +229,8 @@ function ContratoDetalhe({ orgId, orgao, onBack, backLabel, onOpenProcesso, onOp
       )}
       <BotaoAlerta base={{ tipo: "passivo_contrato", orgId, orgao }} rotulo="Avisar se o passivo passar de um valor" titulo="Avisar sobre o passivo" />
       <Anotacao chave={`contrato:${orgId}:${orgao}`} sobre="este contrato" />
+
+      <EvolucaoPassivo processos={c.processos} encerrados={encerradosDe(orgId, orgao)} />
 
       {porArea.length > 0 && (
         <>
