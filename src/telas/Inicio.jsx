@@ -28,7 +28,9 @@ function Anel({ pct, rotulo, size = 92 }) {
     </div>
   );
 }
-function InicioFeed({ onOpenList, onOpenOrg, followedItems, onOpenProcesso, onOpenBloqueio, onOpenReclamacao, onOpenAcompanhando, onOpenBusca, onOpenMenu, onPerguntar, unreadCount, foto, apelido }) {
+const NATUREZAS = ["Trabalhista", "Cível", "Administrativo"];
+
+function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onOpenProcesso, onOpenBloqueio, onOpenReclamacao, onOpenAcompanhando, onOpenBusca, onOpenMenu, onPerguntar, unreadCount, foto, apelido }) {
   const preview = followedItems.slice(0, 3);
   const parados90 = PROCESSOS_LISTA.filter((p) => p.diasParado >= 90).length;
   const sem = (id) => SEMANTICA.find((x) => x.id === id);
@@ -44,6 +46,9 @@ function InicioFeed({ onOpenList, onOpenOrg, followedItems, onOpenProcesso, onOp
   const passivo = PROCESSOS_LISTA.reduce((soma, p) => soma + p.valorCausa, 0);
   const nContratos = Object.values(ORGS).reduce((soma, o) => soma + o.contratos.length, 0);
   const proc = (id) => PROCESSOS_LISTA.find((p) => p.id === id);
+  // "Ativo" = não arquivado nem baixado. Na base de exemplo, todos estão ativos.
+  const ativosProc = PROCESSOS_LISTA.filter((p) => !["Arquivado", "Baixado"].includes(p.status));
+  const outrosProc = ativosProc.filter((p) => !NATUREZAS.includes(p.area)).length;
 
   // Tons da família neutra: cada atalho num tom, o latão fica só para a IA.
   const TONS_ATALHO = {
@@ -120,6 +125,32 @@ function InicioFeed({ onOpenList, onOpenOrg, followedItems, onOpenProcesso, onOp
         <Atalho rotulo="Perguntar" detalhe="Relatórios com a IA" onClick={onPerguntar} Icone={SparkleIcon} tom="ia" />
       </div>
 
+      {/* processos ativos do escritório, por natureza */}
+      <SecLabel acao="Ver todos" onAcao={() => onOpenProcessos("todos")}>Processos ativos</SecLabel>
+      <div style={{ ...CARD, padding: 18 }}>
+        <div className="flex items-baseline gap-2">
+          <span style={{ fontFamily: F.ui, fontSize: 34, fontWeight: 600, color: S.ink, letterSpacing: "-0.02em" }}>{ativosProc.length}</span>
+          <span style={{ fontFamily: F.ui, fontSize: 16, color: S.texto2 }}>processos em andamento no escritório</span>
+        </div>
+        <div className="flex flex-col mt-3" style={{ gap: 4 }}>
+          {NATUREZAS.map((n) => {
+            const qtd = ativosProc.filter((p) => p.area === n).length;
+            return (
+              <button key={n} onClick={() => onOpenProcessos(n)} className="w-full text-left" style={{ padding: "8px 0" }} aria-label={`${n}: ${qtd} processos, ver lista`}>
+                <span className="flex items-baseline justify-between gap-2">
+                  <span style={{ fontFamily: F.ui, fontSize: 16, color: S.ink }}>{n}</span>
+                  <span className="flex items-center gap-1.5" style={{ fontFamily: F.ui, fontSize: 16, fontWeight: 600, color: S.ink }}>{qtd}<ChevronIcon size={14} color={S.texto2} strokeWidth={2} /></span>
+                </span>
+                <span className="block" style={{ marginTop: 6, height: 8, borderRadius: 999, background: S.linha }}>
+                  <span className="block" style={{ height: 8, borderRadius: 999, width: `${Math.max(2, (qtd / ativosProc.length) * 100)}%`, background: S.oliva }} />
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        {outrosProc > 0 && <p style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2, marginTop: 6 }}>Mais {outrosProc} {outrosProc === 1 ? "processo constitucional" : "processos constitucionais"} (reclamações no STF).</p>}
+      </div>
+
       {preview.length > 0 && (
         <>
           <SecLabel acao="Ver todos" onAcao={onOpenAcompanhando}>Processos que você segue</SecLabel>
@@ -178,8 +209,11 @@ function FeedItem({ cliente, text, time, sem, tag, onClick, last }) {
 
 /* Lista de processos ou bloqueios com filtros rápidos e ordenação */
 function Chip({ ativo, onClick, children }) {
+  const ref = React.useRef(null);
+  // O filtro já escolhido (por exemplo, vindo do Início) aparece na tela, mesmo no fim da faixa.
+  React.useEffect(() => { if (ativo && ref.current?.scrollIntoView) ref.current.scrollIntoView({ inline: "center", block: "nearest" }); }, []);
   return (
-    <button onClick={onClick} aria-pressed={ativo} className="shrink-0 rounded-full"
+    <button ref={ref} onClick={onClick} aria-pressed={ativo} className="shrink-0 rounded-full"
             style={{ height: 40, padding: "0 14px", fontFamily: F.ui, fontSize: 15, fontWeight: ativo ? 600 : 500, whiteSpace: "nowrap",
                      background: ativo ? S.marca : S.cartao, color: ativo ? "#FFFFFF" : S.ink, boxShadow: ativo ? "none" : CARD.boxShadow }}>
       {children}
@@ -188,10 +222,10 @@ function Chip({ ativo, onClick, children }) {
 }
 const LinhaChips = ({ children }) => <div className="flex gap-2 overflow-x-auto no-scrollbar" style={{ margin: "0 -32px", padding: "4px 32px" }}>{children}</div>;
 
-function ListaGenerica({ tipo, onBack, followed, onOpenProcesso, onOpenBloqueio }) {
+function ListaGenerica({ tipo, onBack, followed, onOpenProcesso, onOpenBloqueio, recorteInicial = "todos" }) {
   const isProcessos = tipo === "processos";
   const [cliente, setCliente] = useState("todos");
-  const [recorte, setRecorte] = useState("todos");
+  const [recorte, setRecorte] = useState(recorteInicial);
   const [ordem, setOrdem] = useState(isProcessos ? "recentes" : "recentes");
   const base = isProcessos ? PROCESSOS_LISTA : BLOQUEIOS_LISTA;
   const recortes = isProcessos

@@ -69,6 +69,7 @@ function AppSociosPrototype() {
   const online = useConexao(semInternetSim);
   const [desde] = useState(() => new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }));
   const [relatorioOrgao, setRelatorioOrgao] = useState(null);
+  const [recorteLista, setRecorteLista] = useState("todos");
   const [relatorioOrigin, setRelatorioOrigin] = useState("contratos");
   const comPersistencia = (set, chave) => (v) => { set(v); gravarPref(chave, v); };
   const setFoto = comPersistencia(setFotoS, "foto"), setApelido = comPersistencia(setApelidoS, "apelido"),
@@ -197,7 +198,8 @@ function AppSociosPrototype() {
 
         {tab === "inicio" && inicioView === "feed" && (
           <InicioFeed
-            onOpenList={setInicioView}
+            onOpenList={(v) => { setRecorteLista("todos"); setInicioView(v); }}
+            onOpenProcessos={(area) => { setRecorteLista(area); setInicioView("processos"); }}
             onOpenOrg={openOrg}
             followedItems={followedItemsFull}
             onOpenProcesso={openProcesso}
@@ -231,7 +233,7 @@ function AppSociosPrototype() {
             onOpenProcesso={(p) => openProcesso(p, "reclamacao")} />
         )}
         {tab === "inicio" && ["processos", "bloqueios"].includes(inicioView) && (
-          <ListaGenerica tipo={inicioView} onBack={() => setInicioView("feed")} followed={followed}
+          <ListaGenerica key={inicioView + recorteLista} tipo={inicioView} recorteInicial={recorteLista} onBack={() => setInicioView("feed")} followed={followed}
                          onOpenProcesso={openProcesso} onOpenBloqueio={openBloqueio} />
         )}
         {tab === "inicio" && inicioView === "busca" && (

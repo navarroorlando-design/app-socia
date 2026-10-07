@@ -110,12 +110,27 @@ sua (`src/telas/OrgMetricas.jsx`). O cartão da lista de organizações mostra s
 - **Carteira** (`src/telas/Carteira.jsx`): passivo de todos os clientes, aberto pelo bloco de passivo
   do Início. **Movimentações** recentes: o "Ver tudo" de "Hoje no escritório".
 - **Listas com filtros**: cliente e recorte (área, parados, status) em chips, mais ordenação.
+- **Processos ativos por natureza** no Início (trabalhista, cível, administrativo), cada linha abre a
+  lista já filtrada. "Ativo" = não arquivado nem baixado.
 - **Entrada** (`src/telas/Entrada.jsx`): login simulado com a conta do escritório, primeiro acesso
   (tamanho do texto, ouvir resumos), Face ID simulado e tela de bloqueio. Perfil → Segurança liga o
   Face ID, bloqueia, sai da conta e simula "sem internet" (aviso no topo, IA desligada).
 - **Relatório para o cliente** (`src/telas/RelatorioCliente.jsx`): prévia do passivo por contrato,
   conferência obrigatória e PDF (jsPDF). No claude.ai o arquivo sai pela capacidade `downloads`
   (declarar `capabilities: {sample: {}, downloads: true}` ao publicar); fora dele, baixa direto.
+
+## DataJud (movimentações dos processos acompanhados)
+
+- `lib/datajud.mjs`: descobre o tribunal pelo número CNJ, consulta a API Pública do DataJud, junta os
+  graus num histórico e devolve só as movimentações ainda não vistas (a primeira verificação apenas
+  guarda o histórico). Testes em `tests/datajud.test.mjs` (`npm test`).
+- `app/api/cron/datajud/route.js` + `vercel.json` (`crons`): rotina diária no Vercel. Variáveis:
+  `CRON_SECRET` (obrigatória), `ACOMPANHADOS` (números CNJ separados por vírgula, até haver banco com o
+  "Sigo" de cada sócia), `KV_REST_API_URL`/`KV_REST_API_TOKEN` (Redis da Upstash, memória do que já foi
+  visto), `DATAJUD_API_KEY` (opcional; a chave pública do CNJ muda de tempos em tempos).
+- `npm run datajud -- <número CNJ>` consulta à mão; `--verificar` mostra só o que é novo.
+- Limites: o DataJud recebe os dados dos tribunais com atraso (dias), não traz o texto das decisões,
+  não cobre o STF nem processos em segredo de justiça. O plano Hobby do Vercel só roda cron 1 vez por dia.
 
 ## Regra da IA (arquitetura)
 
