@@ -182,7 +182,7 @@ function Faixa({ tom, bloco, bleed = 24, onBack, backLabel, eyebrow, titulo, tit
              style={azul ? { background: S.marca, borderRadius: 24, padding: 22, boxShadow: "0 10px 24px rgba(31,30,26,.22)" } : undefined}>
           <div className="min-w-0">
             {eyebrow && <p style={{ fontFamily: F.ui, fontSize: 16, color: azul ? S.marcaTexto2 : S.texto2, lineHeight: 1.35 }}>{eyebrow}</p>}
-            <h1 style={{ fontFamily: F.display, fontSize: tituloSize, fontWeight: 600, lineHeight: 1.1, letterSpacing: "-0.025em", color: azul ? "#FFFFFF" : S.ink, marginTop: eyebrow ? 4 : 0, textWrap: "balance" }}>{titulo}</h1>
+            <h1 style={{ fontFamily: F.titulo, fontSize: tituloSize, fontWeight: 600, lineHeight: 1.1, letterSpacing: "-0.025em", color: azul ? "#FFFFFF" : S.ink, marginTop: eyebrow ? 4 : 0, textWrap: "balance" }}>{titulo}</h1>
             {detalhe && direita && <div style={{ marginTop: 12 }}>{direita}</div>}
             {sub && <div style={{ fontFamily: F.ui, fontSize: 16, color: azul ? S.marcaTexto2 : S.texto2, marginTop: 8, lineHeight: 1.4 }}>{sub}</div>}
           </div>

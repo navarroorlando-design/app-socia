@@ -73,7 +73,7 @@ function PerfilUsuaria({ onOpenNotifPrefs, onOpenPasta, pinnedCount, onOpenGuia,
         <div className="flex items-center gap-4" style={{ background: S.marca, borderRadius: 24, padding: 22, boxShadow: "0 10px 24px rgba(31,30,26,.22)" }}>
           <Avatar foto={foto} size={72} claro />
           <div className="min-w-0">
-            <p style={{ fontFamily: F.display, letterSpacing: "-0.02em", fontSize: 24, fontWeight: 600, color: "#FFFFFF", lineHeight: 1.15 }}>{apelido || "Sócia"}</p>
+            <p style={{ fontFamily: F.titulo, letterSpacing: "-0.02em", fontSize: 24, fontWeight: 600, color: "#FFFFFF", lineHeight: 1.15 }}>{apelido || "Sócia"}</p>
             <p style={{ fontFamily: F.ui, fontSize: 15, color: S.marcaTexto2, marginTop: 4, lineHeight: 1.35 }}>Azevedo dos Reis Advogados &amp; Associados</p>
           </div>
         </div>

@@ -56,6 +56,8 @@ const S = {
 
 const F = {
   display: "'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  // Títulos grandes (saudação, título das telas). A variável permite testar outra fonte sem rebuild.
+  titulo: "var(--fonte-titulo, 'Lexend'), Georgia, 'Times New Roman', serif",
   ui: "'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
   dados: "'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace",
 };

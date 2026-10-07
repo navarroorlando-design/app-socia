@@ -41,7 +41,7 @@ function IaAsk({ onAsk, sample }) {
         <span className="flex items-center justify-center" style={{ width: 72, height: 72, borderRadius: 999, background: S.iaFundo }}>
           <SparkleIcon size={32} color={S.ia} strokeWidth={1.7} />
         </span>
-        <h1 style={{ fontFamily: F.display, letterSpacing: "-0.02em", fontSize: 34, fontWeight: 600, lineHeight: 1.1, color: S.ink, marginTop: 14, textWrap: "balance" }}>Pergunte qualquer coisa!</h1>
+        <h1 style={{ fontFamily: F.titulo, letterSpacing: "-0.02em", fontSize: 34, fontWeight: 600, lineHeight: 1.1, color: S.ink, marginTop: 14, textWrap: "balance" }}>Pergunte qualquer coisa!</h1>
         <p style={{ fontFamily: F.ui, fontSize: 16, color: S.texto2, lineHeight: 1.45, marginTop: 10, maxWidth: 290 }}>
           Sobre processos, bloqueios e clientes. A IA monta o relatório com os números do escritório.
         </p>

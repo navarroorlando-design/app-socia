@@ -72,8 +72,8 @@ function InicioFeed({ onOpenList, onOpenOrg, followedItems, onOpenProcesso, onOp
       <div className="flex items-center justify-between gap-3" style={{ paddingTop: 10 }}>
         <div className="min-w-0">
           <p style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2 }}>{data.charAt(0).toUpperCase() + data.slice(1)}</p>
-          <p style={{ fontFamily: F.ui, fontSize: 30, fontWeight: 400, color: S.ink, letterSpacing: "-0.02em", lineHeight: 1.1, marginTop: 8 }}>{saudacao.replace(",", "")}</p>
-          <p style={{ fontFamily: F.ui, fontSize: 30, fontWeight: 700, color: S.ink, letterSpacing: "-0.025em", lineHeight: 1.1 }}>{apelido || "Sócia"}</p>
+          <p style={{ fontFamily: F.titulo, fontSize: 30, fontWeight: 400, color: S.ink, letterSpacing: "-0.02em", lineHeight: 1.1, marginTop: 8 }}>{saudacao.replace(",", "")}</p>
+          <p style={{ fontFamily: F.titulo, fontSize: 30, fontWeight: 700, color: S.ink, letterSpacing: "-0.025em", lineHeight: 1.1 }}>{apelido || "Sócia"}</p>
         </div>
         <button onClick={onOpenMenu} aria-label={`Menu da conta${unreadCount ? `, ${unreadCount} notificações novas` : ""}`} className="rounded-full shrink-0">
           <Avatar foto={foto} size={54} badge={unreadCount} />
