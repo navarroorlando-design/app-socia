@@ -3,6 +3,8 @@
 -- Proposta inicial. O app só LÊ dos sistemas do escritório: este banco é
 -- uma cópia organizada para o celular, mais o que é pessoal de cada sócia.
 -- A fonte da verdade continua sendo o Legal One e o Log de Bloqueios.
+-- O Legal One NÃO tem API no contrato: os dados entram por relatórios exportados
+-- (XLSX ou HTML), lidos por lib/importar/planilha.mjs.
 -- ====================================================================
 
 -- --------------------------------------------------------------------
@@ -12,8 +14,7 @@
 -- Organizações sociais (clientes)
 create table clientes (
   id              bigint generated always as identity primary key,
-  legalone_id     text unique not null,          -- id no Legal One
-  nome            text not null,                  -- "Instituto Gnosis"
+  nome            text unique not null,           -- "Instituto Gnosis" (como vem no relatório)
   sigla           text,                           -- "IG"
   principal       boolean not null default false, -- aparece na grade de Organizações
   atualizado_em   timestamptz not null default now()
@@ -26,7 +27,7 @@ create table contratos_gestao (
   orgao           text not null,                  -- "Município de Niterói"
   vigencia_inicio date,
   vigencia_fim    date,
-  legalone_ref    text,                           -- como o contrato aparece no Legal One (campo personalizado, a confirmar)
+  nome_no_relatorio text,                         -- como o contrato aparece na coluna do relatório, se diferente
   atualizado_em   timestamptz not null default now(),
   unique (cliente_id, orgao)
 );
@@ -37,8 +38,8 @@ create type prognostico  as enum ('Provável', 'Possível', 'Remoto');
 
 create table processos (
   id                 bigint generated always as identity primary key,
-  legalone_id        text unique not null,
-  numero_cnj         char(25) unique,             -- 0000000-00.0000.0.00.0000
+  numero_cnj         char(25) unique,             -- 0000000-00.0000.0.00.0000 (chave principal da importação)
+  pasta              text unique,                 -- pasta do Legal One, quando não houver número CNJ
   cliente_id         bigint not null references clientes(id),
   contrato_id        bigint references contratos_gestao(id),
   area               area_direito not null,
@@ -60,10 +61,10 @@ create table movimentacoes (
   id              bigint generated always as identity primary key,
   processo_id     bigint not null references processos(id) on delete cascade,
   data_hora       timestamptz not null,
-  fonte           text not null check (fonte in ('datajud', 'legalone')),
+  fonte           text not null check (fonte in ('datajud', 'planilha')),
   codigo_tpu      integer,                        -- código da Tabela Processual Unificada (DataJud)
   nome            text not null,                  -- "Sentença", "Bloqueio de valores via SISBAJUD"
-  complemento     text,                           -- detalhes; com o Legal One, o resumo da publicação
+  complemento     text,                           -- detalhes; da planilha, o texto do último andamento
   grau            text,                           -- G1, G2...
   chave_origem    text not null,                  -- evita duplicar (data|código|grau no DataJud)
   criado_em       timestamptz not null default now(),
@@ -89,9 +90,8 @@ create index on bloqueios (situacao);
 -- Reclamações constitucionais (STF)
 create table reclamacoes (
   id              bigint generated always as identity primary key,
-  legalone_id     text unique,
   cliente_id      bigint not null references clientes(id),
-  numero          text not null,                  -- "Rcl 80.150/RJ"
+  numero          text unique not null,           -- "Rcl 80.150/RJ"
   assunto         text not null,
   precedente      text,                           -- "ADPF 664"
   ato_reclamado   text,
@@ -209,12 +209,17 @@ create table relatorios_fixados (                 -- respostas da IA guardadas e
 -- 4. CONTROLE E AUDITORIA
 -- --------------------------------------------------------------------
 
-create table sincronizacoes (                     -- cada importação: quando, de onde, quanto, se deu erro
+create table sincronizacoes (                     -- cada importação: de onde, quem, quanto e se deu problema
   id              bigint generated always as identity primary key,
-  fonte           text not null check (fonte in ('legalone', 'log_bloqueios', 'datajud')),
+  fonte           text not null check (fonte in ('planilha_processos', 'planilha_bloqueios', 'datajud')),
+  arquivo         text,                           -- nome do arquivo importado
+  importado_por   uuid references usuarias(id),   -- quem subiu a planilha (vazio na rotina do DataJud)
   iniciada_em     timestamptz not null default now(),
   terminada_em    timestamptz,
   registros       integer,
+  novos           integer,
+  alterados       integer,
+  problemas       jsonb not null default '[]',    -- [{linha, campo, mensagem}] para a equipe corrigir
   erro            text
 );
 -- O app mostra "dados de hoje, 9h12" a partir da última sincronização sem erro.

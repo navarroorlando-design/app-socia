@@ -146,12 +146,25 @@ Guardadas no aparelho no protótipo (`lerPref`/`gravarPref`); no app real, no se
 
 ## Banco de dados (`db/schema.sql`, proposta)
 
-Postgres em quatro partes: (1) **cópia dos sistemas**, preenchida só pela sincronização (clientes,
+Postgres em quatro partes: (1) **cópia dos sistemas**, preenchida só pela importação das planilhas e pelo DataJud (clientes,
 contratos de gestão, processos, movimentações, bloqueios, reclamações); (2) **contas calculadas** em
 views (`passivo_por_contrato`, `processos_parados`); (3) **o que é de cada sócia** (preferências,
 seguidos, anotações, alertas, notificações, relatórios fixados), protegido por row level security;
 (4) **controle e auditoria** (`sincronizacoes`, `datajud_vistos`, que substitui o Redis, e `auditoria`
 para LGPD). Conversas com a IA não são guardadas, só o que for fixado. Testado no PGlite.
+
+## Importação do Legal One (sem API)
+
+O contrato do Legal One **não tem API**. Os dados entram por **relatórios exportados** (XLSX ou HTML):
+- `lib/importar/planilha.mjs`: `importarProcessos` e `importarBloqueios` acham o cabeçalho (mesmo com
+  título antes), reconhecem vários nomes por coluna (`COLUNAS_PROCESSOS`), convertem CNJ, reais e datas
+  (inclusive data serial do Excel) e devolvem a lista de problemas por linha (número real da linha do
+  Excel). Nada é gravado sem confirmação. Testes em `tests/importar.test.mjs`.
+- `npm run importar -- processos|bloqueios <arquivo>` testa um relatório real sem gravar.
+- `db/modelos/`: planilhas modelo com as colunas esperadas (geradas da base de exemplo), para a equipe
+  montar o relatório salvo no Legal One.
+- Chave do processo: número CNJ (ou a pasta, se faltar). O histórico de movimentações vem do DataJud;
+  a planilha traz só o último andamento.
 
 ## Regra da IA (arquitetura)
 
