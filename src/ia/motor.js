@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BLOQUEIOS_LISTA, CLIENTE_NOME, TOTAIS } from "../dados/base";
-import { consultarDados, listarProcessos } from "../dados/consultas";
+import { consultarCruzado, consultarDados, listarProcessos } from "../dados/consultas";
 
 /* ------------------------------------------------------------------ */
 /* IA real: o Claude escolhe a apresentação, o app calcula os números  */
@@ -43,6 +43,9 @@ const TOOLS_DEF = (onProgress) => [
         status_bloqueio: { type: "string", enum: ["Ativo", "Levantado", "todos"], description: "Só para métricas de bloqueio. Padrão: Ativo." },
         dias_minimos_parado: { type: "number", description: "Só para processos_parados. Padrão: 60." },
         prognostico: { type: "string", enum: ["Provável", "Possível", "Remoto"], description: "Só para passivo_estimado." },
+        contrato: { type: "string", description: "Parte do nome do órgão do contrato de gestão, ex.: Niterói." },
+        mes_inicio: { type: "number", description: "Mês inicial (1 a 12) de 2026, pelo mês do bloqueio ou da última movimentação." },
+        mes_fim: { type: "number", description: "Mês final (1 a 12) de 2026." },
       },
       required: ["metrica"],
     },
@@ -52,6 +55,22 @@ const TOOLS_DEF = (onProgress) => [
       onProgress(`Consultando ${rot}${por}${input.cliente ? ` de ${input.cliente}` : ""}`);
       return consultarDados(input);
     },
+  },
+  {
+    name: "consultar_cruzado",
+    description: "Como consultar_dados, mas em duas dimensões: para cada grupo de agrupar_por, o valor dividido por dividir_por (ex.: passivo por contrato dividido por prognóstico). Devolve partes e, por grupo, total e valores.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        metrica: { type: "string", enum: ["valor_bloqueado", "quantidade_bloqueios", "quantidade_processos", "processos_parados", "passivo_estimado"] },
+        agrupar_por: { type: "string", enum: ["cliente", "area", "contrato", "status", "prognostico", "mes"] },
+        dividir_por: { type: "string", enum: ["cliente", "area", "contrato", "status", "prognostico"] },
+        cliente: { type: "string" }, area: { type: "string" }, contrato: { type: "string" },
+        status_bloqueio: { type: "string", enum: ["Ativo", "Levantado", "todos"] },
+      },
+      required: ["metrica", "agrupar_por", "dividir_por"],
+    },
+    execute: (input) => { onProgress(`Cruzando ${input.agrupar_por} por ${input.dividir_por}${input.cliente ? ` de ${input.cliente}` : ""}`); return consultarCruzado(input); },
   },
   {
     name: "listar_processos",
@@ -70,79 +89,120 @@ const TOOLS_DEF = (onProgress) => [
   },
 ];
 
-function montarPrompt(pergunta, clienteId) {
-  const escopo = clienteId ? `\nA sócia está na página da organização ${CLIENTE_NOME[clienteId]}: filtre todas as consultas por cliente = "${CLIENTE_NOME[clienteId]}", a menos que a pergunta peça outra coisa explicitamente.` : "";
-  return `Você é o assistente de estatísticas do app interno dos sócios do escritório Azevedo dos Reis Advogados (Direito do Terceiro Setor). Uma sócia fez uma pergunta e você monta um relatório curto para a tela do celular dela.
+/* ------------------------------------------------------------------ */
+/* Conversa com a IA (formato do app do Claude)                        */
+/* As regras vão num primeiro turno fixo; o histórico vem depois.      */
+/* ------------------------------------------------------------------ */
+function regras(clienteId) {
+  const escopo = clienteId ? `\nEsta conversa começou na página da organização ${CLIENTE_NOME[clienteId]}: filtre as consultas por cliente = "${CLIENTE_NOME[clienteId]}", a menos que a sócia peça outra coisa.` : "";
+  return `Você é o analista de dados do app interno dos sócios do escritório Azevedo dos Reis Advogados & Associados (Direito do Terceiro Setor: organizações sociais com contratos de gestão com o poder público). Converse com a sócia como o Claude conversa no celular: análise de verdade, clara e bem organizada. Ela tem dificuldade de ver de perto, então escreva para leitura fácil.
 
-Regras:
-- Todo número do relatório tem de vir das funções consultar_dados ou listar_processos. Nunca invente nem estime valores. Você pode calcular percentuais simples a partir dos números que as funções devolverem.
-- A base cobre ${TOTAIS.processos} processos e ${BLOQUEIOS_LISTA.length} bloqueios de 4 clientes (AFNE, Instituto Gnosis, FAS, IGEDES), com dados de 2026 até outubro. Hoje é 06/10/2026.
-- Passivo de um contrato de gestão = consultar_dados com metrica passivo_estimado (agrupe por contrato ou prognostico). É o valor em discussão nos processos, não o valor bloqueado; diga isso quando mostrar.
-- Se a pergunta pedir algo que a base não tem (prazos, honorários, nomes de partes, outros anos), diga isso num bloco de texto e não force um gráfico.
-- Faça poucas consultas: em geral de 1 a 3.
-- Escolha os blocos pela forma do dado: um valor único vira "destaque"; uma série ao longo dos meses vira "linha"; comparação entre poucas categorias (até 8) vira "barras"; lista de processos com várias colunas vira "tabela". Termine sempre com um bloco "texto" de 1 a 2 frases com a conclusão principal, em linguagem simples.
-- No máximo 5 blocos. Português do Brasil, sem jargão técnico de sistema.${escopo}
+DADOS
+- A base cobre ${TOTAIS.processos} processos e ${BLOQUEIOS_LISTA.length} bloqueios SISBAJUD de 4 clientes (AFNE, Instituto Gnosis, FAS, IGEDES), cada um com contratos de gestão, com dados de 2026 até outubro. Hoje é 06/10/2026. São dados de exemplo.
+- Todo número que você escrever tem de vir das funções consultar_dados, consultar_cruzado ou listar_processos. Nunca invente nem estime. Pode calcular percentuais e diferenças a partir do que as funções devolverem.
+- Passivo de um contrato de gestão = metrica passivo_estimado (valor em discussão nos processos, por prognóstico Provável/Possível/Remoto). Não confunda com valor bloqueado (o que já saiu da conta).
+- Se pedirem algo que a base não tem (prazos, honorários, partes, outros anos), diga com clareza e ofereça o que dá para mostrar.
+- Faça quantas consultas precisar, em geral de 3 a 8.
 
-Responda só com JSON neste formato:
-{"titulo": "título curto do relatório",
- "blocos": [
-   {"tipo": "destaque", "rotulo": "o que é o número", "valor": 1234567, "unidade": "BRL" | "quantidade"},
-   {"tipo": "linha", "titulo": "...", "rotulos": ["Jan", "Fev"], "valores": [10, 20], "unidade": "BRL" | "quantidade"},
-   {"tipo": "barras", "titulo": "...", "itens": [{"rotulo": "...", "valor": 10}], "unidade": "BRL" | "quantidade"},
-   {"tipo": "tabela", "titulo": "...", "colunas": ["..."], "linhas": [["...", "..."]]},
-   {"tipo": "texto", "texto": "..."}
- ],
- "fontes": ["Log de Bloqueios" e/ou "Legal One"]}
+FORMATO DA RESPOSTA (Markdown)
+1. Comece com **Resumo:** e 2 ou 3 frases com a resposta direta e o número principal.
+2. Depois, um bloco de números-chave (indicadores), quando houver mais de um número importante.
+3. Seções com títulos curtos (###), cada uma com 1 gráfico quando ajudar e 1 ou 2 frases dizendo o que o gráfico mostra. Use listas para pontos de atenção.
+4. Termine com ### Próximos passos (2 ou 3 sugestões práticas de acompanhamento, sem prever resultado de processo nem valor de condenação).
+5. Por último, um bloco de sugestões com 2 ou 3 perguntas curtas para aprofundar.
+Tamanho: o necessário para responder bem. Pergunta simples, resposta curta; pergunta de análise, relatório completo. Português do Brasil, sem jargão de sistema, sem emojis.
 
-Pergunta da sócia: ${pergunta}`;
+GRÁFICOS: você não escreve os números do gráfico. Escreve QUAL consulta o app deve desenhar, num bloco cercado assim:
+\`\`\`grafico
+{"tipo": "barras", "titulo": "Passivo por contrato de gestão", "consulta": {"metrica": "passivo_estimado", "cliente": "AFNE", "agrupar_por": "contrato"}}
+\`\`\`
+Tipos:
+- "barras": comparar categorias. "consulta" com agrupar_por. Para comparar até 3 recortes lado a lado, use "series": [{"rotulo": "AFNE", "consulta": {...}}, {"rotulo": "FAS", "consulta": {...}}] com o mesmo agrupar_por.
+- "linha": evolução por mês. agrupar_por "mes". Também aceita "series".
+- "empilhado": cada grupo dividido em partes. "consulta" com agrupar_por e dividir_por (ex.: contrato dividido por prognostico).
+- "indicadores": até 4 números-chave. "itens": [{"rotulo": "Bloqueado em setembro", "consulta": {...}, "comparar_com": {...}, "comparacao": "vs. agosto", "bom_quando": "desce"}]. comparar_com e bom_quando são opcionais; bom_quando é "sobe" ou "desce" (bloqueio e passivo: desce é bom).
+- "tabela": lista de processos. "processos": parâmetros de listar_processos.
+As consultas usam exatamente os parâmetros das funções (metrica, agrupar_por, dividir_por, cliente, area, contrato, status_bloqueio, prognostico, mes_inicio, mes_fim, dias_minimos_parado). Use no máximo 4 gráficos por resposta.
+
+SUGESTÕES no fim, assim:
+\`\`\`sugestoes
+["E só os processos trabalhistas?", "Compare com a FAS"]
+\`\`\`${escopo}`;
 }
 
-async function gerarRelatorio(sample, pergunta, { clienteId, onProgress, signal }) {
-  const spec = await sample.json(montarPrompt(pergunta, clienteId), { tools: TOOLS_DEF(onProgress), signal, modelTier: "default" });
-  if (!spec || !Array.isArray(spec.blocos)) throw { code: "invalid_json" };
-  return spec;
+// Monta os turnos: regras + histórico (sem respostas com erro), mantendo as últimas trocas.
+function montarTurnos(mensagens, clienteId) {
+  const hist = mensagens.filter((m) => m.text && m.text.trim() && !(m.role === "assistant" && m.status === "erro"))
+    .map((m) => ({ role: m.role, content: m.text })).slice(-12);
+  while (hist.length && hist[0].role !== "user") hist.shift();
+  return [{ role: "user", content: regras(clienteId) }, ...hist];
 }
 
-/* Relatórios pré-calculados para os dois fixados de exemplo */
-function relatorioExemploGnosis() {
-  const tot = consultarDados({ metrica: "valor_bloqueado", cliente: "Instituto Gnosis" });
-  const porArea = consultarDados({ metrica: "valor_bloqueado", cliente: "Instituto Gnosis", agrupar_por: "area" });
-  const porMes = consultarDados({ metrica: "valor_bloqueado", cliente: "Instituto Gnosis", agrupar_por: "mes", status_bloqueio: "todos" });
-  const maior = porArea.grupos[0];
-  return {
-    titulo: "Bloqueios ativos do Instituto Gnosis",
-    blocos: [
-      { tipo: "destaque", rotulo: "Bloqueado hoje", valor: tot.total, unidade: "BRL" },
-      { tipo: "linha", titulo: "Novos bloqueios por mês", rotulos: porMes.grupos.map((g) => g.rotulo), valores: porMes.grupos.map((g) => g.valor), unidade: "BRL" },
-      { tipo: "barras", titulo: "Por área do direito", itens: porArea.grupos, unidade: "BRL" },
-      { tipo: "texto", texto: maior ? `${maior.rotulo} concentra ${Math.round((maior.valor / tot.total) * 100)}% do valor bloqueado do Instituto Gnosis.` : "Não há bloqueios ativos." },
-    ],
-    fontes: ["Log de Bloqueios"],
-  };
+async function conversar(sample, mensagens, { clienteId, onText, onProgress, signal }) {
+  const { text, truncated } = await sample(montarTurnos(mensagens, clienteId), { tools: TOOLS_DEF(onProgress), signal, onText, modelTier: "default" });
+  return { text, truncated };
 }
 
-function relatorioExemploParados() {
+/* ------------------------------------------------------------------ */
+/* Relatórios fixados de exemplo: mesmo formato da conversa, números    */
+/* calculados da base na hora                                          */
+/* ------------------------------------------------------------------ */
+const brl = (v) => "R$ " + Math.round(v).toLocaleString("pt-BR");
+const cerca = (tipo, obj) => "```" + tipo + "\n" + JSON.stringify(obj) + "\n```";
+
+function exemploGnosis() {
+  const cli = "Instituto Gnosis";
+  const tot = consultarDados({ metrica: "valor_bloqueado", cliente: cli });
+  const lev = consultarDados({ metrica: "valor_bloqueado", cliente: cli, status_bloqueio: "Levantado" });
+  const porArea = consultarDados({ metrica: "valor_bloqueado", cliente: cli, agrupar_por: "area" });
+  const porContrato = consultarDados({ metrica: "valor_bloqueado", cliente: cli, agrupar_por: "contrato" });
+  const set = consultarDados({ metrica: "valor_bloqueado", cliente: cli, status_bloqueio: "todos", mes_inicio: 9, mes_fim: 9 });
+  const ago = consultarDados({ metrica: "valor_bloqueado", cliente: cli, status_bloqueio: "todos", mes_inicio: 8, mes_fim: 8 });
+  const area = porArea.grupos[0], contrato = porContrato.grupos[0];
+  return [
+    `**Resumo:** o Instituto Gnosis tem ${brl(tot.total)} bloqueados hoje. ${area.rotulo} concentra ${Math.round((area.valor / tot.total) * 100)}% desse valor, e o contrato com ${contrato.rotulo} responde por ${brl(contrato.valor)}.`,
+    cerca("grafico", { tipo: "indicadores", itens: [
+      { rotulo: "Bloqueado hoje", consulta: { metrica: "valor_bloqueado", cliente: cli } },
+      { rotulo: "Já levantado", consulta: { metrica: "valor_bloqueado", cliente: cli, status_bloqueio: "Levantado" } },
+      { rotulo: "Novos bloqueios em setembro", consulta: { metrica: "valor_bloqueado", cliente: cli, status_bloqueio: "todos", mes_inicio: 9, mes_fim: 9 }, comparar_com: { metrica: "valor_bloqueado", cliente: cli, status_bloqueio: "todos", mes_inicio: 8, mes_fim: 8 }, comparacao: "vs. agosto", bom_quando: "desce" },
+    ] }),
+    "### Onde está o dinheiro bloqueado",
+    `${area.rotulo} lidera, com ${brl(area.valor)}. Toque numa barra para ver o valor exato.`,
+    cerca("grafico", { tipo: "barras", titulo: "Bloqueado hoje por área", consulta: { metrica: "valor_bloqueado", cliente: cli, agrupar_por: "area" } }),
+    "### Por contrato de gestão",
+    cerca("grafico", { tipo: "barras", titulo: "Bloqueado hoje por contrato", consulta: { metrica: "valor_bloqueado", cliente: cli, agrupar_por: "contrato" } }),
+    "### Ao longo do ano",
+    `Em setembro entraram ${brl(set.total)} em novos bloqueios, contra ${brl(ago.total)} em agosto.`,
+    cerca("grafico", { tipo: "linha", titulo: "Novos bloqueios por mês", consulta: { metrica: "valor_bloqueado", cliente: cli, status_bloqueio: "todos", agrupar_por: "mes" } }),
+    "### Próximos passos",
+    `- Acompanhar os pedidos de desbloqueio do contrato com ${contrato.rotulo}, o maior valor.`,
+    `- Revisar os bloqueios trabalhistas mais antigos com a equipe responsável.`,
+    `Até hoje, ${brl(lev.total)} já foram levantados.`,
+    cerca("sugestoes", ["Qual o passivo do Gnosis por contrato?", "Compare com a AFNE", "Quais bloqueios estão ativos há mais tempo?"]),
+  ].join("\n\n");
+}
+
+function exemploParados() {
   const tot = consultarDados({ metrica: "processos_parados" });
   const porCli = consultarDados({ metrica: "processos_parados", agrupar_por: "cliente" });
-  const lista = listarProcessos({ dias_minimos_parado: 60, limite: 6 });
-  return {
-    titulo: "Processos parados há mais de 60 dias",
-    blocos: [
-      { tipo: "destaque", rotulo: "Processos parados", valor: tot.total, unidade: "quantidade" },
-      { tipo: "barras", titulo: "Por cliente", itens: porCli.grupos, unidade: "quantidade" },
-      { tipo: "tabela", titulo: "Os mais antigos", colunas: ["Cliente", "Ação", "Dias parado"], linhas: lista.map((p) => [p.cliente, p.descricao, String(p.dias_parado)]) },
-      { tipo: "texto", texto: `${porCli.grupos[0]?.rotulo || "Nenhum cliente"} tem o maior número de processos parados.` },
-    ],
-    fontes: ["Legal One"],
-  };
+  const lider = porCli.grupos[0];
+  return [
+    `**Resumo:** ${tot.total} processos estão parados há mais de 60 dias. ${lider.rotulo} tem a maior parte (${lider.valor}).`,
+    cerca("grafico", { tipo: "barras", titulo: "Processos parados há mais de 60 dias, por cliente", consulta: { metrica: "processos_parados", agrupar_por: "cliente" } }),
+    "### Por área",
+    cerca("grafico", { tipo: "barras", titulo: "Por área do direito", consulta: { metrica: "processos_parados", agrupar_por: "area" } }),
+    "### Os mais antigos",
+    cerca("grafico", { tipo: "tabela", titulo: "Parados há mais tempo", processos: { dias_minimos_parado: 60, limite: 6 } }),
+    "### Próximos passos",
+    "- Pedir à equipe um despacho de impulso nos processos parados há mais de 120 dias.",
+    `- Começar pelos processos de ${lider.rotulo}.`,
+    cerca("sugestoes", ["Quais desses têm bloqueio ativo?", "E só os trabalhistas?"]),
+  ].join("\n\n");
 }
 
-/* ------------------------------------------------------------------ */
-/* App                                                                  */
-/* ------------------------------------------------------------------ */
 const PINNED_INICIAIS = [
-  { id: "pin-gnosis", question: "Quanto o Instituto Gnosis tem bloqueado hoje, e em quais áreas?", spec: relatorioExemploGnosis(), atualizado: "Exemplo calculado da base", pinnedExample: true },
-  { id: "pin-parados", question: "Quais processos estão parados há mais de 60 dias?", spec: relatorioExemploParados(), atualizado: "Exemplo calculado da base", pinnedExample: true },
+  { id: "pin-gnosis", question: "Quanto o Instituto Gnosis tem bloqueado hoje, e em quais áreas?", text: exemploGnosis(), atualizado: "Exemplo calculado da base", pinnedExample: true },
+  { id: "pin-parados", question: "Quais processos estão parados há mais de 60 dias?", text: exemploParados(), atualizado: "Exemplo calculado da base", pinnedExample: true },
 ];
 
-export { PINNED_INICIAIS, erroTexto, gerarRelatorio, useSample };
+export { PINNED_INICIAIS, conversar, erroTexto, useSample };

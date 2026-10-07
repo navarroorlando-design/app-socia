@@ -3,12 +3,12 @@ import { StatusBar, TabBar } from "./componentes/ui";
 import { BLOQUEIOS_LISTA, CLIENTE_NOME, ORGS, ORG_ORDER, PROCESSOS_LISTA } from "./dados/base";
 import { GlobalStyle } from "./estilo/GlobalStyle";
 import { T, tomDeStatus } from "./estilo/tokens";
-import { PINNED_INICIAIS, erroTexto, gerarRelatorio, useSample } from "./ia/motor";
+import { PINNED_INICIAIS, conversar, erroTexto, useSample } from "./ia/motor";
 import { PrefsContext, gravarPref, lerPref } from "./preferencias";
 import { BloqueioDetalhe } from "./telas/BloqueioDetalhe";
 import { BuscaGlobal } from "./telas/BuscaGlobal";
 import { GuiaEstilo } from "./telas/GuiaEstilo";
-import { IaAsk, IaReport, PastaRelatorios } from "./telas/Ia";
+import { IaAsk, IaConversa, PastaRelatorios } from "./telas/Ia";
 import { AcompanhandoLista, InicioFeed, ListaGenerica } from "./telas/Inicio";
 import { INITIAL_NOTIFS, NotifPrefs, NotificacoesCentral } from "./telas/Notificacoes";
 import { OsLista, OsPerfil } from "./telas/Organizacoes";
@@ -44,7 +44,8 @@ function AppSociosPrototype() {
   const [bloqueioOrigin, setBloqueioOrigin] = useState("bloqueios");
 
   const [pinned, setPinned] = useState(PINNED_INICIAIS);
-  const [job, setJob] = useState(null);
+  // Conversa com a IA: { id, clienteId, backTo, backLabel, msgs: [{ role, text, status, progress, error }] }
+  const [conversa, setConversa] = useState(null);
   const ctlRef = React.useRef(null);
 
   const [notifs, setNotifs] = useState(INITIAL_NOTIFS);
@@ -68,7 +69,7 @@ function AppSociosPrototype() {
     setTab(t);
     if (t === "inicio") setInicioView("feed");
     if (t === "os") setOsView("list");
-    if (t === "ia") setIaView("ask");
+    if (t === "ia") setIaView(conversa && !conversa.backTo ? "conversa" : "ask");
     if (t === "perfil") setPerfilView("main");
   };
   const openOrg = (id) => { setSelectedOrg(id); setTab("os"); setOsView("profile"); };
@@ -79,41 +80,59 @@ function AppSociosPrototype() {
   };
   const osLabels = { profile: ORGS[selectedOrg]?.name, contratos: "Contratos de gestão", contrato: selectedContrato, bloqueios: "Bloqueios", processos: "Processos", bloqueio: "Bloqueio" };
 
-  /* ---- IA ---- */
-  const ask = async (question, clienteId = null, extra = {}) => {
+  /* ---- IA: conversa no formato do app do Claude ---- */
+  const enviar = async (texto, opts = {}) => {
     ctlRef.current?.abort();
     const ctl = new AbortController();
     ctlRef.current = ctl;
-    const id = "r" + Date.now();
-    const base = { id, question, clienteId, status: "thinking", progress: [], spec: null, backLabel: clienteId ? CLIENTE_NOME[clienteId] : "Estatísticas", backTo: clienteId ? "os" : "ia", ...extra };
-    setJob(base);
-    setTab("ia"); setIaView("report");
-    if (!sample) { setJob({ ...base, status: "error", error: "A IA responde quando este app é aberto no Claude.", retryable: false }); return; }
+    const base = opts.nova || !conversa
+      ? { id: "c" + Date.now(), clienteId: opts.clienteId || null, backTo: opts.backTo || null, backLabel: opts.backLabel || null, msgs: [] }
+      : conversa;
+    const msgs = [...base.msgs, { role: "user", text: texto }, { role: "assistant", text: "", status: "pensando", progress: [] }];
+    const id = base.id, idx = msgs.length - 1;
+    setConversa({ ...base, msgs });
+    setTab("ia"); setIaView("conversa");
+    const muda = (f) => setConversa((c) => (c && c.id === id ? { ...c, msgs: c.msgs.map((m, i) => (i === idx ? { ...m, ...f(m) } : m)) } : c));
+    if (!sample) { muda(() => ({ status: "erro", error: "A IA responde quando este app é aberto no Claude.", retryable: false })); return; }
     try {
-      const spec = await gerarRelatorio(sample, question, {
-        clienteId, signal: ctl.signal,
-        onProgress: (p) => setJob((j) => (j && j.id === id ? { ...j, progress: [...j.progress, p] } : j)),
+      const { text, truncated } = await conversar(sample, msgs.slice(0, -1), {
+        clienteId: base.clienteId, signal: ctl.signal,
+        onText: ({ text }) => muda(() => ({ text, status: "escrevendo" })),
+        onProgress: (p) => muda((m) => ({ progress: [...m.progress, p] })),
       });
-      setJob((j) => (j && j.id === id ? { ...j, status: "done", spec, atualizado: "Gerado agora pela IA" } : j));
-      if (extra.pinId) setPinned((ps) => ps.map((p) => (p.id === extra.pinId ? { ...p, spec, atualizado: "Atualizado agora pela IA", pinnedExample: false } : p)));
+      muda(() => ({ text, truncated, status: "pronta" }));
     } catch (e) {
-      if (e?.code === "cancelled") { setJob((j) => (j && j.id === id ? { ...j, status: "error", error: "Você parou esta pergunta.", retryable: true } : j)); return; }
-      setJob((j) => (j && j.id === id ? { ...j, status: "error", error: erroTexto(e), retryable: !["not_granted", "sampling_disabled", "tools_unavailable"].includes(e?.code) } : j));
+      const parcial = e?.text || "";
+      if (e?.code === "cancelled") { muda(() => ({ text: parcial, status: parcial ? "pronta" : "erro", error: "Você parou esta resposta.", retryable: true })); return; }
+      muda(() => ({ text: e?.code === "refused" ? "" : parcial, status: "erro", error: erroTexto(e), retryable: !["not_granted", "sampling_disabled", "tools_unavailable"].includes(e?.code) }));
     }
   };
-
+  const tentarDeNovo = () => {
+    if (!conversa) return;
+    const iu = conversa.msgs.map((m) => m.role).lastIndexOf("user");
+    const pergunta = conversa.msgs[iu].text;
+    setConversa((c) => ({ ...c, msgs: c.msgs.slice(0, iu) }));
+    setTimeout(() => enviar(pergunta), 0);
+  };
+  const fixadas = new Set(pinned.map((p) => p.id));
+  const fixarResposta = (i) => {
+    const m = conversa.msgs[i], chave = m.pinId || `${conversa.id}:${i}`;
+    if (fixadas.has(chave)) { setPinned((ps) => ps.filter((p) => p.id !== chave)); return; }
+    const pergunta = conversa.msgs.slice(0, i).filter((x) => x.role === "user").pop()?.text || "Relatório da IA";
+    setPinned((ps) => [{ id: chave, question: pergunta, text: m.text, clienteId: conversa.clienteId, atualizado: "Fixado agora" }, ...ps]);
+  };
   const openPinned = (p, from = "pasta") => {
     const backs = { pasta: "Relatórios fixados", notificacoes: "Notificações" };
-    setJob({ id: p.id, question: p.question, clienteId: p.clienteId || null, status: "done", spec: p.spec, progress: [], atualizado: p.atualizado, pinnedExample: p.pinnedExample, pinId: p.id, backLabel: backs[from], backTo: from });
-    setTab("ia"); setIaView("report");
+    setConversa({ id: "fix-" + p.id, clienteId: p.clienteId || null, backTo: from, backLabel: backs[from],
+                  msgs: [{ role: "user", text: p.question }, { role: "assistant", text: p.text, status: "pronta", progress: [], atualizado: p.atualizado, pinId: p.id }] });
+    setTab("ia"); setIaView("conversa");
   };
-  const jobPinId = job ? (job.pinId || pinned.find((p) => p.sourceJob === job.id)?.id) : null;
-  const togglePinJob = () => {
-    if (!job) return;
-    if (jobPinId) { setPinned((ps) => ps.filter((p) => p.id !== jobPinId)); setJob((j) => ({ ...j, pinId: null })); return; }
-    const pin = { id: "pin-" + job.id, sourceJob: job.id, question: job.question, clienteId: job.clienteId, spec: job.spec, atualizado: "Fixado agora" };
-    setPinned((ps) => [pin, ...ps]);
-    setJob((j) => ({ ...j, pinId: pin.id }));
+  const voltarDaConversa = () => {
+    ctlRef.current?.abort();
+    if (conversa?.backTo === "os") { setTab("os"); setOsView("profile"); }
+    else if (conversa?.backTo === "pasta") { setTab("perfil"); setPerfilView("pasta"); }
+    else if (conversa?.backTo === "notificacoes") { setTab("inicio"); setInicioView("notificacoes"); }
+    else setIaView("ask");
   };
 
   const openNotif = (n) => {
@@ -199,7 +218,7 @@ function AppSociosPrototype() {
 
         {tab === "os" && osView === "list" && <OsLista onOpenOrg={openOrg} ordem={ordem} />}
         {tab === "os" && osView === "profile" && (
-          <OsPerfil orgId={selectedOrg} onBack={() => setOsView("list")} sample={sample} onAsk={(q) => ask(q, selectedOrg)}
+          <OsPerfil orgId={selectedOrg} onBack={() => setOsView("list")} sample={sample} onAsk={(q) => enviar(q, { nova: true, clienteId: selectedOrg, backTo: "os", backLabel: ORGS[selectedOrg].name })}
             onOpenContratos={() => setOsView("contratos")} onOpenContrato={(c) => openContrato(c, "profile")}
             onOpenBloqueios={() => setOsView("bloqueios")} onOpenProcessos={() => setOsView("processos")} />
         )}
@@ -228,19 +247,13 @@ function AppSociosPrototype() {
             onOpenProcesso={(p) => openOsDetalhe("processo", p, "bloqueio")} />
         )}
 
-        {tab === "ia" && iaView === "ask" && <IaAsk onAsk={(q) => ask(q)} sample={sample} />}
-        {tab === "ia" && iaView === "report" && job && (
-          <IaReport job={job} isPinned={!!jobPinId} onTogglePin={togglePinJob}
-            onStop={() => ctlRef.current?.abort()}
-            onRetry={() => ask(job.question, job.clienteId)}
-            onRefresh={sample ? () => ask(job.question, job.clienteId, { pinId: job.pinId }) : null}
-            onBack={() => {
-              ctlRef.current?.abort();
-              if (job.backTo === "os") { setTab("os"); setOsView("profile"); }
-              else if (job.backTo === "pasta") { setTab("perfil"); setPerfilView("pasta"); }
-              else if (job.backTo === "notificacoes") { setTab("inicio"); setInicioView("notificacoes"); }
-              else setIaView("ask");
-            }} />
+        {tab === "ia" && iaView === "ask" && (
+          <IaAsk onAsk={(q) => enviar(q, { nova: true })} sample={sample} conversa={conversa && !conversa.backTo ? conversa : null} onContinuar={() => setIaView("conversa")} />
+        )}
+        {tab === "ia" && iaView === "conversa" && conversa && (
+          <IaConversa conversa={conversa} sample={sample} onEnviar={(t) => enviar(t)} onParar={() => ctlRef.current?.abort()}
+            onTentar={tentarDeNovo} onFixar={fixarResposta} fixadas={fixadas} onVoltar={voltarDaConversa}
+            onNova={() => { ctlRef.current?.abort(); setConversa(null); setIaView("ask"); }} />
         )}
 
         {tab === "perfil" && perfilView === "main" && <PerfilUsuaria onOpenNotifPrefs={() => setPerfilView("notif")} onOpenPasta={() => setPerfilView("pasta")} pinnedCount={pinned.length} onOpenGuia={() => setPerfilView("guia")}

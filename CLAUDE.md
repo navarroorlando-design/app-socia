@@ -105,10 +105,21 @@ sua (`src/telas/OrgMetricas.jsx`). O cartão da lista de organizações mostra s
 
 ## Regra da IA (arquitetura)
 
-A IA **nunca** é a fonte do número. Ela chama `consultar_dados` / `listar_processos`, que calculam
-sobre a base, e só escolhe a apresentação, respondendo um JSON de blocos. Em produção, essas duas
-funções passam a consultar a camada de métricas real (Legal One + Log de Bloqueios), sem mudar
-o contrato com a IA.
+A IA **nunca** é a fonte do número. Ela chama `consultar_dados`, `consultar_cruzado` e
+`listar_processos` (`src/dados/consultas.js`), que calculam sobre a base. Em produção, essas funções
+passam a consultar a camada de métricas real (Legal One + Log de Bloqueios), sem mudar o contrato.
+
+**Formato: conversa como no app do Claude** (`src/telas/Ia.jsx`, `IaConversa`). Resposta em Markdown,
+escrita aos poucos (`onText`), com histórico (regras num primeiro turno fixo + últimas 12 mensagens,
+`src/ia/motor.js`). Estrutura pedida: **Resumo** em 2–3 frases, números-chave, seções com gráfico e
+1–2 frases de leitura, próximos passos (sem prognóstico jurídico) e sugestões de pergunta.
+
+**Gráficos:** a IA escreve só QUAL consulta desenhar, num bloco ```` ```grafico {json} ```` (tipos:
+barras, linha, empilhado, indicadores, tabela; `series` para comparar até 3 recortes). O app roda a
+consulta e desenha (`src/ia/Resposta.jsx` + `src/ia/Graficos.jsx`), então nenhum número de gráfico
+passa pela IA. Sugestões vêm em ```` ```sugestoes [..] ````. Uma série usa oliva; várias usam a paleta
+validada azul-aço `#2A80AE`, cobre `#C9773E`, ameixa `#7E62A8` (daltonismo e contraste ok, sem
+repetir status). Prognóstico usa as cores de status. Toque no gráfico mostra o valor exato.
 
 ## Próximos passos sugeridos
 
