@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ChevronIcon } from "../componentes/icones";
-import { Faixa, SecLabel } from "../componentes/ui";
+import { Faixa, SecLabel, SeletorSegmentado } from "../componentes/ui";
 import { CLIENTE_NOME, ENCERRADOS_2026, ORGS, ORG_ORDER, PROCESSOS_LISTA } from "../dados/base";
 import { fmtBRL, fmtBRLCurto } from "../dados/formato";
 import { resumoOrg, somaPassivo } from "../dados/passivo";
@@ -14,16 +14,7 @@ import { ContratoCard, NOTA_PASSIVO, PassivoBarra } from "./OrgMetricas";
 /* encerrados). Aberta pelo atalho "Escritório" no Início.              */
 /* ------------------------------------------------------------------ */
 
-function Aba({ ativo, onClick, children }) {
-  return (
-    <button role="tab" aria-selected={ativo} onClick={onClick} className="flex-1 text-center"
-            style={{ height: 44, borderRadius: 12, fontFamily: F.ui, fontSize: 16, fontWeight: ativo ? 700 : 500,
-                     background: ativo ? S.marca : S.cartao, color: ativo ? "#FFFFFF" : S.ink,
-                     boxShadow: ativo ? "none" : CARD.boxShadow }}>
-      {children}
-    </button>
-  );
-}
+const ABAS_ESCRITORIO = [{ id: "passivo", label: "Passivo" }, { id: "desempenho", label: "Desempenho" }];
 
 /* ---------------------------- Passivo ------------------------------ */
 function AbaPassivo({ onOpenOrg, onOpenContrato }) {
@@ -140,10 +131,7 @@ function Escritorio({ onBack, onOpenOrg, onOpenContrato }) {
       <Faixa bleed={32} bloco onBack={onBack} backLabel="Início" eyebrow="Visão do escritório"
              titulo="Escritório" tituloSize={34}
              sub={`${fmtBRL(passivo.total)} de passivo estimado · ${nContratos} contratos de gestão · ${ENCERRADOS_2026.length} processos encerrados em 2026`} />
-      <div className="flex gap-2" role="tablist" aria-label="Seções do escritório">
-        <Aba ativo={aba === "passivo"} onClick={() => setAba("passivo")}>Passivo</Aba>
-        <Aba ativo={aba === "desempenho"} onClick={() => setAba("desempenho")}>Desempenho</Aba>
-      </div>
+      <SeletorSegmentado itens={ABAS_ESCRITORIO} ativo={aba} onChange={setAba} label="Seções do escritório" />
       <div className="mt-4">
         {aba === "passivo" ? <AbaPassivo onOpenOrg={onOpenOrg} onOpenContrato={onOpenContrato} /> : <AbaDesempenho />}
       </div>

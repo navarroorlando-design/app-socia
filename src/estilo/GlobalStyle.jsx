@@ -2,8 +2,16 @@ import React from "react";
 
 const GlobalStyle = () => (
   <style>{`
+    :root{ --ease: cubic-bezier(0.2,0,0,1); --ease-out: cubic-bezier(.2,.7,.2,1); --ease-in: cubic-bezier(.4,0,1,1); }
     .font-serif-legal{ font-family:'Lexend', -apple-system, sans-serif; font-weight:600; letter-spacing:-0.015em; }
     .font-sans-ui{ font-family:'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    /* Escala .97 ao tocar em itens tocáveis (redesenho v3, seção D). */
+    .pressable{ transition: transform .18s var(--ease), background-color .18s var(--ease), opacity .18s var(--ease); }
+    .pressable:active{ transform: scale(.97); }
+    @media (prefers-reduced-motion: reduce){
+      .pressable{ transition:none !important; }
+      .pressable:active{ transform:none !important; opacity:.75; }
+    }
     .no-scrollbar::-webkit-scrollbar{ display:none; }
     .app-stage{ min-height:100vh; width:100%; display:flex; align-items:center; justify-content:center; padding:40px 16px; background:#CFC9BD; }
     .app-phone{ width:390px; height:844px; border-radius:3rem; box-shadow:0 25px 50px -12px rgba(0,0,0,.25); }

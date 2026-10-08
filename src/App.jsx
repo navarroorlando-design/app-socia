@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { StatusBar, TabBar } from "./componentes/ui";
+import { Pilha } from "./componentes/Pilha";
 import { BLOQUEIOS_LISTA, CLIENTE_NOME, ORGS, ORG_ORDER, PROCESSOS_LISTA, RECLAMACOES_LISTA } from "./dados/base";
 import { GlobalStyle } from "./estilo/GlobalStyle";
 import { T, tomDeStatus } from "./estilo/tokens";
@@ -260,8 +261,8 @@ function AppSociosPrototype() {
     "marinho";
 
   const showTabBar =
-    (tab === "inicio" && inicioView === "feed") ||
-    (tab === "os" && osView === "list") ||
+    (inicioView === "feed") ||
+    (osView === "list") ||
     (tab === "ia" && iaView === "ask") ||
     (tab === "perfil" && perfilView === "main");
 
@@ -285,7 +286,9 @@ function AppSociosPrototype() {
         ) : (<>
         {!online && <AvisoSemInternet desde={desde} />}
 
-        {tab === "inicio" && inicioView === "feed" && (
+        {tab === "inicio" && (
+        <Pilha chave={inicioView} raiz={inicioView === "feed"}>
+        {inicioView === "feed" && (
           <InicioFeed
             onOpenList={(v) => { setRecorteLista("todos"); setInicioView(v); }}
             onOpenProcessos={(area) => { setRecorteLista(area); setInicioView("processos"); }}
@@ -302,119 +305,133 @@ function AppSociosPrototype() {
             apelido={apelido}
           />
         )}
-        {tab === "inicio" && inicioView === "notificacoes" && (
+        {inicioView === "notificacoes" && (
           <NotificacoesCentral notifs={notifs} onOpen={openNotif}
             onMarkAll={() => setNotifs((prev) => prev.map((n) => ({ ...n, read: true })))}
             onBack={() => setInicioView("feed")} />
         )}
-        {tab === "inicio" && inicioView === "escritorio" && (
+        {inicioView === "escritorio" && (
           <Escritorio onBack={() => setInicioView("feed")} onOpenOrg={openOrg} onOpenContrato={openContratoDe} />
         )}
-        {tab === "inicio" && inicioView === "movimentacoes" && (
+        {inicioView === "movimentacoes" && (
           <Movimentacoes onBack={() => setInicioView("feed")} onOpenProcesso={(p) => openProcesso(p, "movimentacoes")} onOpenBloqueio={(b) => openBloqueio(b, "movimentacoes")} />
         )}
-        {tab === "inicio" && inicioView === "reclamacoes" && (
+        {inicioView === "reclamacoes" && (
           <ReclamacoesTela onBack={() => setInicioView("feed")} backLabel="Início" onOpen={(r) => openReclamacao(r, "reclamacoes")} />
         )}
-        {tab === "inicio" && inicioView === "reclamacao" && selectedReclamacao && (
+        {inicioView === "reclamacao" && selectedReclamacao && (
           <ReclamacaoDetalhe reclamacao={selectedReclamacao} backLabel={backLabels[reclamacaoOrigin]} onBack={() => setInicioView(reclamacaoOrigin)}
             onOpenProcesso={(p) => openProcesso(p, "reclamacao")} />
         )}
-        {tab === "inicio" && ["processos", "bloqueios"].includes(inicioView) && (
+        {["processos", "bloqueios"].includes(inicioView) && (
           <ListaGenerica key={inicioView + recorteLista} tipo={inicioView} recorteInicial={recorteLista} onBack={() => setInicioView("feed")} followed={followed}
                          onOpenProcesso={openProcesso} onOpenBloqueio={openBloqueio} onOpenOrg={openOrg} />
         )}
-        {tab === "inicio" && inicioView === "bloqueio" && selectedBloqueio && (
+        {inicioView === "bloqueio" && selectedBloqueio && (
           <BloqueioDetalhe bloqueio={selectedBloqueio} backLabel={backLabels[bloqueioOrigin]}
             onBack={() => setInicioView(bloqueioOrigin)}
             onOpenProcesso={(p) => openProcesso(p, "bloqueio")} />
         )}
-        {tab === "inicio" && inicioView === "acompanhando" && (
+        {inicioView === "acompanhando" && (
           <AcompanhandoLista items={followedItemsFull} onOpen={(item) => openProcesso(item, "acompanhando")} onBack={() => setInicioView("feed")} />
         )}
-        {tab === "inicio" && inicioView === "detalhe" && selectedProcesso && (
+        {inicioView === "detalhe" && selectedProcesso && (
           <ProcessoDetalhe key={selectedProcesso.id} processo={selectedProcesso} sample={sample}
             isFollowing={followed.has(selectedProcesso.id)}
             onToggleFollow={() => toggleFollow(selectedProcesso.id)}
             onBack={() => setInicioView(detalheOrigin)}
             backLabel={backLabels[detalheOrigin]} />
         )}
+        </Pilha>
+        )}
 
-        {tab === "os" && osView === "list" && <OsLista onOpenOrg={openOrg} ordem={ordem} />}
-        {tab === "os" && osView === "profile" && (
+        {tab === "os" && (
+        <Pilha chave={osView} raiz={osView === "list"}>
+        {osView === "list" && <OsLista onOpenOrg={openOrg} ordem={ordem} />}
+        {osView === "profile" && (
           <OsPerfil orgId={selectedOrg} onBack={() => setOsView("list")} sample={sample} onAsk={(q) => enviar(q, { nova: true, clienteId: selectedOrg, backTo: "os", backLabel: ORGS[selectedOrg].name })}
             onOpenContratos={() => setOsView("contratos")} onOpenContrato={(c) => openContrato(c, "profile")}
             onOpenBloqueios={() => setOsView("bloqueios")} onOpenProcessos={() => setOsView("processos")} onOpenReclamacoes={() => setOsView("reclamacoes")} />
         )}
-        {tab === "os" && osView === "contratos" && (
+        {osView === "contratos" && (
           <ContratosOrg orgId={selectedOrg} onBack={() => setOsView("profile")} onOpenContrato={(c) => openContrato(c, "contratos")}
             onEnviarCliente={() => { setRelatorioOrgao(null); setRelatorioOrigin("contratos"); setOsView("relatorio"); }} />
         )}
-        {tab === "os" && osView === "contrato" && selectedContrato && (
+        {osView === "contrato" && selectedContrato && (
           <ContratoDetalhe key={selectedContrato} orgId={selectedOrg} orgao={selectedContrato} onBack={() => setOsView(contratoOrigin)} backLabel={osLabels[contratoOrigin]}
             onOpenProcesso={(p) => openOsDetalhe("processo", p, "contrato")} onOpenBloqueio={(b) => openOsDetalhe("bloqueio", b, "contrato")}
             onEnviarCliente={() => { setRelatorioOrgao(selectedContrato); setRelatorioOrigin("contrato"); setOsView("relatorio"); }} />
         )}
-        {tab === "os" && osView === "relatorio" && (
+        {osView === "relatorio" && (
           <RelatorioCliente key={relatorioOrgao || "todos"} orgId={selectedOrg} orgao={relatorioOrgao} onBack={() => setOsView(relatorioOrigin)} backLabel={osLabels[relatorioOrigin]} />
         )}
-        {tab === "os" && osView === "bloqueios" && (
+        {osView === "bloqueios" && (
           <BloqueiosOrg orgId={selectedOrg} onBack={() => setOsView("profile")} onOpenContrato={(c) => openContrato(c, "bloqueios")}
             onOpenBloqueio={(b) => openOsDetalhe("bloqueio", b, "bloqueios")} />
         )}
-        {tab === "os" && osView === "processos" && (
+        {osView === "processos" && (
           <ProcessosOrg orgId={selectedOrg} onBack={() => setOsView("profile")} onOpenContrato={(c) => openContrato(c, "processos")}
             onOpenProcesso={(p) => openOsDetalhe("processo", p, "processos")} />
         )}
-        {tab === "os" && osView === "reclamacoes" && (
+        {osView === "reclamacoes" && (
           <ReclamacoesTela orgId={selectedOrg} onBack={() => setOsView("profile")} backLabel={ORGS[selectedOrg].name}
             onOpen={(r) => { setSelectedReclamacao(r); setOsView("reclamacao"); }} />
         )}
-        {tab === "os" && osView === "reclamacao" && selectedReclamacao && (
+        {osView === "reclamacao" && selectedReclamacao && (
           <ReclamacaoDetalhe reclamacao={selectedReclamacao} backLabel="Reclamações" onBack={() => setOsView("reclamacoes")}
             onOpenProcesso={(p) => openOsDetalhe("processo", p, "reclamacao")} />
         )}
-        {tab === "os" && osView === "processo" && selectedProcesso && (
+        {osView === "processo" && selectedProcesso && (
           <ProcessoDetalhe key={selectedProcesso.id} processo={selectedProcesso} sample={sample}
             isFollowing={followed.has(selectedProcesso.id)} onToggleFollow={() => toggleFollow(selectedProcesso.id)}
             onBack={() => setOsView(osDetalheOrigin)} backLabel={osLabels[osDetalheOrigin]} />
         )}
-        {tab === "os" && osView === "bloqueio" && selectedBloqueio && (
+        {osView === "bloqueio" && selectedBloqueio && (
           <BloqueioDetalhe bloqueio={selectedBloqueio} backLabel={osLabels[osDetalheOrigin]} onBack={() => setOsView(osDetalheOrigin)}
             onOpenProcesso={(p) => openOsDetalhe("processo", p, "bloqueio")} />
         )}
+        </Pilha>
+        )}
 
-        {tab === "ia" && iaView === "ask" && (
+        {tab === "ia" && (
+        <Pilha chave={iaView} raiz={iaView === "ask"}>
+        {iaView === "ask" && (
           <IaAsk onAsk={(q) => enviar(q, { nova: true })} sample={sample} conversa={conversa && !conversa.backTo ? conversa : null} onContinuar={() => setIaView("conversa")} />
         )}
-        {tab === "ia" && iaView === "conversa" && conversa && (
+        {iaView === "conversa" && conversa && (
           <IaConversa conversa={conversa} sample={sample} onEnviar={(t) => enviar(t)} onParar={() => ctlRef.current?.abort()}
             onTentar={tentarDeNovo} onFixar={fixarResposta} fixadas={fixadas} onVoltar={voltarDaConversa}
             onNova={() => { ctlRef.current?.abort(); setConversa(null); setIaView("ask"); }} />
         )}
+        </Pilha>
+        )}
 
-        {tab === "perfil" && perfilView === "main" && <PerfilUsuaria onOpenNotifPrefs={() => setPerfilView("notif")} onOpenSeguranca={() => setPerfilView("seguranca")}
+        {tab === "perfil" && (
+        <Pilha chave={perfilView} raiz={perfilView === "main"}>
+        {perfilView === "main" && <PerfilUsuaria onOpenNotifPrefs={() => setPerfilView("notif")} onOpenSeguranca={() => setPerfilView("seguranca")}
             onOpenAlertas={() => setPerfilView("alertas")} onOpenPersonalizar={() => setPerfilView("personalizar")} alertasCount={alertas.length} onOpenPasta={() => setPerfilView("pasta")} pinnedCount={pinned.length} onOpenGuia={() => setPerfilView("guia")} onOpenAjuda={() => setPerfilView("ajuda")}
             onOpenOrdem={() => setPerfilView("ordem")} foto={foto} setFoto={setFoto} apelido={apelido} setApelido={setApelido}
             escala={escala} setEscala={setEscala} lerVoz={lerVoz} setLerVoz={setLerVoz} />}
-        {tab === "perfil" && perfilView === "ajuda" && (
+        {perfilView === "ajuda" && (
           <ComoUsar onBack={() => setPerfilView("main")} onTour={() => setTourAberto(true)} onReativarDicas={() => setDicasVistas([])}
             onIr={irPara} onPerguntar={() => changeTab("ia")} />
         )}
-        {tab === "perfil" && perfilView === "ordem" && <OrdemClientes ordem={ordem} setOrdem={setOrdem} onBack={() => setPerfilView("main")} />}
-        {tab === "perfil" && perfilView === "guia" && <GuiaEstilo onBack={() => setPerfilView("main")} />}
-        {tab === "perfil" && perfilView === "pasta" && <PastaRelatorios pinned={pinned} onOpenPinned={(p) => openPinned(p, "pasta")} onBack={() => setPerfilView("main")}
+        {perfilView === "ordem" && <OrdemClientes ordem={ordem} setOrdem={setOrdem} onBack={() => setPerfilView("main")} />}
+        {perfilView === "guia" && <GuiaEstilo onBack={() => setPerfilView("main")} />}
+        {perfilView === "pasta" && <PastaRelatorios pinned={pinned} onOpenPinned={(p) => openPinned(p, "pasta")} onBack={() => setPerfilView("main")}
             onApagar={(id) => setPinned((ps) => ps.filter((p) => p.id !== id))}
             onRestaurar={(p, i) => setPinned((ps) => (ps.some((x) => x.id === p.id) ? ps : [...ps.slice(0, i), p, ...ps.slice(i)]))} />}
-        {tab === "perfil" && perfilView === "notif" && <NotifPrefs onBack={() => setPerfilView("main")} />}
-        {tab === "perfil" && perfilView === "alertas" && <MeusAlertas onBack={() => setPerfilView("main")} />}
-        {tab === "perfil" && perfilView === "personalizar" && (
+        {perfilView === "notif" && <NotifPrefs onBack={() => setPerfilView("main")} />}
+        {perfilView === "alertas" && <MeusAlertas onBack={() => setPerfilView("main")} />}
+        {perfilView === "personalizar" && (
           <PersonalizarInicio onBack={() => setPerfilView("main")} ordem={ordemInicio} setOrdem={setOrdemInicio} blocos={INICIO_BLOCOS} padrao={INICIO_PADRAO} />
         )}
-        {tab === "perfil" && perfilView === "seguranca" && (
+        {perfilView === "seguranca" && (
           <Seguranca onBack={() => setPerfilView("main")} faceId={acesso.faceId} setFaceId={(v) => setAcesso({ ...acesso, faceId: v })}
             onBloquear={() => setBloqueado(true)} onSair={() => { setAcesso({ entrou: false, faceId: false }); setBloqueado(false); changeTab("inicio"); }}
             semInternetSimulado={semInternetSim} setSemInternetSimulado={setSemInternetSim} />
+        )}
+        </Pilha>
         )}
 
         {showTabBar && <TabBar active={tab} onChange={changeTab} />}

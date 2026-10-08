@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { BackIcon, BuildingIcon, ChevronIcon, HouseIcon, IconeSem, PersonIcon, SparkleIcon } from "./icones";
 import { CARD, F, S, T, TONS, semDe } from "../estilo/tokens";
+import { EASE, prefersReducedMotion } from "../motion/motion";
 
 /* ------------------------------------------------------------------ */
 /* Peças reutilizáveis                                                 */
@@ -31,7 +32,7 @@ function StatusBar({ tom }) {
 function BackHeader({ label, onBack }) {
   return (
     <div className="flex items-center px-6 pt-3 pb-1 shrink-0">
-      <button onClick={onBack} aria-label={`Voltar para ${label}`} className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: "#FFFDF9" }}>
+      <button onClick={onBack} aria-label={`Voltar para ${label}`} className="w-11 h-11 rounded-full flex items-center justify-center pressable" style={{ background: "#FFFDF9" }}>
         <BackIcon size={18} color={S.ink} />
       </button>
       <span className="ml-3" style={{ fontFamily: F.ui, fontSize: 16, color: S.texto2 }}>{label}</span>
@@ -41,7 +42,7 @@ function BackHeader({ label, onBack }) {
 
 function IconBtn({ label, onClick, children }) {
   return (
-    <button onClick={onClick} aria-label={label} className="w-11 h-11 rounded-full flex items-center justify-center relative" style={{ background: "#FFFDF9" }}>
+    <button onClick={onClick} aria-label={label} className="w-11 h-11 rounded-full flex items-center justify-center relative pressable" style={{ background: "#FFFDF9" }}>
       {children}
     </button>
   );
@@ -52,7 +53,7 @@ function SecLabel({ children, acao, onAcao, primeiro }) {
     <div className="flex items-baseline justify-between gap-3" style={{ margin: `${primeiro ? 8 : 32}px 0 10px` }}>
       <h2 style={{ fontFamily: F.ui, fontSize: 18, fontWeight: 600, color: S.ink, letterSpacing: "-0.01em" }}>{children}</h2>
       {acao && (onAcao
-        ? <button onClick={onAcao} style={{ fontFamily: F.ui, fontSize: 15, fontWeight: 500, color: S.ink, textDecoration: "underline", textUnderlineOffset: 4, flexShrink: 0 }}>{acao}</button>
+        ? <button onClick={onAcao} className="pressable" style={{ fontFamily: F.ui, fontSize: 15, fontWeight: 500, color: S.ink, textDecoration: "underline", textUnderlineOffset: 4, flexShrink: 0 }}>{acao}</button>
         : <span style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2, flexShrink: 0 }}>{acao}</span>)}
     </div>
   );
@@ -60,7 +61,7 @@ function SecLabel({ children, acao, onAcao, primeiro }) {
 
 function CardRow({ icon, label, value, onClick, last }) {
   return (
-    <button onClick={onClick} className="flex items-center gap-3 w-full text-left" style={{ padding: "12px 16px", borderBottom: last ? "none" : `1px solid ${S.linha}` }}>
+    <button onClick={onClick} className="flex items-center gap-3 w-full text-left pressable" style={{ padding: "12px 16px", borderBottom: last ? "none" : `1px solid ${S.linha}` }}>
       <span className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "#EFEBE2" }}>{icon}</span>
       <span style={{ fontFamily: F.ui, fontSize: 17, color: S.ink, flex: 1 }}>{label}</span>
       {value && <span style={{ fontFamily: F.ui, fontSize: 16, color: S.texto2, fontVariantNumeric: "tabular-nums" }}>{value}</span>}
@@ -83,7 +84,7 @@ function TabBar({ active, onChange }) {
           const isActive = active === id;
           return (
             <button key={id} onClick={() => onChange(id)} aria-current={isActive ? "page" : undefined}
-                    className="flex flex-col items-center gap-1 rounded-2xl" style={{ width: 76, padding: "6px 0", background: isActive ? "#EAE6DD" : "transparent" }}>
+                    className="flex flex-col items-center gap-1 rounded-2xl pressable" style={{ width: 76, padding: "6px 0", background: isActive ? "#EAE6DD" : "transparent" }}>
               <I size={23} color={isActive ? (id === "ia" ? S.iaIcone : S.ink) : S.texto2} strokeWidth={isActive ? 2 : 1.7} />
               <span style={{ fontFamily: F.ui, fontSize: 13, fontWeight: isActive ? 700 : 500, color: isActive ? S.ink : S.texto2 }}>{label}</span>
             </button>
@@ -118,7 +119,7 @@ function InfoLinha({ icone, fundo, rotulo, valor, last }) {
 function LinhaLista({ icone, sem, titulo, extra, detalhe, direita, abaixo, onClick, last }) {
   const Tag = onClick ? "button" : "div";
   return (
-    <Tag onClick={onClick} className="w-full text-left flex items-start gap-3"
+    <Tag onClick={onClick} className={`w-full text-left flex items-start gap-3${onClick ? " pressable" : ""}`}
          style={{ padding: "14px 16px", borderBottom: last ? "none" : `1px solid ${S.linha}` }}>
       <span className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: sem.fundo }}>{icone}</span>
       <div className="flex-1 min-w-0">
@@ -156,7 +157,7 @@ function Faixa({ tom, bloco, bleed = 24, onBack, backLabel, eyebrow, titulo, tit
                     display: "flex", alignItems: "center", gap: 6, background: "rgba(242,239,233,.88)", backdropFilter: "saturate(1.6) blur(14px)", WebkitBackdropFilter: "saturate(1.6) blur(14px)",
                     borderBottom: `1px solid ${compacto ? S.linha : "transparent"}`, opacity: compacto ? 1 : 0, pointerEvents: compacto ? "auto" : "none", transition: "opacity .18s ease" }}>
         {onBack && (
-          <button onClick={onBack} tabIndex={compacto ? 0 : -1} aria-label={`Voltar para ${backLabel}`} className="w-11 h-11 rounded-full flex items-center justify-center shrink-0">
+          <button onClick={onBack} tabIndex={compacto ? 0 : -1} aria-label={`Voltar para ${backLabel}`} className="w-11 h-11 rounded-full flex items-center justify-center shrink-0 pressable">
             <BackIcon size={21} color={S.ink} />
           </button>
         )}
@@ -168,7 +169,7 @@ function Faixa({ tom, bloco, bleed = 24, onBack, backLabel, eyebrow, titulo, tit
         {(onBack || (!detalhe && direita)) && (
           <div className="flex items-center justify-between gap-3" style={{ marginBottom: 14 }}>
             {onBack ? (
-              <button onClick={onBack} aria-label={`Voltar para ${backLabel}`} className="flex items-center gap-2.5 min-w-0">
+              <button onClick={onBack} aria-label={`Voltar para ${backLabel}`} className="flex items-center gap-2.5 min-w-0 pressable">
                 <span className="w-11 h-11 rounded-full flex items-center justify-center shrink-0" style={{ background: "#FFFDF9", boxShadow: "0 1px 3px rgba(31,30,26,.08)" }}>
                   <BackIcon size={18} color={S.ink} />
                 </span>
@@ -272,4 +273,37 @@ function Cartao({ children, style }) {
   return <div style={{ background: S.cartao, borderRadius: 24, padding: 18, boxShadow: "0 1px 2px rgba(40,34,24,.06), 0 4px 14px rgba(40,34,24,.05)", ...style }}>{children}</div>;
 }
 
-export { BackHeader, Badge, Botao, CardRow, Cartao, Etiqueta, Faixa, InfoLinha, KPIs, LinhaLista, Row, SecLabel, Secao, Sparkline, StatusBar, TabBar, Toggle };
+/* Seletor segmentado com pílula deslizante (redesenho v3, seção D, 280 ms). A posição vem de
+   offsetLeft/offsetWidth do botão ativo, já medidos depois do `zoom` do contêiner raiz — funciona
+   em qualquer escala de texto sem conta à parte. */
+function SeletorSegmentado({ itens, ativo, onChange, label }) {
+  const refs = useRef({});
+  const [pos, setPos] = useState(null);
+  useLayoutEffect(() => {
+    const calcular = () => {
+      const el = refs.current[ativo];
+      if (el) setPos({ left: el.offsetLeft, width: el.offsetWidth });
+    };
+    calcular();
+    window.addEventListener("resize", calcular);
+    return () => window.removeEventListener("resize", calcular);
+  }, [ativo, itens]);
+  return (
+    <div role="tablist" aria-label={label} className="relative flex" style={{ background: S.linha, borderRadius: 14, padding: 3 }}>
+      {pos && (
+        <span aria-hidden="true" className="absolute top-[3px] bottom-[3px]"
+              style={{ left: pos.left, width: pos.width, background: S.cartao, borderRadius: 11, boxShadow: CARD.boxShadow,
+                       transition: prefersReducedMotion() ? "none" : `left .28s ${EASE}, width .28s ${EASE}` }} />
+      )}
+      {itens.map((it) => (
+        <button key={it.id} ref={(el) => { if (el) refs.current[it.id] = el; }} role="tab" aria-selected={ativo === it.id}
+                onClick={() => onChange(it.id)} className="relative flex-1 text-center pressable"
+                style={{ height: 38, borderRadius: 11, fontFamily: F.ui, fontSize: 15, fontWeight: ativo === it.id ? 700 : 500, color: S.ink, zIndex: 1 }}>
+          {it.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+export { BackHeader, Badge, Botao, CardRow, Cartao, Etiqueta, Faixa, InfoLinha, KPIs, LinhaLista, Row, SecLabel, Secao, SeletorSegmentado, Sparkline, StatusBar, TabBar, Toggle };
