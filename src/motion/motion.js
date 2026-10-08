@@ -22,29 +22,37 @@ function aoMudarReducedMotion(cb) {
 }
 
 // Abrir uma tela interna (push): desliza da direita; a tela de baixo recua 28% e escurece 6%.
+// `entra` sobrevive à transição (vira a camada atual) — por isso cancelamos a animação dela ao
+// terminar: um `fill` preso deixa um `transform` parado no elemento para sempre, e isso cria um
+// novo contexto de empilhamento que esconde folhas inferiores (FolhaInferior) atrás da TabBar.
+// `base` é removida do DOM logo depois, então não precisa de limpeza.
 function animarPush(entra, base) {
   if (prefersReducedMotion()) {
-    return entra.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160, fill: "both" }).finished;
+    const anim = entra.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160, fill: "both" });
+    return anim.finished.then(() => anim.cancel());
   }
   const a = entra.animate([{ transform: "translateX(100%)" }, { transform: "none" }], { duration: 320, easing: EASE, fill: "both" });
   if (base) {
     base.animate([{ transform: "none", filter: "brightness(1)" }, { transform: "translateX(-28%)", filter: "brightness(.94)" }],
       { duration: 320, easing: EASE, fill: "forwards" });
   }
-  return a.finished;
+  return a.finished.then(() => a.cancel());
 }
 
-// Voltar (pop): o caminho inverso, um pouco mais rápido.
+// Voltar (pop): o caminho inverso, um pouco mais rápido. Aqui é `base` que sobrevive (volta a
+// ser a camada atual), então é ela que precisa da mesma limpeza; `sai` é removida do DOM.
 function animarPop(sai, base) {
   if (prefersReducedMotion()) {
-    return sai.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 140, fill: "both" }).finished;
+    const anim = sai.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 140, fill: "both" });
+    return anim.finished.then(() => anim.cancel());
   }
+  let b;
   if (base) {
-    base.animate([{ transform: "translateX(-28%)", filter: "brightness(.94)" }, { transform: "none", filter: "brightness(1)" }],
+    b = base.animate([{ transform: "translateX(-28%)", filter: "brightness(.94)" }, { transform: "none", filter: "brightness(1)" }],
       { duration: 280, easing: EASE, fill: "forwards" });
   }
   const a = sai.animate([{ transform: "none" }, { transform: "translateX(100%)" }], { duration: 280, easing: EASE, fill: "both" });
-  return a.finished;
+  return a.finished.then(() => { if (b) b.cancel(); });
 }
 
 export { EASE, EASE_IN, EASE_OUT, aoMudarReducedMotion, animarPop, animarPush, prefersReducedMotion };

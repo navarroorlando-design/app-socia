@@ -26,7 +26,7 @@ não é detalhe: contraste, tamanho de texto e alvos de toque guiam todas as dec
   passo 1 atualizado; `Dica` (`src/ajuda/Dica.jsx`) agora é sempre a faixa fina do `FaixaAviso`, sem
   cartão com "Entendi", e a lista de dicas vistas não grava mais no aparelho — fica fechada só até o
   fim da sessão; blocos "Processos ativos" e "Processos que você segue" do Início viraram um só,
-  "Mais detalhes", para bater com Perfil → Personalizar Início) e Passo 5, parte 1 de 2 (tela
+  "Mais detalhes", para bater com Perfil → Personalizar Início) e Passo 5, completo (tela
   `src/telas/Bloqueios.jsx` nova: topo escuro com total ativo, "N novos nos últimos 7 dias" e o link
   "N parados há 90+ dias" que abre `BloqueiosParados`; resumo por cliente com barra que filtra; busca;
   seletor Ativos/Levantados/Todos com contagem, aberto em Ativos; seletor de cliente em folha inferior
@@ -35,8 +35,16 @@ não é detalhe: contraste, tamanho de texto e alvos de toque guiam todas as dec
   `statusVisualBloqueio`, `src/dados/criterios.js`, que também ganhou o critério de "bloqueio parado"
   — ativo cujo processo vinculado está parado — separado do de processo parado. `STATUS_SEM_ID.Ativo`
   virou `inativo`/cinza no tema; risco/vermelho agora é só "Novo" em todo o app, como pedia o guia.
-  Falta para a parte 2: o detalhe do bloqueio virar folha inferior, com "Filtrar contrato" e "Ver
-  contrato" — por ora `BloqueioDetalhe` continua tela cheia, só com o status/cor atualizados.
+  O detalhe do bloqueio, dentro da tela Bloqueios e de `BloqueiosParados`, agora abre em folha
+  inferior (`DetalheBloqueioFolha`, dados-chave + processo vinculado + histórico), com "Filtrar
+  contrato" (aplica cliente+contrato na lista de trás) e "Ver contrato" (empurra a tela do contrato,
+  trocando para a aba Clientes); o `BloqueioDetalhe` de tela cheia continua existindo para os outros
+  pontos de entrada (Início, Notificações, processo vinculado), sem mudança de layout, só herdando a
+  cor/status atualizados. Essa parte também corrigiu um bug do Passo 2: `animarPush`/`animarPop`
+  (`src/motion/motion.js`) prendiam um `transform` para sempre na camada que sobrevive à transição
+  (`fill: "both"`/`"forwards"` sem cancelar a animação ao terminar), o que criava um novo contexto de
+  empilhamento e escondia qualquer folha inferior aberta ali atrás da TabBar — corrigido cancelando a
+  animação da camada sobrevivente assim que ela termina.
   Os atalhos Passivo e Desempenho ainda abrem a tela fundida `Escritorio.jsx` (com a aba certa
   pré-selecionada); a separação de verdade em duas telas é o Passo 6. Os demais passos seguem o guia.
   Decisões já confirmadas: Passivo e Desempenho ficam em telas separadas (não fundidas); critério de

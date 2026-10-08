@@ -336,11 +336,12 @@ function AppSociosPrototype() {
                          onOpenProcesso={openProcesso} onOpenBloqueio={openBloqueio} onOpenOrg={openOrg} />
         )}
         {inicioView === "bloqueios" && (
-          <BloqueiosTela onBack={() => setInicioView("feed")} onOpenBloqueio={(b) => openBloqueio(b, "bloqueios")} onOpenOrg={openOrg}
-                         onOpenParados={() => setInicioView("bloqueiosParados")} />
+          <BloqueiosTela onBack={() => setInicioView("feed")} onOpenOrg={openOrg} onOpenParados={() => setInicioView("bloqueiosParados")}
+                         onOpenContrato={openContratoDe} onOpenProcesso={(p) => openProcesso(p, "bloqueios")} />
         )}
         {inicioView === "bloqueiosParados" && (
-          <BloqueiosParados onBack={() => setInicioView("bloqueios")} onOpen={(b) => openBloqueio(b, "bloqueiosParados")} />
+          <BloqueiosParados onBack={() => setInicioView("bloqueios")}
+                            onOpenContrato={openContratoDe} onOpenProcesso={(p) => openProcesso(p, "bloqueiosParados")} />
         )}
         {inicioView === "bloqueio" && selectedBloqueio && (
           <BloqueioDetalhe bloqueio={selectedBloqueio} backLabel={backLabels[bloqueioOrigin]}
