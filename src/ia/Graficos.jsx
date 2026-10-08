@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { fmtBRL, fmtBRLCurto } from "../dados/formato";
-import { CARD, F, S, SEMANTICA } from "../estilo/tokens";
+import { CARD, DADOS, F, S } from "../estilo/tokens";
 
 /* ------------------------------------------------------------------ */
 /* Gráficos dos relatórios da IA                                       */
@@ -11,8 +11,9 @@ import { CARD, F, S, SEMANTICA } from "../estilo/tokens";
 // Uma série: oliva. Várias séries: paleta validada (daltonismo e contraste) que não repete as cores de status.
 const COR_UNICA = S.oliva;
 const CORES_SERIES = ["#2A80AE", "#C9773E", "#7E62A8"];
-const sem = (id) => SEMANTICA.find((x) => x.id === id);
-const COR_PARTE = { Provável: sem("risco").cor, Possível: sem("atencao").cor, Remoto: sem("inativo").cor };
+// Paleta de dados (DADOS), não as cores de status: prognóstico não é "risco" nem "atenção" da
+// interface, é um dado com legenda própria (consolidacao.md, item 16).
+const COR_PARTE = { Provável: DADOS.prov, Possível: DADOS.poss, Remoto: DADOS.rem };
 const corDaParte = (parte, i) => COR_PARTE[parte] || CORES_SERIES[i % CORES_SERIES.length];
 
 const fmt = (v, unidade) => (unidade === "BRL" ? fmtBRL(Number(v) || 0) : Number(v || 0).toLocaleString("pt-BR"));

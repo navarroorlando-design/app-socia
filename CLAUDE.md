@@ -12,6 +12,15 @@ não é detalhe: contraste, tamanho de texto e alvos de toque guiam todas as dec
 - Versão de trabalho publicada em https://claude.ai/artifact/CC5B6mT6EASzhR7H6ktshd ("App dos Sócios Neutro").
   A versão anterior, em marinho, ficou em https://claude.ai/artifact/GFoRKY7Ht8UpAKLsqZCnyj.
 
+- **Redesenho v3 em andamento** (`docs/redesign-v3/`: protótipo HTML, guia por tela/tokens/movimento,
+  especificação dos gráficos, decisões de conflito e os prints de referência). Aplicado em 8 passos
+  pequenos, um de cada vez, com build+teste ao fim de cada um. Passo 1 (tokens de cor) feito; os
+  demais seguem o guia. Decisões já confirmadas: Passivo e Desempenho ficam em telas separadas (não
+  fundidas); critério de "parado" continua processo com `diasParado >= 90` por enquanto (pendente de
+  confirmar com a sócia se deve virar bloqueio sem movimentação há 90 dias); sem Framer Motion (CSS +
+  Web Animations API, como os trechos do próprio guia); escala de texto continua por `zoom` no
+  contêiner raiz (não os tokens `--ts`/`--cts` do protótipo).
+
 - **App web instalável (PWA) em Next.js 16 + React 19**, a caminho do Vercel (região São Paulo,
   `vercel.json`). Stack escolhida: Next.js no Vercel, servidor próprio chamando a API da Anthropic,
   Postgres como cópia dos números do Legal One e do Log de Bloqueios.
@@ -65,9 +74,19 @@ evita ciclos entre módulos.
   `#FFFDF9`, texto `#1A1916` (15:1), apoio `#57544C` (6,6:1). Família de tons: carvão `#1F1E1A`
   (`S.marca`, texto branco), oliva `#565449` (`S.oliva`, texto branco), osso `#D8CFBC` (`S.osso`, texto
   quase preto). Todo texto passa de 4,5:1; nada de texto branco sobre oliva-claro.
-- **Cor com significado**, sempre com ícone e palavra: Risco `#9B2A1C`, Atenção `#835000`,
-  Em curso `#245476`, Resolvido `#24603F`, Inativo `#4F565B`.
-- **Dourado `#765614` é exclusivo da IA.** Status nunca usa dourado.
+- **Cor com significado** (tokens v3, `docs/redesign-v3/`), sempre com ícone e palavra: Risco `#B42318`
+  (**só "novo"**: bloqueio dos últimos 7 dias, e o badge de avisos — "ativo comum" é inativo/cinza, não
+  risco; essa troca de status do bloqueio entra no Passo 5 do redesenho), Atenção `#865708` (aguardando
+  decisão, parado há mais de 90 dias, vence este ano, delta negativo), Em curso `#1F4E8C`, Resolvido
+  `#2F7A4D`, Inativo `#5E5A53`. `S.dourado` (`#E8C27A`) é o âmbar sobre fundo escuro (link "N parados"
+  no topo escuro, filtro ativo, card selecionado).
+- **Dourado `#765614` é exclusivo da IA** (`S.ia`; não confundir com `S.dourado`, o âmbar de dados sobre
+  fundo escuro acima). Status nunca usa dourado.
+- **Paleta de dados** (`DADOS` em `tokens.js`), separada das cores de status: só em gráficos e barras
+  que comparam partes de um todo — prognóstico (Provável `#C0472F`, Possível `#CC9433`, Remoto `#8E99A5`)
+  e resultado de processos encerrados (Favorável `#4A946A`, Acordo `#CC9433`, Desfavorável `#C0472F`),
+  mais Novos `#2D5B87` e Encerrados `#B5AEA2` no gráfico de carteira. Sempre com legenda ao lado (a cor
+  sozinha não passa 4,5:1 em alguns casos, por isso nunca é usada como status nem como texto solto).
 - **Carvão é a cor da marca** (`S.marca`): cartão principal do Início, bloco de título das telas de
   detalhe e identidade no Perfil, com apoio em osso. Etiquetas sobre o carvão usam fundo claro
   (`sobreCor`). Cor de status só em etiquetas e ícones, nunca no fundo de cartão.
@@ -221,7 +240,8 @@ barras, linha, empilhado, indicadores, tabela; `series` para comparar até 3 rec
 consulta e desenha (`src/ia/Resposta.jsx` + `src/ia/Graficos.jsx`), então nenhum número de gráfico
 passa pela IA. Sugestões vêm em ```` ```sugestoes [..] ````. Uma série usa oliva; várias usam a paleta
 validada azul-aço `#2A80AE`, cobre `#C9773E`, ameixa `#7E62A8` (daltonismo e contraste ok, sem
-repetir status). Prognóstico usa as cores de status. Toque no gráfico mostra o valor exato.
+repetir status). Prognóstico usa a paleta de dados (`DADOS`), não as cores de status (v3). Toque no
+gráfico mostra o valor exato.
 
 ## Próximos passos sugeridos
 

@@ -5,7 +5,7 @@ import { ORGS } from "../dados/base";
 import { fmtBRL, fmtBRLCurto, fmtData } from "../dados/formato";
 import { ORDEM_PROGNOSTICO, encerradosDe, historicoPassivo, motivosVariacao, resumoContrato, resumoOrg } from "../dados/passivo";
 import { GraficoColunas } from "../ia/Graficos";
-import { CARD, F, S, SEMANTICA, semDe } from "../estilo/tokens";
+import { CARD, DADOS, F, S, SEMANTICA, semDe } from "../estilo/tokens";
 import { Anotacao, BotaoAlerta } from "../pessoal";
 import { Dica } from "../ajuda/Dica";
 
@@ -13,7 +13,9 @@ import { Dica } from "../ajuda/Dica";
 /* Organização: contratos de gestão (passivo), bloqueios e processos   */
 /* ------------------------------------------------------------------ */
 const sem = (id) => SEMANTICA.find((x) => x.id === id);
-const SEM_PROGNOSTICO = { Provável: sem("risco"), Possível: sem("atencao"), Remoto: sem("inativo") };
+// Paleta de dados (DADOS), não as cores de status: prognóstico não é "risco" nem "atenção" da
+// interface, é um dado com legenda própria (consolidacao.md, item 16).
+const SEM_PROGNOSTICO = { Provável: { cor: DADOS.prov }, Possível: { cor: DADOS.poss }, Remoto: { cor: DADOS.rem } };
 const NOTA_PASSIVO = "Passivo estimado: soma do valor em discussão nos processos do contrato, pelo prognóstico do advogado. Bloqueios são o que já saiu da conta. Dados de exemplo.";
 
 /* Barra empilhada do passivo por prognóstico, com legenda em palavras */

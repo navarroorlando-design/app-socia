@@ -4,7 +4,7 @@ import { Faixa, SecLabel } from "../componentes/ui";
 import { CLIENTE_NOME, ENCERRADOS_2026, ORGS, ORG_ORDER, PROCESSOS_LISTA } from "../dados/base";
 import { fmtBRL, fmtBRLCurto } from "../dados/formato";
 import { resumoOrg, somaPassivo } from "../dados/passivo";
-import { CARD, F, S, SEMANTICA, semDe } from "../estilo/tokens";
+import { CARD, DADOS, F, S } from "../estilo/tokens";
 import { MarcaOrg } from "../componentes/MarcaOrg";
 import { ContratoCard, NOTA_PASSIVO, PassivoBarra } from "./OrgMetricas";
 
@@ -13,7 +13,6 @@ import { ContratoCard, NOTA_PASSIVO, PassivoBarra } from "./OrgMetricas";
 /* Passivo (antiga Carteira) e Desempenho (resultado dos processos      */
 /* encerrados). Aberta pelo atalho "Escritório" no Início.              */
 /* ------------------------------------------------------------------ */
-const sem = (id) => SEMANTICA.find((x) => x.id === id);
 
 function Aba({ ativo, onClick, children }) {
   return (
@@ -67,10 +66,12 @@ function AbaPassivo({ onOpenOrg, onOpenContrato }) {
 // Categorias simplificadas: o que o encerramento significou para o escritório/cliente.
 // Nesta base de exemplo, por QUANTIDADE de processos. A unidade certa (quantidade ou valor)
 // e os nomes das categorias ainda precisam ser validados com o escritório.
+// Paleta de dados (DADOS), não as cores de status: resultado de processo não é "risco" nem "atenção"
+// da interface, é um dado com legenda própria (consolidacao.md, item 16).
 const RESULTADOS = [
-  { id: "Favorável", nome: "Favorável", s: sem("resolvido") },
-  { id: "Acordo", nome: "Acordo", s: sem("atencao") },
-  { id: "Desfavorável", nome: "Desfavorável", s: sem("risco") },
+  { id: "Favorável", nome: "Favorável", cor: DADOS.fav },
+  { id: "Acordo", nome: "Acordo", cor: DADOS.aco },
+  { id: "Desfavorável", nome: "Desfavorável", cor: DADOS.desf },
 ];
 
 function AbaDesempenho() {
@@ -91,13 +92,13 @@ function AbaDesempenho() {
         <p style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2, marginTop: 2 }}>{total} processos encerrados · favorável ou com acordo</p>
         <div className="flex mt-4" style={{ height: 16, gap: 2 }}>
           {porResultado.map((r) => r.n > 0 && (
-            <span key={r.id} style={{ flex: r.n, background: r.s.cor, borderRadius: 4 }} />
+            <span key={r.id} style={{ flex: r.n, background: r.cor, borderRadius: 4 }} />
           ))}
         </div>
         <div className="flex flex-wrap gap-x-4 gap-y-1.5 mt-3">
           {porResultado.map((r) => (
             <span key={r.id} className="inline-flex items-center gap-1.5" style={{ fontFamily: F.ui, fontSize: 14, color: S.ink }}>
-              <span style={{ width: 10, height: 10, borderRadius: 3, background: r.s.cor }} />{r.nome} · {r.n}
+              <span style={{ width: 10, height: 10, borderRadius: 3, background: r.cor }} />{r.nome} · {r.n}
             </span>
           ))}
         </div>
@@ -115,7 +116,7 @@ function AbaDesempenho() {
                 <span style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2 }}>{o.n} {o.n === 1 ? "encerrado" : "encerrados"}</span>
               </div>
               <div className="flex mt-3" style={{ height: 10, gap: 2 }}>
-                {RESULTADOS.map((r, i) => o.porResultado[i] > 0 && <span key={r.id} style={{ flex: o.porResultado[i], background: r.s.cor, borderRadius: 3 }} />)}
+                {RESULTADOS.map((r, i) => o.porResultado[i] > 0 && <span key={r.id} style={{ flex: o.porResultado[i], background: r.cor, borderRadius: 3 }} />)}
               </div>
             </div>
           );
