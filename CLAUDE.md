@@ -14,9 +14,16 @@ não é detalhe: contraste, tamanho de texto e alvos de toque guiam todas as dec
 
 - **Redesenho v3 em andamento** (`docs/redesign-v3/`: protótipo HTML, guia por tela/tokens/movimento,
   especificação dos gráficos, decisões de conflito e os prints de referência). Aplicado em 8 passos
-  pequenos, um de cada vez, com build+teste ao fim de cada um. Passo 1 (tokens de cor) feito; os
-  demais seguem o guia. Decisões já confirmadas: Passivo e Desempenho ficam em telas separadas (não
-  fundidas); critério de "parado" continua processo com `diasParado >= 90` por enquanto (pendente de
+  pequenos, um de cada vez, com build+teste ao fim de cada um. Feitos: Passo 1 (tokens de cor), Passo 2
+  (base de movimento: `src/motion/motion.js`, `src/componentes/Pilha.jsx` para push/pop, `.pressable`,
+  `SeletorSegmentado`) e Passo 3 (Início: topo calculado dos dados, chip de parados em âmbar que abre
+  `ParadosLista`, faixa de dica fina com × — `FaixaAviso` em `src/ajuda/Dica.jsx` —, grade 2x2
+  Processos/Bloqueios/Passivo/Desempenho sem o atalho "Escritório", linha de Reclamação constitucional
+  abaixo da grade, contador e anel animados só na primeira abertura da sessão). Os atalhos Passivo e
+  Desempenho ainda abrem a tela fundida `Escritorio.jsx` (com a aba certa pré-selecionada); a separação
+  de verdade em duas telas é o Passo 6. Os demais passos seguem o guia. Decisões já confirmadas:
+  Passivo e Desempenho ficam em telas separadas (não fundidas); critério de "parado" centralizado em
+  `src/dados/criterios.js`, continua processo com `diasParado >= 90` por enquanto (pendente de
   confirmar com a sócia se deve virar bloqueio sem movimentação há 90 dias); sem Framer Motion (CSS +
   Web Animations API, como os trechos do próprio guia); escala de texto continua por `zoom` no
   contêiner raiz (não os tokens `--ts`/`--cts` do protótipo).

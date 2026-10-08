@@ -122,8 +122,8 @@ function AbaDesempenho() {
 }
 
 /* ------------------------------ Tela --------------------------------- */
-function Escritorio({ onBack, onOpenOrg, onOpenContrato }) {
-  const [aba, setAba] = useState("passivo");
+function Escritorio({ onBack, onOpenOrg, onOpenContrato, abaInicial = "passivo" }) {
+  const [aba, setAba] = useState(abaInicial);
   const passivo = somaPassivo(PROCESSOS_LISTA);
   const nContratos = Object.values(ORGS).reduce((s, o) => s + o.contratos.length, 0);
   return (

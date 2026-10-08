@@ -1,12 +1,40 @@
-import React, { useState } from "react";
-import { ChartIcon, ChevronIcon, FlagIcon, FolderIcon, LockIcon, SearchIcon } from "../componentes/icones";
+import React, { useEffect, useRef, useState } from "react";
+import { ChevronIcon, FlagIcon, FolderIcon, LockIcon, MoedaIcon, SearchIcon, TendenciaIcon } from "../componentes/icones";
 import { Badge, Etiqueta, Faixa, LinhaLista, SecLabel } from "../componentes/ui";
-import { BLOQUEIOS_LISTA, ORGS, ORG_ORDER, PROCESSOS_LISTA, RECLAMACOES_LISTA, TOTAIS } from "../dados/base";
+import { BLOQUEIOS_LISTA, ENCERRADOS_2026, ORGS, ORG_ORDER, PROCESSOS_LISTA, RECLAMACOES_LISTA, TOTAIS } from "../dados/base";
+import { processosParados } from "../dados/criterios";
 import { fmtBRL, fmtBRLCurto, fmtData, norm } from "../dados/formato";
 import { CARD, F, LINK, S, SEMANTICA, T, semDe } from "../estilo/tokens";
+import { prefersReducedMotion } from "../motion/motion";
 import { Avatar } from "../preferencias";
-import { Dica } from "../ajuda/Dica";
+import { FaixaAviso } from "../ajuda/Dica";
 import { MarcaOrg } from "../componentes/MarcaOrg";
+
+/* Conta de 0 até o valor final em 900 ms (ease-out), só quando `animar` é true (primeira
+   abertura do Início na sessão). Com movimento reduzido, mostra o valor final direto. */
+function useContarAoAbrir(valorFinal, animar) {
+  const [valor, setValor] = useState(animar && !prefersReducedMotion() ? 0 : valorFinal);
+  useEffect(() => {
+    if (!animar || prefersReducedMotion()) { setValor(valorFinal); return undefined; }
+    let raf, inicio;
+    const duracao = 900;
+    const tick = (t) => {
+      if (!inicio) inicio = t;
+      const p = Math.min(1, (t - inicio) / duracao);
+      setValor(Math.round(valorFinal * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [valorFinal]);
+  return valor;
+}
+// Conta como "primeira abertura" só uma vez por sessão do app (zera ao recarregar a página).
+let INICIO_JA_ABRIU = false;
+// A dica fechada não volta nesta sessão do app (zera ao recarregar a página), mesmo quando o
+// Início desmonta e remonta ao trocar de aba — por isso o estado fica fora do componente.
+let DICA_INICIO_FECHADA = false;
 
 /* ------------------------------------------------------------------ */
 /* Telas: Início                                                       */
@@ -34,9 +62,9 @@ const NATUREZAS = ["Trabalhista", "Cível", "Administrativo"];
 const INICIO_BLOCOS = { resumo: "Bloqueado hoje", atalhos: "Atalhos", ativos: "Processos ativos", seguidos: "Processos que você segue", hoje: "Hoje no escritório" };
 const INICIO_PADRAO = Object.keys(INICIO_BLOCOS).map((id) => ({ id, visivel: true }));
 
-function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onOpenProcesso, onOpenBloqueio, onOpenReclamacao, onOpenAcompanhando, onOpenMenu, unreadCount, foto, apelido, ordem = INICIO_PADRAO }) {
+function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, onOpenEscritorio, onOpenParados, followedItems, onOpenProcesso, onOpenBloqueio, onOpenReclamacao, onOpenAcompanhando, onOpenMenu, unreadCount, foto, apelido, ordem = INICIO_PADRAO }) {
   const preview = followedItems.slice(0, 3);
-  const parados90 = PROCESSOS_LISTA.filter((p) => p.diasParado >= 90).length;
+  const parados90 = processosParados(PROCESSOS_LISTA).length;
   const sem = (id) => SEMANTICA.find((x) => x.id === id);
   const agora = new Date();
   const hora = agora.getHours();
@@ -48,10 +76,21 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onO
   const pctLevantado = Math.round((levantado / (levantado + TOTAIS.bloqueadoAtivo)) * 100);
   const ativos = BLOQUEIOS_LISTA.filter((b) => b.status === "Ativo").length;
   const passivo = PROCESSOS_LISTA.reduce((soma, p) => soma + p.valorCausa, 0);
+  const totalEncerrados2026 = ENCERRADOS_2026.length;
+  const pctExito = totalEncerrados2026 ? Math.round((ENCERRADOS_2026.filter((e) => e.resultado === "Favorável" || e.resultado === "Acordo").length / totalEncerrados2026) * 100) : 0;
   const proc = (id) => PROCESSOS_LISTA.find((p) => p.id === id);
   // "Ativo" = não arquivado nem baixado. Na base de exemplo, todos estão ativos.
   const ativosProc = PROCESSOS_LISTA.filter((p) => !["Arquivado", "Baixado"].includes(p.status));
   const outrosProc = ativosProc.filter((p) => !NATUREZAS.includes(p.area)).length;
+
+  // Contador e anel animados: só na primeira abertura do Início na sessão (seção B.1/D).
+  const primeiraAbertura = useRef(!INICIO_JA_ABRIU).current;
+  useEffect(() => { INICIO_JA_ABRIU = true; }, []);
+  const valorAnimado = useContarAoAbrir(TOTAIS.bloqueadoAtivo, primeiraAbertura);
+  const pctAnimado = useContarAoAbrir(pctLevantado, primeiraAbertura);
+
+  const [dicaFechada, setDicaFechada] = useState(DICA_INICIO_FECHADA);
+  const fecharDica = () => { DICA_INICIO_FECHADA = true; setDicaFechada(true); };
 
   // O primeiro bloco visível fica em destaque, no carvão da marca; os outros, em cartão branco.
   // Assim, quando a sócia reordena o Início (Perfil → Personalizar Início), o destaque acompanha.
@@ -72,9 +111,9 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onO
     const t = TONS_ATALHO[tom];
     return (
       <button onClick={onClick} className="flex flex-col items-start text-left min-w-0"
-              style={{ ...CARD, background: t.fundo, boxShadow: t.sombra ? CARD.boxShadow : "none", padding: 14, gap: 10 }}>
-        <span className="flex items-center justify-center shrink-0" style={{ width: 42, height: 42, borderRadius: 999, background: t.circulo }}>
-          <Icone size={22} color={t.titulo} strokeWidth={1.8} />
+              style={{ ...CARD, background: t.fundo, boxShadow: t.sombra ? CARD.boxShadow : "none", padding: 12, gap: 8 }}>
+        <span className="flex items-center justify-center shrink-0" style={{ width: 38, height: 38, borderRadius: 999, background: t.circulo }}>
+          <Icone size={20} color={t.titulo} strokeWidth={1.8} />
         </span>
         <span className="min-w-0">
           <span className="block" style={{ fontFamily: F.ui, fontSize: 17, fontWeight: 600, color: t.titulo }}>{rotulo}</span>
@@ -88,33 +127,49 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onO
   const SECOES = {
     resumo: (<>
       {/* valor bloqueado e quanto já foi levantado (em carvão quando é o primeiro bloco) */}
-      <div className="mt-6" style={{ ...caixa(tResumo), padding: 22 }}>
+      <div className="mt-4" style={{ ...caixa(tResumo), padding: 18 }}>
         <p style={{ fontFamily: F.ui, fontSize: 15, color: tResumo.apoio }}>Bloqueado hoje, todos os clientes</p>
-        <p style={{ fontFamily: F.ui, fontSize: 36, fontWeight: 600, color: tResumo.texto, letterSpacing: "-0.03em", lineHeight: 1.1, marginTop: 6, fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>{fmtBRL(TOTAIS.bloqueadoAtivo)}</p>
-        <div className="flex items-end justify-between gap-3 mt-4">
-          <div className="min-w-0 flex flex-col items-start gap-2">
-            <p style={{ fontFamily: F.ui, fontSize: 15, color: tResumo.apoio, marginBottom: 2 }}>{ativos} bloqueios ativos</p>
+        <p style={{ fontFamily: F.ui, fontSize: 36, fontWeight: 600, color: tResumo.texto, letterSpacing: "-0.03em", lineHeight: 1.1, marginTop: 4, fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>{fmtBRL(valorAnimado)}</p>
+        <div className="flex items-end justify-between gap-3 mt-3">
+          <div className="min-w-0 flex flex-col items-start gap-1.5">
+            <p style={{ fontFamily: F.ui, fontSize: 15, color: tResumo.apoio, marginBottom: 1 }}>{ativos} bloqueios ativos</p>
             {parados90 > 0 && (
-              <button onClick={() => onOpenList("processos")} aria-label={`${parados90} processos parados há mais de 90 dias, ver lista`}>
-                <Etiqueta s={sem("risco")} texto={`${parados90} parados há 90 dias`} sobreCor={tResumo.escuro} />
+              <button onClick={onOpenParados} aria-label={`${parados90} processos parados há mais de 90 dias, ver lista`}>
+                <Etiqueta s={sem("atencao")} texto={`${parados90} parados há 90 dias`} sobreCor={tResumo.escuro} />
               </button>
             )}
             <button onClick={onOpenAcompanhando} aria-label={`${followedItems.length} processos acompanhados`}>
               <Etiqueta s={sem("curso")} texto={`${followedItems.length} que você segue`} sobreCor={tResumo.escuro} />
             </button>
           </div>
-          <Anel pct={pctLevantado} rotulo="já levantado" size={84} claro={!tResumo.escuro} />
+          <Anel pct={pctAnimado} rotulo="já levantado" size={72} claro={!tResumo.escuro} />
         </div>
       </div>
+      {!dicaFechada && (
+        <FaixaAviso onFechar={fecharDica} style={{ marginTop: 10, padding: "10px 12px" }}>
+          Passivo e Desempenho ganharam atalhos. Personalize em Perfil.
+        </FaixaAviso>
+      )}
     </>),
     atalhos: (<>
       {/* atalhos em grade 2×2: 4 tipos, sempre o mesmo tamanho */}
-      <div className="grid grid-cols-2 gap-3 mt-4">
+      <div className="grid grid-cols-2 gap-2.5 mt-3">
         <Atalho rotulo="Processos" detalhe={`${PROCESSOS_LISTA.length} no total`} onClick={() => onOpenList("processos")} Icone={FolderIcon} tom="cartao" />
-        <Atalho rotulo="Bloqueios" detalhe={`${ativos} ativos`} onClick={() => onOpenList("bloqueios")} Icone={LockIcon} tom="osso" />
-        <Atalho rotulo="Reclamação constitucional" detalhe={`${RECLAMACOES_LISTA.length} no STF`} onClick={() => onOpenList("reclamacoes")} Icone={FlagIcon} tom="cartao" />
-        <Atalho rotulo="Escritório" detalhe={`${fmtBRLCurto(passivo)} de passivo`} onClick={() => onOpenList("escritorio")} Icone={ChartIcon} tom="oliva" />
+        <Atalho rotulo="Bloqueios" detalhe={`${ativos} ativos · ${fmtBRLCurto(TOTAIS.bloqueadoAtivo)}`} onClick={() => onOpenList("bloqueios")} Icone={LockIcon} tom="osso" />
+        <Atalho rotulo="Passivo" detalhe={`${fmtBRLCurto(passivo)} estimado`} onClick={() => onOpenEscritorio("passivo")} Icone={MoedaIcon} tom="cartao" />
+        <Atalho rotulo="Desempenho" detalhe={`${pctExito}% de êxito em 2026`} onClick={() => onOpenEscritorio("desempenho")} Icone={TendenciaIcon} tom="oliva" />
       </div>
+      <button onClick={() => onOpenList("reclamacoes")} className="w-full text-left flex items-center gap-3 mt-3"
+              style={{ ...CARD, padding: 16 }} aria-label={`Reclamação constitucional, ${RECLAMACOES_LISTA.length} no STF`}>
+        <span className="flex items-center justify-center shrink-0" style={{ width: 42, height: 42, borderRadius: 999, background: "#EFEBE2" }}>
+          <FlagIcon size={22} color={S.ink} strokeWidth={1.8} />
+        </span>
+        <span className="flex-1 min-w-0">
+          <span className="block" style={{ fontFamily: F.ui, fontSize: 17, fontWeight: 600, color: S.ink }}>Reclamação constitucional</span>
+          <span className="block" style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2, marginTop: 2 }}>{RECLAMACOES_LISTA.length} no STF</span>
+        </span>
+        <ChevronIcon size={18} color={S.texto2} strokeWidth={2} />
+      </button>
     </>),
     ativos: (<>
       {/* processos ativos do escritório, por natureza */}
@@ -193,7 +248,6 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, followedItems, onO
         </button>
       </div>
 
-      <Dica id="inicio" />
       {ordem.filter((x) => x.visivel).map((x) => <React.Fragment key={x.id}>{SECOES[x.id]}</React.Fragment>)}
     </div>
   );
@@ -383,4 +437,28 @@ function AcompanhandoLista({ items, onOpen, onBack }) {
   );
 }
 
-export { INICIO_BLOCOS, INICIO_PADRAO, AcompanhandoLista, FeedItem, InicioFeed, ListaGenerica };
+/* Parados há 90+ dias (critério centralizado em src/dados/criterios.js): do mais antigo
+   para o mais novo, aberta pelo chip do topo do Início (seção B.1). */
+function ParadosLista({ onOpen, onBack }) {
+  const sem = (id) => SEMANTICA.find((x) => x.id === id);
+  const items = processosParados(PROCESSOS_LISTA).sort((a, b) => b.diasParado - a.diasParado);
+  return (
+    <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 60 }}>
+      <Faixa bleed={32} onBack={onBack} backLabel="Início" titulo="Parados há 90+ dias"
+             sub={items.length === 1 ? "1 processo sem movimentação" : `${items.length} processos sem movimentação`} />
+      {items.length === 0 ? (
+        <p style={{ fontFamily: F.ui, fontSize: 16, color: S.texto2, lineHeight: 1.5 }}>Nenhum processo parado há 90 dias ou mais.</p>
+      ) : (
+        <div style={CARD}>
+          {items.map((item, i) => (
+            <LinhaLista key={item.id} onClick={() => onOpen(item)} last={i === items.length - 1} sem={semDe(item.status)}
+                        icone={<FolderIcon size={18} color={semDe(item.status).cor} />} titulo={item.cliente}
+                        detalhe={item.desc} abaixo={<Etiqueta s={sem("atencao")} texto={`${item.diasParado} dias parado`} />} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export { INICIO_BLOCOS, INICIO_PADRAO, AcompanhandoLista, FeedItem, InicioFeed, ListaGenerica, ParadosLista };

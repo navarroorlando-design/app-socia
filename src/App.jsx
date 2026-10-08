@@ -9,7 +9,7 @@ import { PrefsContext, gravarPref, lerPref } from "./preferencias";
 import { BloqueioDetalhe } from "./telas/BloqueioDetalhe";
 import { GuiaEstilo } from "./telas/GuiaEstilo";
 import { IaAsk, IaConversa, PastaRelatorios } from "./telas/Ia";
-import { AcompanhandoLista, INICIO_BLOCOS, INICIO_PADRAO, InicioFeed, ListaGenerica } from "./telas/Inicio";
+import { AcompanhandoLista, INICIO_BLOCOS, INICIO_PADRAO, InicioFeed, ListaGenerica, ParadosLista } from "./telas/Inicio";
 import { MeusAlertas, PersonalizarInicio, PessoalContext, TIPOS_ALERTA, mesmoAlvo } from "./pessoal";
 import { INITIAL_NOTIFS, NotifPrefs, NotificacoesCentral } from "./telas/Notificacoes";
 import { OsLista, OsPerfil } from "./telas/Organizacoes";
@@ -29,6 +29,7 @@ function AppSociosPrototype() {
   const abrirGuia = typeof location !== "undefined" && location.hash === "#guia";
   const [tab, setTab] = useState(abrirGuia ? "perfil" : "inicio");
   const [inicioView, setInicioView] = useState("feed");
+  const [escritorioAba, setEscritorioAba] = useState("passivo");
   const [osView, setOsView] = useState("list");
   const [selectedOrg, setSelectedOrg] = useState("afne");
   // Telas da organização: contratos, contrato, bloqueios, processos e os detalhes abertos a partir delas.
@@ -155,7 +156,7 @@ function AppSociosPrototype() {
   const openProcesso = (item, origin) => { setTab("inicio"); setSelectedProcesso(item); setDetalheOrigin(origin); setInicioView("detalhe"); };
   const openBloqueio = (item, origin) => { setTab("inicio"); setSelectedBloqueio(item); setBloqueioOrigin(origin); setInicioView("bloqueio"); };
   const openReclamacao = (item, origin) => { setTab("inicio"); setSelectedReclamacao(item); setReclamacaoOrigin(origin); setInicioView("reclamacao"); };
-  const backLabels = { feed: "Início", processos: "Processos", bloqueios: "Bloqueios", acompanhando: "Acompanhando", busca: "Busca", bloqueio: "Bloqueio", notificacoes: "Notificações", movimentacoes: "Movimentações", reclamacoes: "Reclamações", reclamacao: "Reclamação" };
+  const backLabels = { feed: "Início", processos: "Processos", bloqueios: "Bloqueios", acompanhando: "Acompanhando", busca: "Busca", bloqueio: "Bloqueio", notificacoes: "Notificações", movimentacoes: "Movimentações", reclamacoes: "Reclamações", reclamacao: "Reclamação", parados: "Parados" };
   const followedItemsFull = PROCESSOS_LISTA.filter((p) => followed.has(p.id));
 
   const changeTab = (t) => {
@@ -293,6 +294,8 @@ function AppSociosPrototype() {
             onOpenList={(v) => { setRecorteLista("todos"); setInicioView(v); }}
             onOpenProcessos={(area) => { setRecorteLista(area); setInicioView("processos"); }}
             onOpenOrg={openOrg}
+            onOpenEscritorio={(aba) => { setEscritorioAba(aba); setInicioView("escritorio"); }}
+            onOpenParados={() => setInicioView("parados")}
             followedItems={followedItemsFull}
             onOpenProcesso={openProcesso}
             onOpenBloqueio={openBloqueio}
@@ -311,7 +314,10 @@ function AppSociosPrototype() {
             onBack={() => setInicioView("feed")} />
         )}
         {inicioView === "escritorio" && (
-          <Escritorio onBack={() => setInicioView("feed")} onOpenOrg={openOrg} onOpenContrato={openContratoDe} />
+          <Escritorio onBack={() => setInicioView("feed")} onOpenOrg={openOrg} onOpenContrato={openContratoDe} abaInicial={escritorioAba} />
+        )}
+        {inicioView === "parados" && (
+          <ParadosLista onBack={() => setInicioView("feed")} onOpen={(p) => openProcesso(p, "parados")} />
         )}
         {inicioView === "movimentacoes" && (
           <Movimentacoes onBack={() => setInicioView("feed")} onOpenProcesso={(p) => openProcesso(p, "movimentacoes")} onOpenBloqueio={(b) => openBloqueio(b, "movimentacoes")} />
