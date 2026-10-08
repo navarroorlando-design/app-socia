@@ -59,7 +59,7 @@ const NATUREZAS = ["Trabalhista", "Cível", "Administrativo"];
 const INICIO_BLOCOS = { resumo: "Bloqueado hoje", atalhos: "Atalhos", detalhes: "Mais detalhes", hoje: "Hoje no escritório" };
 const INICIO_PADRAO = Object.keys(INICIO_BLOCOS).map((id) => ({ id, visivel: true }));
 
-function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, onOpenEscritorio, onOpenParados, followedItems, onOpenProcesso, onOpenBloqueio, onOpenReclamacao, onOpenAcompanhando, onOpenMenu, unreadCount, foto, apelido, ordem = INICIO_PADRAO }) {
+function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, onOpenPassivo, onOpenDesempenho, onOpenParados, followedItems, onOpenProcesso, onOpenBloqueio, onOpenReclamacao, onOpenAcompanhando, onOpenMenu, unreadCount, foto, apelido, ordem = INICIO_PADRAO }) {
   const preview = followedItems.slice(0, 3);
   const parados90 = processosParados(PROCESSOS_LISTA).length;
   const sem = (id) => SEMANTICA.find((x) => x.id === id);
@@ -146,8 +146,8 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, onOpenEscritorio, 
       <div className="grid grid-cols-2 gap-2.5 mt-3">
         <Atalho rotulo="Processos" detalhe={`${PROCESSOS_LISTA.length} no total`} onClick={() => onOpenList("processos")} Icone={FolderIcon} tom="cartao" />
         <Atalho rotulo="Bloqueios" detalhe={`${ativos} ativos · ${fmtBRLCurto(TOTAIS.bloqueadoAtivo)}`} onClick={() => onOpenList("bloqueios")} Icone={LockIcon} tom="osso" />
-        <Atalho rotulo="Passivo" detalhe={`${fmtBRLCurto(passivo)} estimado`} onClick={() => onOpenEscritorio("passivo")} Icone={MoedaIcon} tom="cartao" />
-        <Atalho rotulo="Desempenho" detalhe={`${pctExito}% de êxito em 2026`} onClick={() => onOpenEscritorio("desempenho")} Icone={TendenciaIcon} tom="oliva" />
+        <Atalho rotulo="Passivo" detalhe={`${fmtBRLCurto(passivo)} estimado`} onClick={onOpenPassivo} Icone={MoedaIcon} tom="cartao" />
+        <Atalho rotulo="Desempenho" detalhe={`${pctExito}% de êxito em 2026`} onClick={onOpenDesempenho} Icone={TendenciaIcon} tom="oliva" />
       </div>
       <button onClick={() => onOpenList("reclamacoes")} className="w-full text-left flex items-center gap-3 mt-3"
               style={{ ...CARD, padding: 16 }} aria-label={`Reclamação constitucional, ${RECLAMACOES_LISTA.length} no STF`}>

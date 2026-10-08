@@ -17,7 +17,9 @@ function somaPassivo(processos) {
 
 function statusVigencia(vigencia) {
   const fim = Number(String(vigencia).split("–")[1]);
-  if (fim < 2026) return { id: "atencao", texto: `Vigência encerrada em ${fim}` };
+  // Cores do redesenho v3 (seção B.6): Vigente em azul, Vence este ano em âmbar, Encerrado em
+  // cinza — antes "encerrada" também caía em âmbar, confundindo com "vence este ano".
+  if (fim < 2026) return { id: "inativo", texto: `Vigência encerrada em ${fim}` };
   if (fim === 2026) return { id: "atencao", texto: "Vence este ano" };
   return { id: "curso", texto: "Vigente" };
 }

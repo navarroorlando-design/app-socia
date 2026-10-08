@@ -37,7 +37,8 @@ const PASSOS_TOUR = [
 const DICAS = {
   inicio: "Passivo e Desempenho ganharam atalhos. Personalize em Perfil.",
   osLista: "Toque num cliente para ver o passivo de cada contrato de gestão, os bloqueios e os processos dele.",
-  osPerfil: "Comece por Contratos de gestão: lá está o passivo de cada contrato, que é o que o cliente costuma perguntar.",
+  osPerfil: "O passivo total do cliente já aparece aqui. Toque num contrato para ver o passivo dele.",
+  passivo: "Passivo é o risco estimado pelo advogado. Bloqueado é o que já saiu da conta.",
   contrato: "Aqui você gera o PDF do passivo para enviar ao cliente e pode pedir um aviso se o passivo passar de um valor.",
   processo: "Toque em Seguir processo para receber as movimentações novas. “Contar a história do processo” pede à IA um resumo por fases.",
 };
@@ -48,7 +49,7 @@ const PERGUNTAS = [
     id: "passivo",
     pergunta: "O que é o passivo estimado?",
     resposta: "É a soma do valor em discussão nos processos ativos de um contrato de gestão, separada pelo prognóstico do escritório: provável, possível e remoto. Os bloqueios aparecem à parte, porque são dinheiro que já saiu da conta.",
-    destino: "escritorio", rotuloDestino: "Ver o passivo da carteira",
+    destino: "passivo", rotuloDestino: "Ver o passivo da carteira",
   },
   {
     id: "contrato",

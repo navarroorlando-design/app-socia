@@ -22,10 +22,10 @@ function semStatus(visual) { return sem(SEM_ID_STATUS_BLOQUEIO[visual]); }
 
 const MES_ANO = (d) => { const t = d.toLocaleDateString("pt-BR", { month: "long", year: "numeric" }); return t.charAt(0).toUpperCase() + t.slice(1); };
 
-function BloqueiosTela({ onBack, onOpenOrg, onOpenParados, onOpenContrato, onOpenProcesso }) {
+function BloqueiosTela({ onBack, onOpenOrg, onOpenParados, onOpenContrato, onOpenProcesso, clienteInicial, contratoInicial }) {
   const [recorte, setRecorte] = useState("Ativo");
-  const [clienteFiltro, setClienteFiltroS] = useState(null);
-  const [contratoFiltro, setContratoFiltro] = useState(null);
+  const [clienteFiltro, setClienteFiltroS] = useState(clienteInicial || null);
+  const [contratoFiltro, setContratoFiltro] = useState(contratoInicial || null);
   const setClienteFiltro = (id) => { setClienteFiltroS(id); setContratoFiltro(null); };
   const [sheetCliente, setSheetCliente] = useState(false);
   const [bloqueioAberto, setBloqueioAberto] = useState(null);

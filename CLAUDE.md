@@ -45,8 +45,20 @@ não é detalhe: contraste, tamanho de texto e alvos de toque guiam todas as dec
   (`fill: "both"`/`"forwards"` sem cancelar a animação ao terminar), o que criava um novo contexto de
   empilhamento e escondia qualquer folha inferior aberta ali atrás da TabBar — corrigido cancelando a
   animação da camada sobrevivente assim que ela termina.
-  Os atalhos Passivo e Desempenho ainda abrem a tela fundida `Escritorio.jsx` (com a aba certa
-  pré-selecionada); a separação de verdade em duas telas é o Passo 6. Os demais passos seguem o guia.
+  Passo 6, completo: `Escritorio.jsx` (a tela fundida) saiu; **Passivo** (`src/telas/Passivo.jsx`) e
+  **Desempenho** (`src/telas/Desempenho.jsx`) viraram telas próprias, cada uma com seu atalho. A
+  página do cliente (`OsPerfil`, `src/telas/Organizacoes.jsx`) virou a tela única pedida pela seção
+  B.4: cabeçalho no tom da organização, passivo do cliente em carvão, "Contratos" (até 2 + "Ver
+  todos"), "Ver também" (Bloqueios ativos, Desempenho no ano, Processos) — aberta pela aba Clientes,
+  pelo "Por cliente" do Passivo e pelo "Página ›" do seletor de cliente dos Bloqueios. `ContratoDetalhe`
+  ganhou "Ver bloqueios" (abre Bloqueios já filtrado por cliente+contrato, via `clienteInicial`/
+  `contratoInicial` novos em `BloqueiosTela`) e "Página do cliente". `ContratoCard` ganhou o modo
+  `legendaCompleta` (legenda em 3 colunas + "Bloqueado R$ · % do passivo") para os cartões do Passivo.
+  `statusVigencia` (`src/dados/passivo.js`) corrigido: contrato com vigência encerrada agora é
+  inativo/cinza, não mais âmbar (que ficou só para "vence este ano"). A antiga tela `BloqueiosOrg`
+  (bloqueios por organização) saiu — o botão "Avisar se o bloqueado passar de um valor" que morava
+  lá se mudou para a página do cliente, ao lado da anotação pessoal. Veja mais em "Organizações" e em
+  "Outras telas" abaixo. Os demais passos (7, Desempenho e gráficos; 8, QA) seguem o guia.
   Decisões já confirmadas: Passivo e Desempenho ficam em telas separadas (não fundidas); critério de
   "parado" centralizado em `src/dados/criterios.js`, continua processo com `diasParado >= 90` por
   enquanto (pendente de confirmar com a sócia se deve virar bloqueio sem movimentação há 90 dias); sem
@@ -122,8 +134,8 @@ evita ciclos entre módulos.
 - **Carvão é a cor da marca** (`S.marca`): cartão principal do Início, bloco de título das telas de
   detalhe e identidade no Perfil, com apoio em osso. Etiquetas sobre o carvão usam fundo claro
   (`sobreCor`). Cor de status só em etiquetas e ícones, nunca no fundo de cartão.
-- **Atalhos do Início em tons**: Processos branco, Bloqueios osso, Reclamação constitucional branco,
-  Escritório oliva (texto branco, 6,7:1). O tom "ia" (dourado) é exclusivo da aba IA, nunca de um atalho.
+- **Atalhos do Início em tons**: Processos branco, Bloqueios osso, Passivo branco, Desempenho oliva
+  (texto branco, 6,7:1). O tom "ia" (dourado) é exclusivo da aba IA, nunca de um atalho.
 - **Ícones: Iconoir** (MIT), gerados em `src/componentes/icones.jsx`, traço 1,7 (2,1 nas etiquetas).
   Processo = documento (`page`), OS = `city`. **Sem balança, martelo ou colunas**: clichês vetados.
 - **Títulos em Lexend.** A serifada foi testada e recusada. `F.titulo` segue existindo (cai na Lexend).
@@ -131,10 +143,10 @@ evita ciclos entre módulos.
   (valor bloqueado e anel "já levantado") e grade 2×2 de atalhos com detalhe; abas e listas com título
   grande estilo iOS que encolhe ao rolar; detalhes com o título num bloco carvão arredondado e a
   fileira de números-chave logo abaixo, em cartão branco.
-- **Atalhos do Início** (bloco "Atalhos", `src/telas/Inicio.jsx`): só 4, sem repetir destino nenhum (cada um
-  é a única porta para aquela tela): Processos, Bloqueios, Reclamação constitucional e Escritório. "Sigo" e
-  "Perguntar" foram tirados por já existirem como bloco próprio ("Processos que você segue") e aba da navbar
-  (IA).
+- **Atalhos do Início** (bloco "Atalhos", `src/telas/Inicio.jsx`): grade 2x2 Processos, Bloqueios,
+  Passivo e Desempenho (redesenho v3), sem repetir destino nenhum, mais a linha de largura total da
+  Reclamação constitucional abaixo da grade. "Sigo" e "Perguntar" não têm atalho próprio por já
+  existirem como bloco ("Processos que você segue", dentro de "Mais detalhes") e aba da navbar (IA).
 - **Tela Processos** (`ProcessosTela`, dentro de `src/telas/Inicio.jsx`): página única, sem navegar para
   lugar nenhum. É só o título e um campo de busca; ao digitar, aparecem organizações, processos e
   bloqueios juntos (a mesma lógica da antiga `BuscaGlobal`, removida — a busca por trecho de texto é
@@ -156,12 +168,20 @@ evita ciclos entre módulos.
   Perfil → Relatórios fixados (guardados no aparelho, com "Apagar", confirmação e "Desfazer").
 - **Barra de navegação**: Início, IA, Clientes, Perfil (era "OS"; pílula de destaque deslizante, redesenho v3).
 
-## Organizações: contratos de gestão, bloqueios e processos
+## Organizações: página única do cliente, contratos, bloqueios e processos
 
-O que os clientes (OS) sempre perguntam é **o passivo de cada contrato de gestão**. Por isso a tela
-da organização abre pela identidade e pelas três métricas, nesta ordem: **Contratos de gestão**
-(passivo estimado), **Bloqueios**, **Processos**. Cada uma tem tela própria, e cada contrato tem a
-sua (`src/telas/OrgMetricas.jsx`). O cartão da lista de organizações mostra só o número de processos.
+O que os clientes (OS) sempre perguntam é **o passivo de cada contrato de gestão**. Desde o
+redesenho v3 (Passo 6), existe **uma página só do cliente** (`OsPerfil`, `src/telas/Organizacoes.jsx`),
+usada pela aba Clientes, pela tela Passivo, pelo seletor de cliente dos Bloqueios ("Página ›") e pela
+tela de contrato ("Página do cliente") — nunca telas diferentes para a mesma coisa. Ela tem, nesta
+ordem: cabeçalho (logo no tom da organização, "N processos", "N contratos de gestão · N encerrados
+em 2026"), o passivo do cliente em carvão (total, barra Provável/Possível/Remoto com legenda e %, e
+"Já bloqueado"), "Contratos" (até 2 cartões, com "Ver todos os N contratos" quando passa disso) e
+"Ver também" (Bloqueios ativos, Desempenho no ano, Processos). Cada contrato tem a sua própria tela
+(`ContratoDetalhe`, `src/telas/OrgMetricas.jsx`), aberta como push, com "Ver bloqueios" (abre
+Bloqueios já filtrado por cliente e contrato) e "Página do cliente" (volta para a página do cliente
+sem empilhar outra, já que a navegação aqui é por estado, não por pilha de verdade). O cartão da
+lista de organizações mostra só o número de processos.
 
 - **Passivo estimado** = soma do valor em discussão dos processos do contrato, separada pelo
   prognóstico (Provável, Possível, Remoto). Bloqueios entram à parte, como o que já saiu da conta.
@@ -190,11 +210,19 @@ sua (`src/telas/OrgMetricas.jsx`). O cartão da lista de organizações mostra s
 - **Relatório para o cliente** (`src/telas/RelatorioCliente.jsx`): prévia do passivo por contrato,
   conferência obrigatória e PDF (jsPDF). No claude.ai o arquivo sai pela capacidade `downloads`
   (declarar `capabilities: {sample: {}, downloads: true}` ao publicar); fora dele, baixa direto.
-- **Escritório** (`src/telas/Escritorio.jsx`, aberta pelo atalho "Escritório"): visão de todos os clientes,
-  em duas abas. **Passivo** é a antiga tela Carteira (passivo por cliente, contratos com maior passivo).
-  **Desempenho** é o resultado dos processos encerrados em 2026 (`ENCERRADOS_2026`, campo `resultado`:
-  Favorável, Acordo ou Desfavorável), por quantidade de processos — **a unidade (quantidade × valor) e os
-  nomes das categorias ainda precisam ser validados com o escritório.**
+- **Passivo** (`src/telas/Passivo.jsx`, redesenho v3, atalho "Passivo"): passivo de todos os clientes —
+  topo em carvão (total, "N contratos · N processos", barra de prognóstico com legenda e %, "Já
+  bloqueado"), "Por cliente" (ordenado por passivo, abre a página única do cliente) e "Contratos"
+  (4 de N, seletor Maior passivo/Vence primeiro, "Ver todos os N"/"Mostrar menos", cartões com a
+  legenda completa do prognóstico e "Bloqueado R$ · % do passivo"). Antes era a aba Passivo da tela
+  Escritório (removida neste passo); "Já bloqueado" é sempre igual ao total ativo da tela Bloqueios,
+  porque os dois somam a mesma base.
+- **Desempenho** (`src/telas/Desempenho.jsx`, redesenho v3, atalho "Desempenho"): resultado dos
+  processos encerrados em 2026 (`ENCERRADOS_2026`, campo `resultado`: Favorável, Acordo ou
+  Desfavorável), por quantidade de processos — **a unidade (quantidade × valor) e os nomes das
+  categorias ainda precisam ser validados com o escritório.** Hoje é só o índice de êxito e o "por
+  cliente" de antes, numa tela própria em vez de aba da antiga Escritório; os 4 cartões de indicador
+  e os gráficos da seção B.7 do guia são o Passo 7.
 
 ## Funções pessoais da sócia (`src/pessoal.jsx`)
 

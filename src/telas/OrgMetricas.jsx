@@ -1,6 +1,6 @@
 import React from "react";
 import { ChevronIcon, DownloadIcon, FolderIcon, LockIcon } from "../componentes/icones";
-import { Badge, Etiqueta, Faixa, KPIs, LinhaLista, SecLabel } from "../componentes/ui";
+import { Badge, Botao, Etiqueta, Faixa, KPIs, LinhaLista, SecLabel } from "../componentes/ui";
 import { ORGS } from "../dados/base";
 import { fmtBRL, fmtBRLCurto, fmtData } from "../dados/formato";
 import { ORDEM_PROGNOSTICO, encerradosDe, historicoPassivo, motivosVariacao, resumoContrato, resumoOrg } from "../dados/passivo";
@@ -44,8 +44,11 @@ function PassivoBarra({ passivo, legenda = true }) {
   );
 }
 
-/* Cartão de um contrato de gestão: o passivo é a primeira coisa */
-function ContratoCard({ c, onClick, comCliente }) {
+/* Cartão de um contrato de gestão: o passivo é a primeira coisa.
+   `legendaCompleta` (tela Passivo, seção B.6): troca o resumo de uma linha pela legenda em 3
+   colunas (valor de cada prognóstico) e o rodapé "Bloqueado R$ · % do passivo" com barra própria. */
+function ContratoCard({ c, onClick, comCliente, legendaCompleta }) {
+  const pctBloqueado = c.passivo.total ? Math.round((c.bloqueadoAtivo / c.passivo.total) * 100) : 0;
   return (
     <button onClick={onClick} className="w-full text-left" style={{ ...CARD, padding: 18 }}
             aria-label={`${c.orgao}: passivo estimado ${fmtBRL(c.passivo.total)}, ${c.processos.length} processos`}>
@@ -53,17 +56,37 @@ function ContratoCard({ c, onClick, comCliente }) {
         <div className="min-w-0">
           {comCliente && <p style={{ fontFamily: F.ui, fontSize: 14, fontWeight: 600, color: S.texto2, marginBottom: 2 }}>{ORGS[c.orgId].name}</p>}
           <p style={{ fontFamily: F.ui, fontSize: 17, fontWeight: 600, color: S.ink, lineHeight: 1.3 }}>{c.orgao}</p>
-          <p style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2, marginTop: 2 }}>Vigência {c.vigencia}</p>
+          <p style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2, marginTop: 2 }}>Vigência {c.vigencia} · {c.processos.length} processos</p>
         </div>
         <ChevronIcon size={18} color={S.texto2} strokeWidth={2} />
       </div>
+      <div className="mt-2"><Etiqueta s={sem(c.vigenciaStatus.id)} texto={c.vigenciaStatus.texto} /></div>
       <p style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2, marginTop: 14 }}>Passivo estimado</p>
       <p style={{ fontFamily: F.ui, fontSize: 26, fontWeight: 600, color: S.ink, letterSpacing: "-0.02em", fontVariantNumeric: "tabular-nums", marginBottom: 10 }}>{fmtBRL(c.passivo.total)}</p>
       <PassivoBarra passivo={c.passivo} legenda={false} />
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mt-3">
-        <span style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2 }}>{c.processos.length} processos · {fmtBRLCurto(c.bloqueadoAtivo)} bloqueado</span>
-        <Etiqueta s={sem(c.vigenciaStatus.id)} texto={c.vigenciaStatus.texto} />
-      </div>
+      {legendaCompleta ? (
+        <>
+          <div className="grid grid-cols-3 gap-2 mt-3">
+            {ORDEM_PROGNOSTICO.map((k) => (
+              <div key={k}>
+                <span className="flex items-center gap-1.5" style={{ fontFamily: F.ui, fontSize: 13, color: S.texto2 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: 2, background: SEM_PROGNOSTICO[k].cor }} />{k}
+                </span>
+                <p style={{ fontFamily: F.ui, fontSize: 14, fontWeight: 600, color: S.ink, marginTop: 2, fontVariantNumeric: "tabular-nums" }}>{fmtBRL(c.passivo[k])}</p>
+              </div>
+            ))}
+          </div>
+          <div className="flex items-baseline justify-between gap-2 mt-3 pt-3" style={{ borderTop: `1px solid ${S.linha}` }}>
+            <span style={{ fontFamily: F.ui, fontSize: 15, color: S.ink }}>Bloqueado <strong>{fmtBRL(c.bloqueadoAtivo)}</strong></span>
+            <span style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2 }}>{pctBloqueado}% do passivo</span>
+          </div>
+          <div className="mt-1.5" style={{ height: 6, borderRadius: 999, background: S.linha }}>
+            <div style={{ height: 6, borderRadius: 999, width: `${Math.max(2, pctBloqueado)}%`, background: S.oliva }} />
+          </div>
+        </>
+      ) : (
+        <p style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2, marginTop: 10 }}>{fmtBRLCurto(c.bloqueadoAtivo)} bloqueado</p>
+      )}
     </button>
   );
 }
@@ -200,7 +223,7 @@ function ContratosOrg({ orgId, onBack, onOpenContrato, onEnviarCliente }) {
 }
 
 /* ---------------- Tela: um contrato de gestão ---------------- */
-function ContratoDetalhe({ orgId, orgao, onBack, backLabel, onOpenProcesso, onOpenBloqueio, onEnviarCliente }) {
+function ContratoDetalhe({ orgId, orgao, onBack, backLabel, onOpenProcesso, onOpenBloqueio, onEnviarCliente, onVerBloqueios, onAbrirPaginaCliente }) {
   const o = ORGS[orgId], c = resumoContrato(orgId, orgao);
   const porArea = ["Trabalhista", "Cível", "Administrativo", "Constitucional"]
     .map((a) => [a, c.processos.filter((p) => p.area === a)])
@@ -219,9 +242,15 @@ function ContratoDetalhe({ orgId, orgao, onBack, backLabel, onOpenProcesso, onOp
           <PassivoBarra passivo={c.passivo} />
         </div>
         <div className="mt-3">
-          <KPIs itens={[["Processos", String(c.processos.length)], ["Bloqueado", fmtBRLCurto(c.bloqueadoAtivo)], ["Levantado", fmtBRLCurto(c.levantado)]]} />
+          <KPIs itens={[["Bloqueado hoje", fmtBRLCurto(c.bloqueadoAtivo)], ["Processos", String(c.processos.length)], ["Levantado", fmtBRLCurto(c.levantado)]]} />
         </div>
       </Faixa>
+      {(onVerBloqueios || onAbrirPaginaCliente) && (
+        <div className="flex gap-2 mt-4">
+          {onVerBloqueios && <div className="flex-1"><Botao variante="secundario" onClick={onVerBloqueios}>Ver bloqueios</Botao></div>}
+          {onAbrirPaginaCliente && <div className="flex-1"><Botao onClick={onAbrirPaginaCliente}>Página do cliente</Botao></div>}
+        </div>
+      )}
       <Dica id="contrato" />
       {onEnviarCliente && (
         <button onClick={onEnviarCliente} className="w-full inline-flex items-center justify-center gap-2 mt-4"
@@ -268,27 +297,6 @@ function ContratoDetalhe({ orgId, orgao, onBack, backLabel, onOpenProcesso, onOp
   );
 }
 
-/* ---------------- Tela: bloqueios da organização ---------------- */
-function BloqueiosOrg({ orgId, onBack, onOpenContrato, onOpenBloqueio }) {
-  const o = ORGS[orgId], r = resumoOrg(orgId);
-  const pct = Math.round((r.levantado / ((r.levantado + r.bloqueadoAtivo) || 1)) * 100);
-  return (
-    <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 60 }}>
-      <Faixa bleed={32} bloco onBack={onBack} backLabel={o.name} eyebrow={`${o.name} · bloqueado hoje`}
-             titulo={fmtBRL(r.bloqueadoAtivo)} tituloCompacto="Bloqueios" tituloSize={36}
-             sub={`${r.bloqueiosAtivos} bloqueios ativos via SISBAJUD`}>
-        <KPIs itens={[["Ativo", fmtBRLCurto(r.bloqueadoAtivo)], ["Levantado", fmtBRLCurto(r.levantado)], ["Já liberado", `${pct}%`]]} />
-        <BotaoAlerta base={{ tipo: "bloqueio_cliente", orgId }} rotulo="Avisar se o bloqueado passar de um valor" titulo="Avisar sobre bloqueios" />
-      </Faixa>
-      <SecLabel>Por contrato de gestão</SecLabel>
-      <PorContrato onOpenContrato={onOpenContrato}
-                   linhas={r.contratos.map((c) => [c.orgao, fmtBRLCurto(c.bloqueadoAtivo), `${c.bloqueiosAtivos} ativos · ${fmtBRLCurto(c.levantado)} levantado`])} />
-      <SecLabel>Todos os bloqueios</SecLabel>
-      <ListaBloqueios bloqueios={r.bloqueios} onOpenBloqueio={onOpenBloqueio} comContrato />
-    </div>
-  );
-}
-
 /* ---------------- Tela: processos da organização ---------------- */
 function ProcessosOrg({ orgId, onBack, onOpenContrato, onOpenProcesso }) {
   const o = ORGS[orgId], r = resumoOrg(orgId);
@@ -311,4 +319,4 @@ function ProcessosOrg({ orgId, onBack, onOpenContrato, onOpenProcesso }) {
   );
 }
 
-export { BloqueiosOrg, ContratoCard, ContratoDetalhe, ContratosOrg, NOTA_PASSIVO, PassivoBarra, ProcessosOrg };
+export { ContratoCard, ContratoDetalhe, ContratosOrg, NOTA_PASSIVO, PassivoBarra, ProcessosOrg, SEM_PROGNOSTICO };

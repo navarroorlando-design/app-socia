@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { StatusBar, TabBar } from "./componentes/ui";
 import { Pilha } from "./componentes/Pilha";
-import { BLOQUEIOS_LISTA, CLIENTE_NOME, ORGS, ORG_ORDER, PROCESSOS_LISTA, RECLAMACOES_LISTA } from "./dados/base";
+import { BLOQUEIOS_LISTA, ORGS, ORG_ORDER, PROCESSOS_LISTA, RECLAMACOES_LISTA } from "./dados/base";
 import { GlobalStyle } from "./estilo/GlobalStyle";
 import { T, tomDeStatus } from "./estilo/tokens";
 import { PINNED_INICIAIS, conversar, erroTexto, useSample } from "./ia/motor";
@@ -13,10 +13,11 @@ import { AcompanhandoLista, INICIO_BLOCOS, INICIO_PADRAO, InicioFeed, ListaGener
 import { MeusAlertas, PersonalizarInicio, PessoalContext, TIPOS_ALERTA, mesmoAlvo } from "./pessoal";
 import { INITIAL_NOTIFS, NotifPrefs, NotificacoesCentral } from "./telas/Notificacoes";
 import { OsLista, OsPerfil } from "./telas/Organizacoes";
-import { BloqueiosOrg, ContratoDetalhe, ContratosOrg, ProcessosOrg } from "./telas/OrgMetricas";
+import { ContratoDetalhe, ContratosOrg, ProcessosOrg } from "./telas/OrgMetricas";
 import { Movimentacoes } from "./telas/Carteira";
 import { BloqueiosParados, BloqueiosTela } from "./telas/Bloqueios";
-import { Escritorio } from "./telas/Escritorio";
+import { Passivo } from "./telas/Passivo";
+import { Desempenho } from "./telas/Desempenho";
 import { ReclamacaoDetalhe, ReclamacoesTela } from "./telas/Reclamacoes";
 import { RelatorioCliente } from "./telas/RelatorioCliente";
 import { AvisoSemInternet, Bloqueio, FluxoEntrada, Seguranca, useConexao } from "./telas/Entrada";
@@ -30,7 +31,9 @@ function AppSociosPrototype() {
   const abrirGuia = typeof location !== "undefined" && location.hash === "#guia";
   const [tab, setTab] = useState(abrirGuia ? "perfil" : "inicio");
   const [inicioView, setInicioView] = useState("feed");
-  const [escritorioAba, setEscritorioAba] = useState("passivo");
+  // Bloqueios filtrados de fora da própria aba (Ver também do cliente, Ver bloqueios do contrato):
+  // guarda o cliente (e, se vier, o contrato) para a tela de Bloqueios abrir já marcada.
+  const [bloqueiosFiltroInicial, setBloqueiosFiltroInicial] = useState(null);
   const [osView, setOsView] = useState("list");
   const [selectedOrg, setSelectedOrg] = useState("afne");
   // Telas da organização: contratos, contrato, bloqueios, processos e os detalhes abertos a partir delas.
@@ -177,15 +180,16 @@ function AppSociosPrototype() {
   // "Me leve lá" das perguntas comuns
   const irPara = (destino) => {
     const perfil = { alertas: "alertas", personalizar: "personalizar", seguranca: "seguranca", perfil: "main" };
-    const inicio = { escritorio: "escritorio", acompanhando: "acompanhando", processos: "processos" };
+    const inicio = { passivo: "passivo", acompanhando: "acompanhando", processos: "processos" };
     if (perfil[destino]) { setTab("perfil"); setPerfilView(perfil[destino]); }
     else if (inicio[destino]) { setTab("inicio"); setInicioView(inicio[destino]); }
     else if (destino === "org") openOrg(ordem[0]);
     else if (destino === "contratos") { setSelectedOrg(ordem[0]); setTab("os"); setOsView("contratos"); }
     else changeTab(destino);
   };
-  const osLabels = { profile: ORGS[selectedOrg]?.name, contratos: "Contratos de gestão", contrato: selectedContrato, bloqueios: "Bloqueios", processos: "Processos", bloqueio: "Bloqueio", reclamacoes: "Reclamações", reclamacao: "Reclamação" };
+  const osLabels = { profile: ORGS[selectedOrg]?.name, contratos: "Contratos de gestão", contrato: selectedContrato, processos: "Processos", bloqueio: "Bloqueio", reclamacoes: "Reclamações", reclamacao: "Reclamação" };
   const openContratoDe = (orgId, orgao) => { setSelectedOrg(orgId); setTab("os"); setSelectedContrato(orgao); setContratoOrigin("profile"); setOsView("contrato"); };
+  const abrirBloqueiosFiltrado = (clienteId, contrato) => { setBloqueiosFiltroInicial({ clienteId, contrato: contrato || null }); setTab("inicio"); setInicioView("bloqueios"); };
 
   /* ---- IA: conversa no formato do app do Claude ---- */
   const enviar = async (texto, opts = {}) => {
@@ -296,7 +300,8 @@ function AppSociosPrototype() {
             onOpenList={(v) => { setRecorteLista("todos"); setInicioView(v); }}
             onOpenProcessos={(area) => { setRecorteLista(area); setInicioView("processos"); }}
             onOpenOrg={openOrg}
-            onOpenEscritorio={(aba) => { setEscritorioAba(aba); setInicioView("escritorio"); }}
+            onOpenPassivo={() => setInicioView("passivo")}
+            onOpenDesempenho={() => setInicioView("desempenho")}
             onOpenParados={() => setInicioView("parados")}
             followedItems={followedItemsFull}
             onOpenProcesso={openProcesso}
@@ -315,8 +320,11 @@ function AppSociosPrototype() {
             onMarkAll={() => setNotifs((prev) => prev.map((n) => ({ ...n, read: true })))}
             onBack={() => setInicioView("feed")} />
         )}
-        {inicioView === "escritorio" && (
-          <Escritorio onBack={() => setInicioView("feed")} onOpenOrg={openOrg} onOpenContrato={openContratoDe} abaInicial={escritorioAba} />
+        {inicioView === "passivo" && (
+          <Passivo onBack={() => setInicioView("feed")} onOpenOrg={openOrg} onOpenContrato={openContratoDe} />
+        )}
+        {inicioView === "desempenho" && (
+          <Desempenho onBack={() => setInicioView("feed")} />
         )}
         {inicioView === "parados" && (
           <ParadosLista onBack={() => setInicioView("feed")} onOpen={(p) => openProcesso(p, "parados")} />
@@ -336,8 +344,9 @@ function AppSociosPrototype() {
                          onOpenProcesso={openProcesso} onOpenBloqueio={openBloqueio} onOpenOrg={openOrg} />
         )}
         {inicioView === "bloqueios" && (
-          <BloqueiosTela onBack={() => setInicioView("feed")} onOpenOrg={openOrg} onOpenParados={() => setInicioView("bloqueiosParados")}
-                         onOpenContrato={openContratoDe} onOpenProcesso={(p) => openProcesso(p, "bloqueios")} />
+          <BloqueiosTela onBack={() => { setBloqueiosFiltroInicial(null); setInicioView("feed"); }} onOpenOrg={openOrg} onOpenParados={() => setInicioView("bloqueiosParados")}
+                         onOpenContrato={openContratoDe} onOpenProcesso={(p) => openProcesso(p, "bloqueios")}
+                         clienteInicial={bloqueiosFiltroInicial?.clienteId} contratoInicial={bloqueiosFiltroInicial?.contrato} />
         )}
         {inicioView === "bloqueiosParados" && (
           <BloqueiosParados onBack={() => setInicioView("bloqueios")}
@@ -367,7 +376,8 @@ function AppSociosPrototype() {
         {osView === "profile" && (
           <OsPerfil orgId={selectedOrg} onBack={() => setOsView("list")} sample={sample} onAsk={(q) => enviar(q, { nova: true, clienteId: selectedOrg, backTo: "os", backLabel: ORGS[selectedOrg].name })}
             onOpenContratos={() => setOsView("contratos")} onOpenContrato={(c) => openContrato(c, "profile")}
-            onOpenBloqueios={() => setOsView("bloqueios")} onOpenProcessos={() => setOsView("processos")} onOpenReclamacoes={() => setOsView("reclamacoes")} />
+            onOpenBloqueiosAtivos={() => abrirBloqueiosFiltrado(selectedOrg)} onOpenDesempenhoAno={() => { setTab("inicio"); setInicioView("desempenho"); }}
+            onOpenProcessos={() => setOsView("processos")} onOpenReclamacoes={() => setOsView("reclamacoes")} />
         )}
         {osView === "contratos" && (
           <ContratosOrg orgId={selectedOrg} onBack={() => setOsView("profile")} onOpenContrato={(c) => openContrato(c, "contratos")}
@@ -376,14 +386,11 @@ function AppSociosPrototype() {
         {osView === "contrato" && selectedContrato && (
           <ContratoDetalhe key={selectedContrato} orgId={selectedOrg} orgao={selectedContrato} onBack={() => setOsView(contratoOrigin)} backLabel={osLabels[contratoOrigin]}
             onOpenProcesso={(p) => openOsDetalhe("processo", p, "contrato")} onOpenBloqueio={(b) => openOsDetalhe("bloqueio", b, "contrato")}
+            onVerBloqueios={() => abrirBloqueiosFiltrado(selectedOrg, selectedContrato)} onAbrirPaginaCliente={() => setOsView("profile")}
             onEnviarCliente={() => { setRelatorioOrgao(selectedContrato); setRelatorioOrigin("contrato"); setOsView("relatorio"); }} />
         )}
         {osView === "relatorio" && (
           <RelatorioCliente key={relatorioOrgao || "todos"} orgId={selectedOrg} orgao={relatorioOrgao} onBack={() => setOsView(relatorioOrigin)} backLabel={osLabels[relatorioOrigin]} />
-        )}
-        {osView === "bloqueios" && (
-          <BloqueiosOrg orgId={selectedOrg} onBack={() => setOsView("profile")} onOpenContrato={(c) => openContrato(c, "bloqueios")}
-            onOpenBloqueio={(b) => openOsDetalhe("bloqueio", b, "bloqueios")} />
         )}
         {osView === "processos" && (
           <ProcessosOrg orgId={selectedOrg} onBack={() => setOsView("profile")} onOpenContrato={(c) => openContrato(c, "processos")}

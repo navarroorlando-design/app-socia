@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import { ChevronIcon, FlagIcon } from "../componentes/icones";
+import { ChevronIcon, FlagIcon, FolderIcon, LockIcon, TendenciaIcon } from "../componentes/icones";
 import { Faixa, SecLabel } from "../componentes/ui";
 import { ORGS, ORG_ORDER, OUTRAS_ORGS, RECLAMACOES_LISTA } from "../dados/base";
-import { fmtBRL, fmtBRLCurto } from "../dados/formato";
-import { resumoOrg } from "../dados/passivo";
-import { CARD, F, LINK, S, SEMANTICA, T } from "../estilo/tokens";
+import { fmtBRL } from "../dados/formato";
+import { encerradosDe, resumoOrg } from "../dados/passivo";
+import { CARD, DADOS, F, LINK, S, SEMANTICA, T } from "../estilo/tokens";
 import { AskBar } from "./Ia";
 import { FeedItem } from "./Inicio";
 import { ContratoCard } from "./OrgMetricas";
-import { Anotacao } from "../pessoal";
+import { Anotacao, BotaoAlerta } from "../pessoal";
 import { Dica } from "../ajuda/Dica";
 import { LogoOrg, MarcaOrg, tomOrg } from "../componentes/MarcaOrg";
 import { MARCAS } from "../componentes/marcas";
@@ -58,54 +58,106 @@ function OsLista({ onOpenOrg, ordem = ORG_ORDER }) {
   );
 }
 
-function OsPerfil({ orgId, onBack, sample, onAsk, onOpenContratos, onOpenContrato, onOpenBloqueios, onOpenProcessos, onOpenReclamacoes }) {
+/* Página única do cliente (redesenho v3, seção B.4): o mesmo componente abre pela aba Clientes,
+   pelo Passivo, pelo seletor de cliente dos Bloqueios e pela tela de contrato. */
+function OsPerfil({ orgId, onBack, sample, onAsk, onOpenContratos, onOpenContrato, onOpenProcessos, onOpenReclamacoes, onOpenBloqueiosAtivos, onOpenDesempenhoAno }) {
   const o = ORGS[orgId], r = resumoOrg(orgId);
   const reclamacoes = RECLAMACOES_LISTA.filter((x) => x.clienteId === orgId);
+  const nEncerrados = encerradosDe(orgId).length;
+  const pctBloqueado = r.passivo.total ? Math.round((r.bloqueadoAtivo / r.passivo.total) * 100) : 0;
+  const contratosVisiveis = r.contratos.slice(0, 2);
   const [q, setQ] = useState("");
-  // Atalho de métrica: contratos (o que o cliente mais pergunta) em destaque, depois bloqueios e processos.
-  const Metrica = ({ rotulo, valor, detalhe, onClick, tom, largo }) => {
-    const t = { oliva: [S.oliva, "#FFFFFF", "#E6E1D6"], osso: [S.osso, S.ink, S.ossoTexto2], cartao: [S.cartao, S.ink, S.texto2] }[tom];
-    return (
-      <button onClick={onClick} className={`text-left flex flex-col min-w-0 ${largo ? "col-span-2" : ""}`}
-              style={{ ...CARD, background: t[0], boxShadow: tom === "cartao" ? CARD.boxShadow : "none", padding: 16 }}>
-        <span className="flex items-center justify-between gap-2 w-full">
-          <span style={{ fontFamily: F.ui, fontSize: 15, fontWeight: 600, color: t[1] }}>{rotulo}</span>
-          <ChevronIcon size={16} color={t[1]} strokeWidth={2} />
-        </span>
-        <span style={{ fontFamily: F.ui, fontSize: largo ? 28 : 22, fontWeight: 600, color: t[1], letterSpacing: "-0.02em", marginTop: 8, fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>{valor}</span>
-        <span style={{ fontFamily: F.ui, fontSize: 14, color: t[2], marginTop: 2, lineHeight: 1.3 }}>{detalhe}</span>
-      </button>
-    );
-  };
+
+  const VerTambem = ({ Icone, rotulo, detalhe, onClick }) => (
+    <button onClick={onClick} className="flex-1 text-left flex flex-col min-w-0 pressable" style={{ ...CARD, padding: 14 }}>
+      <span className="flex items-center justify-center shrink-0" style={{ width: 34, height: 34, borderRadius: 999, background: "#EFEBE2" }}>
+        <Icone size={17} color={S.ink} strokeWidth={1.8} />
+      </span>
+      <span className="block" style={{ fontFamily: F.ui, fontSize: 15, fontWeight: 600, color: S.ink, marginTop: 8 }}>{rotulo}</span>
+      <span className="block" style={{ fontFamily: F.ui, fontSize: 13, color: S.texto2, marginTop: 2 }}>{detalhe}</span>
+    </button>
+  );
+
   return (
     <>
       <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 150 }}>
-        <Faixa bleed={32} bloco onBack={onBack} backLabel="Organizações"
-               eyebrow="Organização social" titulo={o.name} tituloCompacto={o.name} tituloSize={32}
-               sub={`${r.contratos.length} contratos de gestão · ${r.processos.length} processos`}
-               aside={<MarcaOrg id={orgId} iniciais={o.initials} size={56} claro />}>
-          <div className="grid grid-cols-2 gap-3">
-            <Metrica largo tom="oliva" rotulo="Contratos de gestão" valor={fmtBRL(r.passivo.total)}
-                     detalhe={`Passivo estimado em ${r.contratos.length} contratos`} onClick={onOpenContratos} />
-            <Metrica tom="osso" rotulo="Bloqueios" valor={fmtBRLCurto(r.bloqueadoAtivo)} detalhe={`${r.bloqueiosAtivos} ativos`} onClick={onOpenBloqueios} />
-            <Metrica tom="cartao" rotulo="Processos" valor={String(r.processos.length)} detalhe={`${r.processos.filter((p) => p.diasParado >= 60).length} parados há 60+ dias`} onClick={onOpenProcessos} />
-          </div>
-          <button onClick={onOpenReclamacoes} className="w-full text-left flex items-center gap-3 mt-3" style={{ ...CARD, padding: "14px 16px" }}>
-            <span className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "#EFEBE2" }}><FlagIcon size={18} color={S.ink} /></span>
-            <span className="flex-1 min-w-0">
-              <span className="block" style={{ fontFamily: F.ui, fontSize: 16, fontWeight: 600, color: S.ink }}>Reclamações no STF</span>
-              <span className="block" style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2 }}>{reclamacoes.length === 0 ? "Nenhuma" : `${reclamacoes.filter((x) => x.status !== "Julgada").length} em andamento · ${reclamacoes.length} no total`}</span>
-            </span>
-            <ChevronIcon size={16} color={S.texto2} strokeWidth={2} />
-          </button>
-          <Anotacao chave={`org:${orgId}`} sobre={o.name} />
-        </Faixa>
-        <Dica id="osPerfil" />
+        <Faixa bleed={32} onBack={onBack} backLabel="Clientes" eyebrow="Cliente" titulo={o.name} tituloCompacto={o.name} tituloSize={32} />
 
-        <SecLabel acao="Ver todos" onAcao={onOpenContratos}>Passivo por contrato</SecLabel>
-        <div className="flex flex-col gap-3">
-          {r.contratos.map((c) => <ContratoCard key={c.orgao} c={c} onClick={() => onOpenContrato(c.orgao)} />)}
+        {/* cabeçalho: logo no tom da organização, processos e contratos/encerrados */}
+        <div className="flex items-center gap-3" style={{ ...CARD, background: tomOrg(orgId), boxShadow: "none", padding: 14 }}>
+          {MARCAS[orgId]?.logo ? <span style={{ width: 96 }}><LogoOrg id={orgId} altura={52} /></span> : <MarcaOrg id={orgId} iniciais={o.initials} size={48} />}
+          <span className="flex-1 min-w-0">
+            <span className="block" style={{ fontFamily: F.ui, fontSize: 24, fontWeight: 600, color: S.ink, letterSpacing: "-0.02em" }}>{r.processos.length} processos</span>
+            <span className="block" style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2, marginTop: 2 }}>
+              {r.contratos.length} {r.contratos.length === 1 ? "contrato" : "contratos"} de gestão · {nEncerrados} {nEncerrados === 1 ? "encerrado" : "encerrados"} em 2026
+            </span>
+          </span>
         </div>
+
+        {/* topo escuro: passivo do cliente, por prognóstico, e já bloqueado */}
+        <div className="mt-4" style={{ background: S.marca, borderRadius: 24, padding: 20 }}>
+          <p style={{ fontFamily: F.ui, fontSize: 15, color: S.marcaTexto2 }}>Passivo estimado · {o.name}</p>
+          <p style={{ fontFamily: F.ui, fontSize: 32, fontWeight: 600, color: "#FFFFFF", letterSpacing: "-0.03em", marginTop: 4, fontVariantNumeric: "tabular-nums" }}>{fmtBRL(r.passivo.total)}</p>
+          <p style={{ fontFamily: F.ui, fontSize: 15, color: S.marcaTexto2, marginTop: 6 }}>{r.contratos.length} contratos de gestão · {r.processos.length} processos</p>
+          <div className="mt-4">
+            <div className="flex w-full overflow-hidden" style={{ height: 10, borderRadius: 999, gap: 2 }}>
+              {["Provável", "Possível", "Remoto"].map((k) => (
+                <span key={k} style={{ width: `${(r.passivo[k] / (r.passivo.total || 1)) * 100}%`, background: { Provável: DADOS.prov, Possível: DADOS.poss, Remoto: DADOS.rem }[k] }} />
+              ))}
+            </div>
+            <div className="flex flex-col gap-1.5 mt-3">
+              {["Provável", "Possível", "Remoto"].map((k) => (
+                <div key={k} className="flex items-center gap-2">
+                  <span className="shrink-0" style={{ width: 10, height: 10, borderRadius: 3, background: { Provável: DADOS.prov, Possível: DADOS.poss, Remoto: DADOS.rem }[k] }} />
+                  <span style={{ fontFamily: F.ui, fontSize: 15, color: "#FFFFFF", flex: 1 }}>{k}</span>
+                  <span style={{ fontFamily: F.ui, fontSize: 15, fontWeight: 600, color: "#FFFFFF", fontVariantNumeric: "tabular-nums" }}>{fmtBRL(r.passivo[k])}</span>
+                  <span style={{ fontFamily: F.ui, fontSize: 14, color: S.marcaTexto2, width: 36, textAlign: "right" }}>{Math.round((r.passivo[k] / (r.passivo.total || 1)) * 100)}%</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="mt-4 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,.16)" }}>
+            <div className="flex items-baseline justify-between gap-2">
+              <span style={{ fontFamily: F.ui, fontSize: 15, color: "#FFFFFF" }}>Já bloqueado</span>
+              <span style={{ fontFamily: F.ui, fontSize: 15, fontWeight: 600, color: "#FFFFFF", fontVariantNumeric: "tabular-nums" }}>
+                {fmtBRL(r.bloqueadoAtivo)} <span style={{ color: S.marcaTexto2, fontWeight: 400 }}>{pctBloqueado}%</span>
+              </span>
+            </div>
+            <div className="mt-2" style={{ height: 8, borderRadius: 999, background: "rgba(255,255,255,.18)" }}>
+              <div style={{ height: 8, borderRadius: 999, width: `${Math.max(2, pctBloqueado)}%`, background: S.osso }} />
+            </div>
+          </div>
+        </div>
+        <Dica id="osPerfil" />
+        <BotaoAlerta base={{ tipo: "bloqueio_cliente", orgId }} rotulo="Avisar se o bloqueado passar de um valor" titulo="Avisar sobre bloqueios" />
+        <Anotacao chave={`org:${orgId}`} sobre={o.name} />
+
+        <SecLabel acao={r.contratos.length > 2 ? "Ver todos" : undefined} onAcao={onOpenContratos}>Contratos</SecLabel>
+        <div className="flex flex-col gap-3">
+          {contratosVisiveis.map((c) => <ContratoCard key={c.orgao} c={c} onClick={() => onOpenContrato(c.orgao)} />)}
+        </div>
+        {r.contratos.length > 2 && (
+          <button onClick={onOpenContratos} className="w-full text-center mt-3"
+                  style={{ height: 48, borderRadius: 14, fontFamily: F.ui, fontSize: 16, fontWeight: 600, color: S.ink, background: S.cartao, boxShadow: CARD.boxShadow }}>
+            Ver todos os {r.contratos.length} contratos
+          </button>
+        )}
+
+        <SecLabel>Ver também</SecLabel>
+        <div className="flex gap-3">
+          <VerTambem Icone={LockIcon} rotulo="Bloqueios" detalhe={`${r.bloqueiosAtivos} ativos`} onClick={onOpenBloqueiosAtivos} />
+          <VerTambem Icone={TendenciaIcon} rotulo="Desempenho" detalhe="No ano" onClick={onOpenDesempenhoAno} />
+          <VerTambem Icone={FolderIcon} rotulo="Processos" detalhe={`${r.processos.length} no total`} onClick={onOpenProcessos} />
+        </div>
+
+        <button onClick={onOpenReclamacoes} className="w-full text-left flex items-center gap-3 mt-3" style={{ ...CARD, padding: "14px 16px" }}>
+          <span className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "#EFEBE2" }}><FlagIcon size={18} color={S.ink} /></span>
+          <span className="flex-1 min-w-0">
+            <span className="block" style={{ fontFamily: F.ui, fontSize: 16, fontWeight: 600, color: S.ink }}>Reclamações no STF</span>
+            <span className="block" style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2 }}>{reclamacoes.length === 0 ? "Nenhuma" : `${reclamacoes.filter((x) => x.status !== "Julgada").length} em andamento · ${reclamacoes.length} no total`}</span>
+          </span>
+          <ChevronIcon size={16} color={S.texto2} strokeWidth={2} />
+        </button>
 
         <SecLabel>O que mudou aqui</SecLabel>
         <div style={CARD}>
