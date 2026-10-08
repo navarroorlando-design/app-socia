@@ -38,6 +38,10 @@ const GlobalStyle = () => (
     @keyframes gup{ from{ opacity:0; transform: translateY(8px); } to{ opacity:1; transform:none; } }
     @keyframes gsheet{ from{ transform: translateY(100%); } to{ transform:none; } }
     @media (prefers-reduced-motion: reduce){ .guia-spin,.guia-skel,.guia-toast,.guia-sheet{ animation:none !important; } .guia-btn{ transition:none !important; } }
+    /* Desenho dos gráficos de Desempenho na primeira vez que aparecem (seção D, ~600ms ease-out). */
+    .grafico-desenho{ animation: gdraw .6s var(--ease-out); }
+    @keyframes gdraw{ from{ opacity:0; transform: scaleY(.85); transform-origin: bottom; } to{ opacity:1; transform:none; } }
+    @media (prefers-reduced-motion: reduce){ .grafico-desenho{ animation:none !important; } }
   `}</style>
 );
 

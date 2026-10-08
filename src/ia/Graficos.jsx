@@ -264,4 +264,4 @@ function TabelaProcessos({ titulo, linhas }) {
   );
 }
 
-export { CORES_SERIES, GraficoBarras, GraficoEmpilhado, GraficoLinha, Indicadores, TabelaProcessos, fmt, fmtCurto, GraficoColunas };
+export { CORES_SERIES, GraficoBarras, GraficoEmpilhado, GraficoLinha, Indicadores, TabelaProcessos, fmt, fmtCurto, GraficoColunas, ticks };

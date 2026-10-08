@@ -324,7 +324,7 @@ function AppSociosPrototype() {
           <Passivo onBack={() => setInicioView("feed")} onOpenOrg={openOrg} onOpenContrato={openContratoDe} />
         )}
         {inicioView === "desempenho" && (
-          <Desempenho onBack={() => setInicioView("feed")} />
+          <Desempenho onBack={() => setInicioView("feed")} onOpenBloqueios={() => setInicioView("bloqueios")} />
         )}
         {inicioView === "parados" && (
           <ParadosLista onBack={() => setInicioView("feed")} onOpen={(p) => openProcesso(p, "parados")} />

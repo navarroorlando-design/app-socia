@@ -39,6 +39,7 @@ const DICAS = {
   osLista: "Toque num cliente para ver o passivo de cada contrato de gestão, os bloqueios e os processos dele.",
   osPerfil: "O passivo total do cliente já aparece aqui. Toque num contrato para ver o passivo dele.",
   passivo: "Passivo é o risco estimado pelo advogado. Bloqueado é o que já saiu da conta.",
+  desempenho: "Toque num indicador para trocar o gráfico, e num mês do gráfico para ver os números.",
   contrato: "Aqui você gera o PDF do passivo para enviar ao cliente e pode pedir um aviso se o passivo passar de um valor.",
   processo: "Toque em Seguir processo para receber as movimentações novas. “Contar a história do processo” pede à IA um resumo por fases.",
 };

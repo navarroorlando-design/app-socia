@@ -133,11 +133,14 @@ function gerarBloqueio(id, proc, fixo = {}) {
   const data = new Date(Math.min(new Date(2026, mes, between(1, 27)).getTime(), HOJE.getTime() - between(1, 5) * 86400000));
   const status = fixo.status || (rand() < 0.22 ? "Levantado" : "Ativo");
   const historico = [{ date: fmtData(data), text: "Bloqueio realizado via SISBAJUD" }];
-  if (status === "Levantado") historico.unshift({ date: fmtData(new Date(Math.min(HOJE, data.getTime() + between(20, 90) * 86400000))), text: "Valor levantado por decisão judicial" });
-  else if (rand() < 0.4) historico.unshift({ date: fmtData(new Date(Math.min(HOJE, data.getTime() + between(10, 40) * 86400000))), text: "Pedido de desbloqueio protocolado" });
+  let liberadoEm = null;
+  if (status === "Levantado") {
+    liberadoEm = new Date(Math.min(HOJE, data.getTime() + between(20, 90) * 86400000));
+    historico.unshift({ date: fmtData(liberadoEm), text: "Valor levantado por decisão judicial" });
+  } else if (rand() < 0.4) historico.unshift({ date: fmtData(new Date(Math.min(HOJE, data.getTime() + between(10, 40) * 86400000))), text: "Pedido de desbloqueio protocolado" });
   return {
     id, processoId: proc.id, clienteId: proc.clienteId, cliente: proc.cliente, contrato: proc.contrato, area: proc.area,
-    valorNum, valor: fmtBRL(valorNum), data, mes, status, sistema: "SISBAJUD", historico,
+    valorNum, valor: fmtBRL(valorNum), data, mes, status, sistema: "SISBAJUD", historico, liberadoEm,
   };
 }
 
@@ -212,6 +215,17 @@ const ENCERRADOS_2026 = [];
   }
 }
 
+/* Quanto do valor em discussão de cada encerrado foi revertido (cliente não pagou) ou mantido
+   (condenação ou acordo). Gerador próprio por id, para não alterar a sequência acima.
+   Favorável: 100% revertido. Desfavorável: 0% revertido. Acordo: fração de exemplo entre 30% e 70%
+   — TODO confirmar com o escritório a fração realmente revertida em acordos homologados. */
+for (const e of ENCERRADOS_2026) {
+  const r = rng([...e.id].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 11));
+  e.valorRevertido = e.resultado === "Favorável" ? e.valorCausa
+    : e.resultado === "Desfavorável" ? 0
+    : Math.round((e.valorCausa * (0.3 + r() * 0.4)) / 100) * 100;
+}
+
 /* Totais derivados da base, usados nas telas fixas */
 const TOTAIS = (() => {
   const ativo = BLOQUEIOS_LISTA.filter((b) => b.status === "Ativo");
@@ -258,4 +272,4 @@ const RECLAMACOES_LISTA = RECLAMACOES_BASE.map((r) => {
   return { ...r, cliente: CLIENTE_NOME[r.clienteId], desc: r.assunto, processosOrigem: origem.map((p) => p.id), valorDiscutido: origem.reduce((s, p) => s + bloqueadoDe(p), 0) };
 });
 
-export { BLOQUEIOS_LISTA, CLIENTE_NOME, CONTRATOS, ENCERRADOS_2026, ORGS, ORG_ORDER, OUTRAS_ORGS, PROCESSOS_LISTA, RECLAMACOES_LISTA, TOTAIS };
+export { AREAS, BLOQUEIOS_LISTA, CLIENTE_NOME, CONTRATOS, ENCERRADOS_2026, ORGS, ORG_ORDER, OUTRAS_ORGS, PROCESSOS_LISTA, RECLAMACOES_LISTA, TOTAIS };
