@@ -4,6 +4,7 @@ import { Badge, Botao, Etiqueta, Faixa, KPIs, LinhaLista, SecLabel } from "../co
 import { ORGS } from "../dados/base";
 import { fmtBRL, fmtBRLCurto, fmtData } from "../dados/formato";
 import { ORDEM_PROGNOSTICO, encerradosDe, historicoPassivo, motivosVariacao, resumoContrato, resumoOrg } from "../dados/passivo";
+import { DIAS_PARADO_LIMITE, processosParados } from "../dados/criterios";
 import { GraficoColunas } from "../ia/Graficos";
 import { CARD, DADOS, F, S, SEMANTICA, semDe } from "../estilo/tokens";
 import { Anotacao, BotaoAlerta } from "../pessoal";
@@ -301,13 +302,13 @@ function ContratoDetalhe({ orgId, orgao, onBack, backLabel, onOpenProcesso, onOp
 function ProcessosOrg({ orgId, onBack, onOpenContrato, onOpenProcesso }) {
   const o = ORGS[orgId], r = resumoOrg(orgId);
   const conta = (a) => r.processos.filter((p) => p.area === a).length;
-  const parados = r.processos.filter((p) => p.diasParado >= 60).length;
+  const parados = processosParados(r.processos).length;
   const processos = [...r.processos].sort((a, b) => b.valorCausa - a.valorCausa);
   return (
     <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 60 }}>
       <Faixa bleed={32} bloco onBack={onBack} backLabel={o.name} eyebrow={`${o.name} · processos`}
              titulo={`${r.processos.length} processos`} tituloCompacto="Processos" tituloSize={36}
-             sub={`${parados} parados há mais de 60 dias`}>
+             sub={`${parados} parados há mais de ${DIAS_PARADO_LIMITE} dias`}>
         <KPIs itens={[["Trabalhista", String(conta("Trabalhista"))], ["Cível", String(conta("Cível"))], ["Administr.", String(conta("Administrativo"))]]} />
       </Faixa>
       <SecLabel>Por contrato de gestão</SecLabel>

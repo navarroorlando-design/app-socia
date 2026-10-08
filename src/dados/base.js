@@ -1,5 +1,6 @@
 import { HOJE, fmtBRL, fmtBRLCurto, fmtData, tempoRelativo } from "./formato";
 import { T } from "../estilo/tokens";
+import { processosParados } from "./criterios";
 
 /* ------------------------------------------------------------------ */
 /* Dados de exemplo                                                    */
@@ -238,7 +239,7 @@ const TOTAIS = (() => {
   return {
     bloqueadoAtivo: ativo.reduce((s, b) => s + b.valorNum, 0),
     processos: PROCESSOS_LISTA.length,
-    parados: PROCESSOS_LISTA.filter((p) => p.diasParado >= 60).length,
+    parados: processosParados(PROCESSOS_LISTA).length,
     porCliente, porArea,
   };
 })();

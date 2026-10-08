@@ -223,7 +223,8 @@ function Indicadores({ itens }) {
         const dif = temDelta ? it.valor - it.anterior : 0;
         const pct = temDelta && it.anterior ? Math.round((dif / it.anterior) * 100) : null;
         const bom = it.bomQuando === "desce" ? dif < 0 : dif > 0;
-        const corDelta = dif === 0 ? S.texto2 : bom ? S.resolvido : S.risco;
+        // Delta negativo usa âmbar (atenção), não vermelho: vermelho é só para "novo" e o badge de avisos.
+        const corDelta = dif === 0 ? S.texto2 : bom ? S.resolvido : S.atencao;
         return (
           <div key={i} className={itens.length % 2 && i === 0 ? "col-span-2" : ""} style={{ ...CARD, padding: 16 }}>
             <p style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2, lineHeight: 1.3 }}>{it.rotulo}</p>
