@@ -87,9 +87,10 @@ function AppSociosPrototype() {
   // Tutorial: tour de boas-vindas (uma vez) e dicas de primeira vez em cada tela
   const [tourAberto, setTourAberto] = useState(() => !!acesso.entrou && !lerPref("tourVisto", false));
   const fecharTour = () => { setTourAberto(false); gravarPref("tourVisto", true); };
-  const [dicasVistas, setDicasVistasS] = useState(() => lerPref("dicas", []));
-  const setDicasVistas = (v) => { setDicasVistasS(v); gravarPref("dicas", v); };
-  const ajuda = { vistas: dicasVistas, marcar: (id) => setDicasVistas([...dicasVistas.filter((x) => x !== id), id]), mini: false };
+  // A dica fechada (×) fica fechada só até o fim da sessão (redesenho v3): sem gravar no aparelho,
+  // uma nova sessão (recarregar a página) já começa com todas de novo.
+  const [dicasVistas, setDicasVistas] = useState([]);
+  const ajuda = { vistas: dicasVistas, marcar: (id) => setDicasVistas((vs) => [...vs.filter((x) => x !== id), id]), mini: false };
   const setOrdemInicio = (o) => { setOrdemInicioS(o); gravarPref("inicio", o); };
   const mudarAlertas = (f) => setAlertasS((as) => { const n = f(as); gravarPref("alertas", n); return n; });
   const hojeCurto = () => new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
@@ -288,7 +289,7 @@ function AppSociosPrototype() {
         {!online && <AvisoSemInternet desde={desde} />}
 
         {tab === "inicio" && (
-        <Pilha chave={inicioView} raiz={inicioView === "feed"}>
+        <Pilha chave={inicioView} raiz={inicioView === "feed"} className="troca-aba">
         {inicioView === "feed" && (
           <InicioFeed
             onOpenList={(v) => { setRecorteLista("todos"); setInicioView(v); }}
@@ -352,7 +353,7 @@ function AppSociosPrototype() {
         )}
 
         {tab === "os" && (
-        <Pilha chave={osView} raiz={osView === "list"}>
+        <Pilha chave={osView} raiz={osView === "list"} className="troca-aba">
         {osView === "list" && <OsLista onOpenOrg={openOrg} ordem={ordem} />}
         {osView === "profile" && (
           <OsPerfil orgId={selectedOrg} onBack={() => setOsView("list")} sample={sample} onAsk={(q) => enviar(q, { nova: true, clienteId: selectedOrg, backTo: "os", backLabel: ORGS[selectedOrg].name })}
@@ -400,7 +401,7 @@ function AppSociosPrototype() {
         )}
 
         {tab === "ia" && (
-        <Pilha chave={iaView} raiz={iaView === "ask"}>
+        <Pilha chave={iaView} raiz={iaView === "ask"} className="troca-aba">
         {iaView === "ask" && (
           <IaAsk onAsk={(q) => enviar(q, { nova: true })} sample={sample} conversa={conversa && !conversa.backTo ? conversa : null} onContinuar={() => setIaView("conversa")} />
         )}
@@ -413,7 +414,7 @@ function AppSociosPrototype() {
         )}
 
         {tab === "perfil" && (
-        <Pilha chave={perfilView} raiz={perfilView === "main"}>
+        <Pilha chave={perfilView} raiz={perfilView === "main"} className="troca-aba">
         {perfilView === "main" && <PerfilUsuaria onOpenNotifPrefs={() => setPerfilView("notif")} onOpenSeguranca={() => setPerfilView("seguranca")}
             onOpenAlertas={() => setPerfilView("alertas")} onOpenPersonalizar={() => setPerfilView("personalizar")} alertasCount={alertas.length} onOpenPasta={() => setPerfilView("pasta")} pinnedCount={pinned.length} onOpenGuia={() => setPerfilView("guia")} onOpenAjuda={() => setPerfilView("ajuda")}
             onOpenOrdem={() => setPerfilView("ordem")} foto={foto} setFoto={setFoto} apelido={apelido} setApelido={setApelido}

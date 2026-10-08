@@ -74,17 +74,33 @@ function TabBar({ active, onChange }) {
   const items = [
     { id: "inicio", label: "Início", Icon: HouseIcon },
     { id: "ia", label: "IA", Icon: SparkleIcon },
-    { id: "os", label: "OS", Icon: BuildingIcon },
+    { id: "os", label: "Clientes", Icon: BuildingIcon },
     { id: "perfil", label: "Perfil", Icon: PersonIcon },
   ];
+  const refs = useRef({});
+  const [pos, setPos] = useState(null);
+  useLayoutEffect(() => {
+    const calcular = () => {
+      const el = refs.current[active];
+      if (el) setPos({ left: el.offsetLeft, width: el.offsetWidth });
+    };
+    calcular();
+    window.addEventListener("resize", calcular);
+    return () => window.removeEventListener("resize", calcular);
+  }, [active]);
   return (
     <nav className="absolute bottom-0 left-0 right-0 px-3 pt-2 pb-7" style={{ background: "#FFFDF9", borderTop: `1px solid ${S.linha}` }}>
-      <div className="flex items-center justify-between">
+      <div className="relative flex items-center justify-between">
+        {/* pílula de destaque: desliza até a aba ativa (320 ms, seção B.2) */}
+        {pos && (
+          <span aria-hidden="true" className="absolute rounded-2xl" style={{ left: pos.left, width: pos.width, top: 0, bottom: 0, background: "#EAE6DD",
+                transition: prefersReducedMotion() ? "none" : `left .32s ${EASE}, width .32s ${EASE}` }} />
+        )}
         {items.map(({ id, label, Icon: I }) => {
           const isActive = active === id;
           return (
-            <button key={id} onClick={() => onChange(id)} aria-current={isActive ? "page" : undefined}
-                    className="flex flex-col items-center gap-1 rounded-2xl pressable" style={{ width: 76, padding: "6px 0", background: isActive ? "#EAE6DD" : "transparent" }}>
+            <button key={id} ref={(el) => { if (el) refs.current[id] = el; }} onClick={() => onChange(id)} aria-current={isActive ? "page" : undefined}
+                    className="relative flex flex-col items-center gap-1 rounded-2xl pressable" style={{ width: 76, padding: "6px 0", zIndex: 1 }}>
               <I size={23} color={isActive ? (id === "ia" ? S.iaIcone : S.ink) : S.texto2} strokeWidth={isActive ? 2 : 1.7} />
               <span style={{ fontFamily: F.ui, fontSize: 13, fontWeight: isActive ? 700 : 500, color: isActive ? S.ink : S.texto2 }}>{label}</span>
             </button>

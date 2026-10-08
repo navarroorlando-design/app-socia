@@ -19,7 +19,14 @@ não é detalhe: contraste, tamanho de texto e alvos de toque guiam todas as dec
   `SeletorSegmentado`) e Passo 3 (Início: topo calculado dos dados, chip de parados em âmbar que abre
   `ParadosLista`, faixa de dica fina com × — `FaixaAviso` em `src/ajuda/Dica.jsx` —, grade 2x2
   Processos/Bloqueios/Passivo/Desempenho sem o atalho "Escritório", linha de Reclamação constitucional
-  abaixo da grade, contador e anel animados só na primeira abertura da sessão). Os atalhos Passivo e
+  abaixo da grade, contador e anel animados só na primeira abertura da sessão) e Passo 4 (aba "OS" virou
+  "Clientes" na `TabBar`, com pílula deslizante igual ao `SeletorSegmentado`; troca de aba com fade curto
+  via `.troca-aba`; aba IA com as sugestões antes do campo de pergunta e o aviso do Claude pequeno no
+  rodapé, sem dica; onboarding sem "Passo X de 3" — só o tour mantém "Passo X de 5", com o texto do
+  passo 1 atualizado; `Dica` (`src/ajuda/Dica.jsx`) agora é sempre a faixa fina do `FaixaAviso`, sem
+  cartão com "Entendi", e a lista de dicas vistas não grava mais no aparelho — fica fechada só até o
+  fim da sessão; blocos "Processos ativos" e "Processos que você segue" do Início viraram um só,
+  "Mais detalhes", para bater com Perfil → Personalizar Início). Os atalhos Passivo e
   Desempenho ainda abrem a tela fundida `Escritorio.jsx` (com a aba certa pré-selecionada); a separação
   de verdade em duas telas é o Passo 6. Os demais passos seguem o guia. Decisões já confirmadas:
   Passivo e Desempenho ficam em telas separadas (não fundidas); critério de "parado" centralizado em
@@ -129,7 +136,7 @@ evita ciclos entre módulos.
 - **Subtítulos de seção**: 18pt seminegrito na cor do texto, ação à direita ("Ver todos").
 - **Aba IA** em branco com "Pergunte qualquer coisa!" e sugestões; relatórios fixados ficam em
   Perfil → Relatórios fixados (guardados no aparelho, com "Apagar", confirmação e "Desfazer").
-- **Barra de navegação**: Início, IA, OS, Perfil.
+- **Barra de navegação**: Início, IA, Clientes, Perfil (era "OS"; pílula de destaque deslizante, redesenho v3).
 
 ## Organizações: contratos de gestão, bloqueios e processos
 
@@ -187,11 +194,14 @@ Guardadas no aparelho no protótipo (`lerPref`/`gravarPref`); no app real, no se
 ## Tutorial do app (`src/ajuda/`, `src/telas/Ajuda.jsx`)
 
 Três camadas, todas com texto em 17pt e botão Ouvir (`OuvirBtn sempre`). Nada de balõezinhos sobre a tela.
-- **Tour de boas-vindas** (`TourBoasVindas`): 5 cartões (Início, OS, IA, só seu, Perfil), cada um com a
+- **Tour de boas-vindas** (`TourBoasVindas`): 5 cartões (Início, Clientes, IA, só seu, Perfil), cada um com a
   miniatura da tela de verdade (reduzida, sem toque, com a parte importante recortada em `foco`).
   Abre depois do primeiro acesso e uma vez para quem já usava (`tourVisto`); revisto em Perfil → Como usar o app.
-- **Dicas de primeira vez** (`<Dica id>`): cartão em osso no alto de Início, OS, organização, contrato,
-  processo e IA, até tocar em "Entendi" (`dicas`). "Mostrar as dicas de novo" zera a lista.
+  Sem contador de passo no onboarding (login/leitura/Face ID); só o tour mostra "Passo X de 5" (redesenho v3).
+- **Dicas de primeira vez** (`<Dica id>`, `src/ajuda/Dica.jsx`): faixa fina em osso no alto de Início,
+  Clientes, organização, contrato e processo (não há mais na IA), fechada pelo × (`FaixaAviso`, sem
+  cartão nem "Entendi"). Fica fechada só até o fim da sessão — `dicas` não grava no aparelho. "Mostrar
+  as dicas de novo" zera a lista na sessão atual.
 - **Como usar o app** (`ComoUsar`, Perfil → Sobre): perguntas comuns com passos e "Me leve lá" (`irPara` no App).
 - Os textos ficam em `src/ajuda/conteudo.js` (`PASSOS_TOUR`, `DICAS`, `PERGUNTAS`). A IA recebe as
   `PERGUNTAS` nas regras e responde "como faço…" em passos curtos, sem o formato de relatório.

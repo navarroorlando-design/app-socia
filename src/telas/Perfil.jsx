@@ -175,7 +175,7 @@ function OrdemClientes({ ordem, setOrdem, onBack }) {
   return (
     <>
       <div className="flex-1 overflow-y-auto no-scrollbar px-6" style={{ paddingBottom: 60 }}>
-        <Faixa onBack={onBack} backLabel="Perfil" titulo="Ordem dos clientes" sub="Os primeiros aparecem no topo da aba OS." />
+        <Faixa onBack={onBack} backLabel="Perfil" titulo="Ordem dos clientes" sub="Os primeiros aparecem no topo da aba Clientes." />
         <div style={CARD}>
           {ordem.map((id, i) => (
             <div key={id} className="flex items-center gap-3" style={{ padding: "12px 14px 12px 18px", borderBottom: i === ordem.length - 1 ? "none" : `1px solid ${S.linha}` }}>

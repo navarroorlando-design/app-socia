@@ -9,7 +9,7 @@ import { animarPop, animarPush } from "../motion/motion";
 /* Ao abrir uma tela (raiz → não raiz): push. Ao voltar (não raiz →     */
 /* raiz): pop. Troca entre telas de partida: sem animação.              */
 /* ------------------------------------------------------------------ */
-function Pilha({ chave, raiz, children }) {
+function Pilha({ chave, raiz, className, children }) {
   const [camadas, setCamadas] = useState(() => [{ chave, node: children }]);
   const refs = useRef({});
   const prevRaiz = useRef(raiz);
@@ -47,7 +47,7 @@ function Pilha({ chave, raiz, children }) {
   const ordenadas = emTransicao && camadas[1].tipo === "pop" ? [camadas[1], camadas[0]] : camadas;
 
   return (
-    <div className="flex-1 min-h-0 relative overflow-hidden">
+    <div className={`flex-1 min-h-0 relative overflow-hidden${className ? ` ${className}` : ""}`}>
       {ordenadas.map((c) => (
         <div key={c.chave} ref={(el) => { if (el) refs.current[c.chave] = el; }} className="absolute inset-0 flex flex-col">
           {c.node}

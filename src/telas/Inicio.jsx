@@ -7,7 +7,7 @@ import { fmtBRL, fmtBRLCurto, fmtData, norm } from "../dados/formato";
 import { CARD, F, LINK, S, SEMANTICA, T, semDe } from "../estilo/tokens";
 import { prefersReducedMotion } from "../motion/motion";
 import { Avatar } from "../preferencias";
-import { FaixaAviso } from "../ajuda/Dica";
+import { Dica } from "../ajuda/Dica";
 import { MarcaOrg } from "../componentes/MarcaOrg";
 
 /* Conta de 0 até o valor final em 900 ms (ease-out), só quando `animar` é true (primeira
@@ -32,9 +32,6 @@ function useContarAoAbrir(valorFinal, animar) {
 }
 // Conta como "primeira abertura" só uma vez por sessão do app (zera ao recarregar a página).
 let INICIO_JA_ABRIU = false;
-// A dica fechada não volta nesta sessão do app (zera ao recarregar a página), mesmo quando o
-// Início desmonta e remonta ao trocar de aba — por isso o estado fica fora do componente.
-let DICA_INICIO_FECHADA = false;
 
 /* ------------------------------------------------------------------ */
 /* Telas: Início                                                       */
@@ -59,7 +56,7 @@ function Anel({ pct, rotulo, size = 92, claro }) {
   );
 }
 const NATUREZAS = ["Trabalhista", "Cível", "Administrativo"];
-const INICIO_BLOCOS = { resumo: "Bloqueado hoje", atalhos: "Atalhos", ativos: "Processos ativos", seguidos: "Processos que você segue", hoje: "Hoje no escritório" };
+const INICIO_BLOCOS = { resumo: "Bloqueado hoje", atalhos: "Atalhos", detalhes: "Mais detalhes", hoje: "Hoje no escritório" };
 const INICIO_PADRAO = Object.keys(INICIO_BLOCOS).map((id) => ({ id, visivel: true }));
 
 function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, onOpenEscritorio, onOpenParados, followedItems, onOpenProcesso, onOpenBloqueio, onOpenReclamacao, onOpenAcompanhando, onOpenMenu, unreadCount, foto, apelido, ordem = INICIO_PADRAO }) {
@@ -89,17 +86,14 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, onOpenEscritorio, 
   const valorAnimado = useContarAoAbrir(TOTAIS.bloqueadoAtivo, primeiraAbertura);
   const pctAnimado = useContarAoAbrir(pctLevantado, primeiraAbertura);
 
-  const [dicaFechada, setDicaFechada] = useState(DICA_INICIO_FECHADA);
-  const fecharDica = () => { DICA_INICIO_FECHADA = true; setDicaFechada(true); };
-
   // O primeiro bloco visível fica em destaque, no carvão da marca; os outros, em cartão branco.
   // Assim, quando a sócia reordena o Início (Perfil → Personalizar Início), o destaque acompanha.
-  const primeiro = ordem.find((x) => x.visivel && !(x.id === "seguidos" && preview.length === 0))?.id;
+  const primeiro = ordem.find((x) => x.visivel)?.id;
   const tema = (id) => (id === primeiro
     ? { escuro: true, fundo: S.marca, texto: "#FFFFFF", apoio: S.marcaTexto2, linha: "rgba(255,255,255,.16)", trilho: S.marcaTrilho, barra: S.osso, circulo: "rgba(255,255,255,.12)", sombra: "0 10px 24px rgba(31,30,26,.22)" }
     : { escuro: false, fundo: S.cartao, texto: S.ink, apoio: S.texto2, linha: S.linha, trilho: S.linha, barra: S.oliva, circulo: "#EFEBE2", sombra: CARD.boxShadow });
   const caixa = (t) => ({ ...CARD, background: t.fundo, boxShadow: t.sombra });
-  const tResumo = tema("resumo"), tAtivos = tema("ativos"), tSeguidos = tema("seguidos"), tHoje = tema("hoje");
+  const tResumo = tema("resumo"), tDetalhes = tema("detalhes"), tHoje = tema("hoje");
 
   // Tons da família neutra: cada atalho num tom, o latão fica só para a IA.
   const TONS_ATALHO = {
@@ -145,11 +139,7 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, onOpenEscritorio, 
           <Anel pct={pctAnimado} rotulo="já levantado" size={72} claro={!tResumo.escuro} />
         </div>
       </div>
-      {!dicaFechada && (
-        <FaixaAviso onFechar={fecharDica} style={{ marginTop: 10, padding: "10px 12px" }}>
-          Passivo e Desempenho ganharam atalhos. Personalize em Perfil.
-        </FaixaAviso>
-      )}
+      <Dica id="inicio" style={{ marginTop: 10, padding: "10px 12px" }} />
     </>),
     atalhos: (<>
       {/* atalhos em grade 2×2: 4 tipos, sempre o mesmo tamanho */}
@@ -171,13 +161,13 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, onOpenEscritorio, 
         <ChevronIcon size={18} color={S.texto2} strokeWidth={2} />
       </button>
     </>),
-    ativos: (<>
+    detalhes: (<>
       {/* processos ativos do escritório, por natureza */}
       <SecLabel acao="Ver todos" onAcao={() => onOpenProcessos("todos")}>Processos ativos</SecLabel>
-      <div style={{ ...caixa(tAtivos), padding: 18 }}>
+      <div style={{ ...caixa(tDetalhes), padding: 18 }}>
         <div className="flex items-baseline gap-2">
-          <span style={{ fontFamily: F.ui, fontSize: 34, fontWeight: 600, color: tAtivos.texto, letterSpacing: "-0.02em" }}>{ativosProc.length}</span>
-          <span style={{ fontFamily: F.ui, fontSize: 16, color: tAtivos.apoio }}>processos em andamento no escritório</span>
+          <span style={{ fontFamily: F.ui, fontSize: 34, fontWeight: 600, color: tDetalhes.texto, letterSpacing: "-0.02em" }}>{ativosProc.length}</span>
+          <span style={{ fontFamily: F.ui, fontSize: 16, color: tDetalhes.apoio }}>processos em andamento no escritório</span>
         </div>
         <div className="flex flex-col mt-3" style={{ gap: 4 }}>
           {NATUREZAS.map((n) => {
@@ -185,36 +175,34 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, onOpenEscritorio, 
             return (
               <button key={n} onClick={() => onOpenProcessos(n)} className="w-full text-left" style={{ padding: "8px 0" }} aria-label={`${n}: ${qtd} processos, ver lista`}>
                 <span className="flex items-baseline justify-between gap-2">
-                  <span style={{ fontFamily: F.ui, fontSize: 16, color: tAtivos.texto }}>{n}</span>
-                  <span className="flex items-center gap-1.5" style={{ fontFamily: F.ui, fontSize: 16, fontWeight: 600, color: tAtivos.texto }}>{qtd}<ChevronIcon size={14} color={tAtivos.apoio} strokeWidth={2} /></span>
+                  <span style={{ fontFamily: F.ui, fontSize: 16, color: tDetalhes.texto }}>{n}</span>
+                  <span className="flex items-center gap-1.5" style={{ fontFamily: F.ui, fontSize: 16, fontWeight: 600, color: tDetalhes.texto }}>{qtd}<ChevronIcon size={14} color={tDetalhes.apoio} strokeWidth={2} /></span>
                 </span>
-                <span className="block" style={{ marginTop: 6, height: 8, borderRadius: 999, background: tAtivos.trilho }}>
-                  <span className="block" style={{ height: 8, borderRadius: 999, width: `${Math.max(2, (qtd / ativosProc.length) * 100)}%`, background: tAtivos.barra }} />
+                <span className="block" style={{ marginTop: 6, height: 8, borderRadius: 999, background: tDetalhes.trilho }}>
+                  <span className="block" style={{ height: 8, borderRadius: 999, width: `${Math.max(2, (qtd / ativosProc.length) * 100)}%`, background: tDetalhes.barra }} />
                 </span>
               </button>
             );
           })}
         </div>
-        {outrosProc > 0 && <p style={{ fontFamily: F.ui, fontSize: 14, color: tAtivos.apoio, marginTop: 6 }}>Mais {outrosProc} {outrosProc === 1 ? "processo constitucional" : "processos constitucionais"} (reclamações no STF).</p>}
+        {outrosProc > 0 && <p style={{ fontFamily: F.ui, fontSize: 14, color: tDetalhes.apoio, marginTop: 6 }}>Mais {outrosProc} {outrosProc === 1 ? "processo constitucional" : "processos constitucionais"} (reclamações no STF).</p>}
       </div>
-    </>),
-    seguidos: (<>
       {preview.length > 0 && (
         <>
           <SecLabel acao="Ver todos" onAcao={onOpenAcompanhando}>Processos que você segue</SecLabel>
-          <div style={caixa(tSeguidos)}>
+          <div style={caixa(tDetalhes)}>
             {preview.map((item, i) => (
               <button key={item.id} onClick={() => onOpenProcesso(item, "feed")} className="w-full text-left flex items-center gap-3"
-                      style={{ padding: "14px 16px", borderTop: i ? `1px solid ${tSeguidos.linha}` : "none" }}>
+                      style={{ padding: "14px 16px", borderTop: i ? `1px solid ${tDetalhes.linha}` : "none" }}>
                 <span className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: semDe(item.status).fundo }}>
                   <FolderIcon size={18} color={semDe(item.status).cor} />
                 </span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-baseline justify-between gap-2">
-                    <p style={{ fontFamily: F.ui, fontSize: 16, fontWeight: 600, color: tSeguidos.texto }}>{item.cliente}</p>
-                    <span style={{ fontFamily: F.ui, fontSize: 14, color: tSeguidos.apoio, flexShrink: 0 }}>{item.lastUpdate}</span>
+                    <p style={{ fontFamily: F.ui, fontSize: 16, fontWeight: 600, color: tDetalhes.texto }}>{item.cliente}</p>
+                    <span style={{ fontFamily: F.ui, fontSize: 14, color: tDetalhes.apoio, flexShrink: 0 }}>{item.lastUpdate}</span>
                   </div>
-                  <p style={{ fontFamily: F.ui, fontSize: 15, color: tSeguidos.apoio, marginTop: 2, lineHeight: 1.35 }}>{item.desc}</p>
+                  <p style={{ fontFamily: F.ui, fontSize: 15, color: tDetalhes.apoio, marginTop: 2, lineHeight: 1.35 }}>{item.desc}</p>
                 </div>
               </button>
             ))}

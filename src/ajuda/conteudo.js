@@ -9,12 +9,12 @@ const PASSOS_TOUR = [
   {
     id: "inicio",
     titulo: "Tudo começa no Início",
-    texto: "O cartão escuro mostra quanto está bloqueado hoje em todos os clientes. Logo abaixo ficam quatro atalhos: Processos, Bloqueios, Reclamação constitucional e Escritório.",
+    texto: "O cartão escuro mostra quanto está bloqueado hoje em todos os clientes. Logo abaixo ficam quatro atalhos: Processos, Bloqueios, Passivo e Desempenho. A Reclamação constitucional vem numa linha logo depois.",
   },
   {
     id: "os",
     titulo: "Cada cliente, por contrato",
-    texto: "Na aba OS, toque num cliente. A tela abre pelo passivo de cada contrato de gestão e, depois, pelos bloqueios e pelos processos.",
+    texto: "Na aba Clientes, toque num cliente. A tela abre pelo passivo de cada contrato de gestão e, depois, pelos bloqueios e pelos processos.",
   },
   {
     id: "ia",
@@ -33,14 +33,13 @@ const PASSOS_TOUR = [
   },
 ];
 
-// Dicas de primeira vez: aparecem uma vez em cada tela, até a sócia tocar em "Entendi".
+// Dicas de primeira vez: faixa fina, fechada com × até o fim da sessão (redesenho v3).
 const DICAS = {
-  inicio: "Os atalhos levam direto aos bloqueios, aos processos que você segue, à busca e à IA. Para mudar o que aparece aqui, use Perfil → Personalizar Início.",
+  inicio: "Passivo e Desempenho ganharam atalhos. Personalize em Perfil.",
   osLista: "Toque num cliente para ver o passivo de cada contrato de gestão, os bloqueios e os processos dele.",
   osPerfil: "Comece por Contratos de gestão: lá está o passivo de cada contrato, que é o que o cliente costuma perguntar.",
   contrato: "Aqui você gera o PDF do passivo para enviar ao cliente e pode pedir um aviso se o passivo passar de um valor.",
   processo: "Toque em Seguir processo para receber as movimentações novas. “Contar a história do processo” pede à IA um resumo por fases.",
-  ia: "Escreva como falaria com um colega. A IA consulta os números do escritório e monta gráficos. Toque num gráfico para ver o valor exato.",
 };
 
 // Perguntas comuns (Perfil → Como usar o app). `destino` é a tela aberta pelo botão "Me leve lá".
@@ -54,13 +53,13 @@ const PERGUNTAS = [
   {
     id: "contrato",
     pergunta: "Onde vejo o passivo de cada contrato de gestão?",
-    passos: ["Toque em OS, na barra de baixo.", "Escolha o cliente.", "Toque em Contratos de gestão, o primeiro cartão."],
-    destino: "os", rotuloDestino: "Abrir a aba OS",
+    passos: ["Toque em Clientes, na barra de baixo.", "Escolha o cliente.", "Toque em Contratos de gestão, o primeiro cartão."],
+    destino: "os", rotuloDestino: "Abrir a aba Clientes",
   },
   {
     id: "relatorio",
     pergunta: "Como mando o relatório de passivo ao cliente?",
-    passos: ["Abra o cliente na aba OS e toque em Contratos de gestão.", "Toque em Relatório para o cliente (PDF).", "Confira a prévia, marque a conferência e gere o PDF."],
+    passos: ["Abra o cliente na aba Clientes e toque em Contratos de gestão.", "Toque em Relatório para o cliente (PDF).", "Confira a prévia, marque a conferência e gere o PDF."],
     destino: "contratos", rotuloDestino: "Abrir os contratos de gestão",
   },
   {

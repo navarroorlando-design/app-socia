@@ -5,7 +5,6 @@ import { CLIENTE_NOME } from "../dados/base";
 import { CARD, F, LINK, S, T } from "../estilo/tokens";
 import { Resposta, lerSugestoes, textoParaOuvir } from "../ia/Resposta";
 import { OuvirBtn } from "../preferencias";
-import { Dica } from "../ajuda/Dica";
 
 /* ------------------------- Telas de IA ----------------------------- */
 function AskBar({ value, onChange, onSubmit, placeholder, disabled, scopeLabel }) {
@@ -52,20 +51,6 @@ function IaAsk({ onAsk, sample, conversa, onContinuar }) {
         </p>
       </div>
       <div className="px-5 shrink-0">
-        <Dica id="ia" style={{ marginTop: 0, marginBottom: 12 }} />
-        {sample === null && (
-          <p className="mb-2 text-center" style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2 }}>A IA responde quando este app é aberto no Claude.</p>
-        )}
-        {ultimaPergunta && (
-          <button onClick={onContinuar} className="w-full text-left flex items-center gap-3 mb-3" style={{ ...CARD, borderRadius: 20, padding: "12px 14px" }}>
-            <span className="flex items-center justify-center shrink-0" style={{ width: 38, height: 38, borderRadius: 999, background: S.marca }}><SparkleIcon size={18} color="#FFFFFF" /></span>
-            <span className="flex-1 min-w-0">
-              <span className="block" style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2 }}>Continuar conversa</span>
-              <span className="block" style={{ fontFamily: F.ui, fontSize: 15, fontWeight: 600, color: S.ink, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{ultimaPergunta}</span>
-            </span>
-            <ChevronIcon size={16} color={S.texto2} strokeWidth={2} />
-          </button>
-        )}
         <div className="flex flex-col gap-2 mb-3">
           {sugestoes.map(([sg, Ic]) => (
             <button key={sg} onClick={() => onAsk(sg)} disabled={!sample} className="text-left flex items-center gap-3"
@@ -76,7 +61,20 @@ function IaAsk({ onAsk, sample, conversa, onContinuar }) {
             </button>
           ))}
         </div>
+        {ultimaPergunta && (
+          <button onClick={onContinuar} className="w-full text-left flex items-center gap-3 mb-3" style={{ ...CARD, borderRadius: 20, padding: "12px 14px" }}>
+            <span className="flex items-center justify-center shrink-0" style={{ width: 38, height: 38, borderRadius: 999, background: S.marca }}><SparkleIcon size={18} color="#FFFFFF" /></span>
+            <span className="flex-1 min-w-0">
+              <span className="block" style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2 }}>Continuar conversa</span>
+              <span className="block" style={{ fontFamily: F.ui, fontSize: 15, fontWeight: 600, color: S.ink, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{ultimaPergunta}</span>
+            </span>
+            <ChevronIcon size={16} color={S.texto2} strokeWidth={2} />
+          </button>
+        )}
         <AskBar value={q} onChange={setQ} onSubmit={(t) => { onAsk(t); setQ(""); }} disabled={!sample} placeholder="Pergunte sobre os números…" />
+        {sample === null && (
+          <p className="mt-3 text-center" style={{ fontFamily: F.ui, fontSize: 13, color: S.texto2 }}>A IA responde quando este app é aberto no Claude.</p>
+        )}
       </div>
     </div>
   );

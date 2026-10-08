@@ -19,10 +19,6 @@ const Tela = ({ children }) => (
   <div className="flex-1 flex flex-col overflow-y-auto no-scrollbar px-8" style={{ paddingTop: 24, paddingBottom: 36 }}>{children}</div>
 );
 
-const Passos = ({ atual }) => (
-  <p style={{ fontFamily: F.ui, fontSize: 14, fontWeight: 600, color: S.texto2 }}>Passo {atual} de 3</p>
-);
-
 function Login({ onEntrar }) {
   const [entrando, setEntrando] = useState(false);
   const entrar = () => { setEntrando(true); setTimeout(onEntrar, 900); };
@@ -47,7 +43,6 @@ function Login({ onEntrar }) {
 function PrimeiroAcesso({ escala, setEscala, lerVoz, setLerVoz, onContinuar }) {
   return (
     <Tela>
-      <Passos atual={2} />
       <h1 style={{ fontFamily: F.titulo, fontSize: 30, fontWeight: 600, color: S.ink, marginTop: 8, letterSpacing: "-0.02em", lineHeight: 1.15 }}>Como você prefere ler?</h1>
       <p style={{ fontFamily: F.ui, fontSize: 16, color: S.texto2, marginTop: 8, lineHeight: 1.45 }}>Escolha o tamanho do texto. Dá para mudar depois em Perfil.</p>
       <div className="grid grid-cols-3 gap-2 mt-5" role="radiogroup" aria-label="Tamanho do texto">
@@ -82,7 +77,6 @@ function PrimeiroAcesso({ escala, setEscala, lerVoz, setLerVoz, onContinuar }) {
 function ConfigFaceId({ onAtivar, onPular }) {
   return (
     <Tela>
-      <Passos atual={3} />
       <div className="flex-1 flex flex-col items-center justify-center text-center">
         <span className="flex items-center justify-center" style={{ width: 96, height: 96, borderRadius: 28, background: S.cartao, boxShadow: CARD.boxShadow }}>
           <FaceIdIcon size={52} color={S.ink} strokeWidth={1.4} />

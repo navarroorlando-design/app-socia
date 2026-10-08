@@ -8,9 +8,13 @@ const GlobalStyle = () => (
     /* Escala .97 ao tocar em itens tocáveis (redesenho v3, seção D). */
     .pressable{ transition: transform .18s var(--ease), background-color .18s var(--ease), opacity .18s var(--ease); }
     .pressable:active{ transform: scale(.97); }
+    /* Troca de aba (seção B.2): o conteúdo entra com um fade curto. */
+    .troca-aba{ animation: tabfade .18s var(--ease); }
+    @keyframes tabfade{ from{ opacity:0; } to{ opacity:1; } }
     @media (prefers-reduced-motion: reduce){
       .pressable{ transition:none !important; }
       .pressable:active{ transform:none !important; opacity:.75; }
+      .troca-aba{ animation:none !important; }
     }
     .no-scrollbar::-webkit-scrollbar{ display:none; }
     .app-stage{ min-height:100vh; width:100%; display:flex; align-items:center; justify-content:center; padding:40px 16px; background:#CFC9BD; }
