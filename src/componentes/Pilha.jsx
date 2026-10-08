@@ -7,8 +7,18 @@ import { T } from "../estilo/tokens";
 /* Não decide navegação — só anima a troca do que a aba já renderiza.   */
 /* `chave` identifica a tela atual da aba (ex.: inicioView); `raiz` diz  */
 /* se é a tela de partida da aba (equivalente ao `showTabBar` do App).  */
-/* Ao abrir uma tela (raiz → não raiz): push. Ao voltar (não raiz →     */
-/* raiz): pop. Troca entre telas de partida: sem animação.              */
+/*                                                                      */
+/* Push ou pop vêm de uma pilha de navegação de verdade (`pilhaRef`),    */
+/* reconstruída só de observar a sequência de `chave` ao longo do tempo  */
+/* — a tela que chama não precisa dizer a direção. Uma `chave` nova      */
+/* (nunca vista, ou mais funda que a atual) é push; uma `chave` já       */
+/* presente mais abaixo na pilha é pop (corta de volta até ela, mesmo    */
+/* pulando mais de um nível). `raiz` força a pilha de volta a `[chave]`  */
+/* — garante o reset ao voltar à tela de partida, mesmo que a sequência   */
+/* de chaves sozinha fosse ambígua. Isso corrige telas empilhadas duas    */
+/* vezes (ex.: Bloqueios → Parados): antes, só uma troca raiz↔não-raiz    */
+/* virava animação — uma segunda tela por cima de uma já não-raiz         */
+/* (não-raiz → não-raiz) não tinha push nem pop, um corte seco.          */
 /*                                                                      */
 /* As duas trocas de estado abaixo (montar a camada nova e, no efeito    */
 /* seguinte, iniciar a animação dela) usam useLayoutEffect, não          */
@@ -27,7 +37,7 @@ import { T } from "../estilo/tokens";
 function Pilha({ chave, raiz, className, children }) {
   const [camadas, setCamadas] = useState(() => [{ chave, node: children }]);
   const refs = useRef({});
-  const prevRaiz = useRef(raiz);
+  const pilhaRef = useRef([chave]);
 
   useLayoutEffect(() => {
     setCamadas((cs) => {
@@ -35,9 +45,21 @@ function Pilha({ chave, raiz, className, children }) {
       if (atual.chave === chave) {
         return [...cs.slice(0, -1), { ...atual, node: children }];
       }
-      const eraRaiz = prevRaiz.current;
-      prevRaiz.current = raiz;
-      const tipo = eraRaiz && !raiz ? "push" : !eraRaiz && raiz ? "pop" : null;
+      const pilha = pilhaRef.current;
+      let tipo;
+      if (raiz) {
+        tipo = pilha.length > 1 ? "pop" : null;
+        pilhaRef.current = [chave];
+      } else {
+        const idx = pilha.indexOf(chave);
+        if (idx !== -1 && idx < pilha.length - 1) {
+          tipo = "pop";
+          pilhaRef.current = pilha.slice(0, idx + 1);
+        } else {
+          tipo = "push";
+          pilhaRef.current = idx === -1 ? [...pilha, chave] : pilha;
+        }
+      }
       return [...cs.slice(-1), { chave, node: children, tipo }].slice(-2);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

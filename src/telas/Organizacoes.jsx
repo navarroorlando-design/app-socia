@@ -60,7 +60,7 @@ function OsLista({ onOpenOrg, ordem = ORG_ORDER }) {
 
 /* Página única do cliente (redesenho v3, seção B.4): o mesmo componente abre pela aba Clientes,
    pelo Passivo, pelo seletor de cliente dos Bloqueios e pela tela de contrato. */
-function OsPerfil({ orgId, onBack, sample, onAsk, onOpenContratos, onOpenContrato, onOpenProcessos, onOpenReclamacoes, onOpenBloqueiosAtivos, onOpenDesempenhoAno }) {
+function OsPerfil({ orgId, onBack, backLabel = "Clientes", sample, onAsk, onOpenContratos, onOpenContrato, onOpenProcessos, onOpenReclamacoes, onOpenBloqueiosAtivos, onOpenDesempenhoAno }) {
   const o = ORGS[orgId], r = resumoOrg(orgId);
   const reclamacoes = RECLAMACOES_LISTA.filter((x) => x.clienteId === orgId);
   const nEncerrados = encerradosDe(orgId).length;
@@ -81,7 +81,7 @@ function OsPerfil({ orgId, onBack, sample, onAsk, onOpenContratos, onOpenContrat
   return (
     <>
       <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 150 }}>
-        <Faixa bleed={32} onBack={onBack} backLabel="Clientes" eyebrow="Cliente" titulo={o.name} tituloCompacto={o.name} tituloSize={32} />
+        <Faixa bleed={32} onBack={onBack} backLabel={backLabel} eyebrow="Cliente" titulo={o.name} tituloCompacto={o.name} tituloSize={32} />
 
         {/* cabeçalho: logo no tom da organização, processos e contratos/encerrados */}
         <div className="flex items-center gap-3" style={{ ...CARD, background: tomOrg(orgId), boxShadow: "none", padding: 14 }}>
