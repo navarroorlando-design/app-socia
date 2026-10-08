@@ -26,14 +26,24 @@ não é detalhe: contraste, tamanho de texto e alvos de toque guiam todas as dec
   passo 1 atualizado; `Dica` (`src/ajuda/Dica.jsx`) agora é sempre a faixa fina do `FaixaAviso`, sem
   cartão com "Entendi", e a lista de dicas vistas não grava mais no aparelho — fica fechada só até o
   fim da sessão; blocos "Processos ativos" e "Processos que você segue" do Início viraram um só,
-  "Mais detalhes", para bater com Perfil → Personalizar Início). Os atalhos Passivo e
-  Desempenho ainda abrem a tela fundida `Escritorio.jsx` (com a aba certa pré-selecionada); a separação
-  de verdade em duas telas é o Passo 6. Os demais passos seguem o guia. Decisões já confirmadas:
-  Passivo e Desempenho ficam em telas separadas (não fundidas); critério de "parado" centralizado em
-  `src/dados/criterios.js`, continua processo com `diasParado >= 90` por enquanto (pendente de
-  confirmar com a sócia se deve virar bloqueio sem movimentação há 90 dias); sem Framer Motion (CSS +
-  Web Animations API, como os trechos do próprio guia); escala de texto continua por `zoom` no
-  contêiner raiz (não os tokens `--ts`/`--cts` do protótipo).
+  "Mais detalhes", para bater com Perfil → Personalizar Início) e Passo 5, parte 1 de 2 (tela
+  `src/telas/Bloqueios.jsx` nova: topo escuro com total ativo, "N novos nos últimos 7 dias" e o link
+  "N parados há 90+ dias" que abre `BloqueiosParados`; resumo por cliente com barra que filtra; busca;
+  seletor Ativos/Levantados/Todos com contagem, aberto em Ativos; seletor de cliente em folha inferior
+  — `FolhaInferior` nova em `src/componentes/ui.jsx` — com "Página ›"; ordenação e agrupamento por
+  Mês/Contrato com subtotal e "Fim da lista"; status visual Novo/Parado/Ativo/Levantado por
+  `statusVisualBloqueio`, `src/dados/criterios.js`, que também ganhou o critério de "bloqueio parado"
+  — ativo cujo processo vinculado está parado — separado do de processo parado. `STATUS_SEM_ID.Ativo`
+  virou `inativo`/cinza no tema; risco/vermelho agora é só "Novo" em todo o app, como pedia o guia.
+  Falta para a parte 2: o detalhe do bloqueio virar folha inferior, com "Filtrar contrato" e "Ver
+  contrato" — por ora `BloqueioDetalhe` continua tela cheia, só com o status/cor atualizados.
+  Os atalhos Passivo e Desempenho ainda abrem a tela fundida `Escritorio.jsx` (com a aba certa
+  pré-selecionada); a separação de verdade em duas telas é o Passo 6. Os demais passos seguem o guia.
+  Decisões já confirmadas: Passivo e Desempenho ficam em telas separadas (não fundidas); critério de
+  "parado" centralizado em `src/dados/criterios.js`, continua processo com `diasParado >= 90` por
+  enquanto (pendente de confirmar com a sócia se deve virar bloqueio sem movimentação há 90 dias); sem
+  Framer Motion (CSS + Web Animations API, como os trechos do próprio guia); escala de texto continua
+  por `zoom` no contêiner raiz (não os tokens `--ts`/`--cts` do protótipo).
 
 - **App web instalável (PWA) em Next.js 16 + React 19**, a caminho do Vercel (região São Paulo,
   `vercel.json`). Stack escolhida: Next.js no Vercel, servidor próprio chamando a API da Anthropic,
@@ -163,7 +173,7 @@ sua (`src/telas/OrgMetricas.jsx`). O cartão da lista de organizações mostra s
   detalhe (precedente invocado, ato reclamado, liminar, processos de origem, movimentações).
 - **Carteira** (`src/telas/Carteira.jsx`): passivo de todos os clientes, aberto pelo bloco de passivo
   do Início. **Movimentações** recentes: o "Ver tudo" de "Hoje no escritório".
-- **Listas com filtros**: cliente e recorte (área, parados, status) em chips, mais ordenação.
+- **Bloqueios** (`src/telas/Bloqueios.jsx`, redesenho v3): ver acima, no estado atual.
 - **Processos ativos por natureza** no Início (trabalhista, cível, administrativo), cada linha abre a
   lista já filtrada. "Ativo" = não arquivado nem baixado.
 - **Entrada** (`src/telas/Entrada.jsx`): login simulado com a conta do escritório, primeiro acesso

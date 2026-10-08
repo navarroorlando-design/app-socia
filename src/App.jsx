@@ -15,6 +15,7 @@ import { INITIAL_NOTIFS, NotifPrefs, NotificacoesCentral } from "./telas/Notific
 import { OsLista, OsPerfil } from "./telas/Organizacoes";
 import { BloqueiosOrg, ContratoDetalhe, ContratosOrg, ProcessosOrg } from "./telas/OrgMetricas";
 import { Movimentacoes } from "./telas/Carteira";
+import { BloqueiosParados, BloqueiosTela } from "./telas/Bloqueios";
 import { Escritorio } from "./telas/Escritorio";
 import { ReclamacaoDetalhe, ReclamacoesTela } from "./telas/Reclamacoes";
 import { RelatorioCliente } from "./telas/RelatorioCliente";
@@ -157,7 +158,7 @@ function AppSociosPrototype() {
   const openProcesso = (item, origin) => { setTab("inicio"); setSelectedProcesso(item); setDetalheOrigin(origin); setInicioView("detalhe"); };
   const openBloqueio = (item, origin) => { setTab("inicio"); setSelectedBloqueio(item); setBloqueioOrigin(origin); setInicioView("bloqueio"); };
   const openReclamacao = (item, origin) => { setTab("inicio"); setSelectedReclamacao(item); setReclamacaoOrigin(origin); setInicioView("reclamacao"); };
-  const backLabels = { feed: "Início", processos: "Processos", bloqueios: "Bloqueios", acompanhando: "Acompanhando", busca: "Busca", bloqueio: "Bloqueio", notificacoes: "Notificações", movimentacoes: "Movimentações", reclamacoes: "Reclamações", reclamacao: "Reclamação", parados: "Parados" };
+  const backLabels = { feed: "Início", processos: "Processos", bloqueios: "Bloqueios", bloqueiosParados: "Parados", acompanhando: "Acompanhando", busca: "Busca", bloqueio: "Bloqueio", notificacoes: "Notificações", movimentacoes: "Movimentações", reclamacoes: "Reclamações", reclamacao: "Reclamação", parados: "Parados" };
   const followedItemsFull = PROCESSOS_LISTA.filter((p) => followed.has(p.id));
 
   const changeTab = (t) => {
@@ -330,9 +331,16 @@ function AppSociosPrototype() {
           <ReclamacaoDetalhe reclamacao={selectedReclamacao} backLabel={backLabels[reclamacaoOrigin]} onBack={() => setInicioView(reclamacaoOrigin)}
             onOpenProcesso={(p) => openProcesso(p, "reclamacao")} />
         )}
-        {["processos", "bloqueios"].includes(inicioView) && (
+        {inicioView === "processos" && (
           <ListaGenerica key={inicioView + recorteLista} tipo={inicioView} recorteInicial={recorteLista} onBack={() => setInicioView("feed")} followed={followed}
                          onOpenProcesso={openProcesso} onOpenBloqueio={openBloqueio} onOpenOrg={openOrg} />
+        )}
+        {inicioView === "bloqueios" && (
+          <BloqueiosTela onBack={() => setInicioView("feed")} onOpenBloqueio={(b) => openBloqueio(b, "bloqueios")} onOpenOrg={openOrg}
+                         onOpenParados={() => setInicioView("bloqueiosParados")} />
+        )}
+        {inicioView === "bloqueiosParados" && (
+          <BloqueiosParados onBack={() => setInicioView("bloqueios")} onOpen={(b) => openBloqueio(b, "bloqueiosParados")} />
         )}
         {inicioView === "bloqueio" && selectedBloqueio && (
           <BloqueioDetalhe bloqueio={selectedBloqueio} backLabel={backLabels[bloqueioOrigin]}

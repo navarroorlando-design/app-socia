@@ -322,4 +322,20 @@ function SeletorSegmentado({ itens, ativo, onChange, label }) {
   );
 }
 
-export { BackHeader, Badge, Botao, CardRow, Cartao, Etiqueta, Faixa, InfoLinha, KPIs, LinhaLista, Row, SecLabel, Secao, SeletorSegmentado, Sparkline, StatusBar, TabBar, Toggle };
+/* Folha inferior genérica (bottom sheet): fundo escurecido + painel que desliza de baixo
+   (.guia-sheet). Usada pelo seletor de cliente dos Bloqueios e, depois, pelo detalhe do bloqueio. */
+function FolhaInferior({ titulo, onFechar, children }) {
+  return (
+    <div className="absolute inset-0" style={{ zIndex: 60 }}>
+      <button aria-label="Fechar" onClick={onFechar} className="absolute inset-0" style={{ background: "rgba(40,34,24,.38)" }} />
+      <div role="dialog" aria-label={titulo} className="guia-sheet absolute left-0 right-0 bottom-0 flex flex-col"
+           style={{ background: S.cartao, borderRadius: "24px 24px 0 0", padding: "10px 24px 34px", maxHeight: "82vh" }}>
+        <div className="mx-auto shrink-0" style={{ width: 40, height: 5, borderRadius: 3, background: S.linha }} />
+        {titulo && <h3 className="shrink-0" style={{ fontFamily: F.display, letterSpacing: "-0.02em", fontSize: 22, fontWeight: 500, color: S.ink, marginTop: 14 }}>{titulo}</h3>}
+        <div className="overflow-y-auto no-scrollbar">{children}</div>
+      </div>
+    </div>
+  );
+}
+
+export { BackHeader, Badge, Botao, CardRow, Cartao, Etiqueta, Faixa, FolhaInferior, InfoLinha, KPIs, LinhaLista, Row, SecLabel, Secao, SeletorSegmentado, Sparkline, StatusBar, TabBar, Toggle };

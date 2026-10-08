@@ -14,7 +14,10 @@ const T = {
 
 const STATUS_SEM_ID = {
   "Em andamento": "curso", "Em execução": "curso", "Aguardando decisão": "atencao", "Suspenso": "inativo",
-  "Julgada": "resolvido", "Levantado": "resolvido", "Ativo": "risco",
+  "Julgada": "resolvido", "Levantado": "resolvido",
+  // Bloqueio ativo comum (redesenho v3, Passo 5): cinza. "Novo" e "Parado" são status visuais à
+  // parte, calculados por statusVisualBloqueio (src/dados/criterios.js), não por este mapa.
+  "Ativo": "inativo",
 };
 
 const semDe = (status) => SEMANTICA.find((x) => x.id === (STATUS_SEM_ID[status] || "inativo"));
@@ -45,8 +48,8 @@ const S = {
   papel: "#F2EFE9", cartao: "#FFFDF9", linha: "#E6E1D6",
   ink: "#1A1916", texto2: "#57544C",
   ia: "#765614", iaFundo: "#F2E8D3", iaIcone: "#96763A",
-  // Cores do redesenho v3 (docs/redesign-v3): risco/vermelho passa a significar só "novo" (bloqueio
-  // dos últimos 7 dias) e o badge de avisos — nunca mais "ativo comum" (isso é inativo/cinza, Passo 5).
+  // Cores do redesenho v3 (docs/redesign-v3): risco/vermelho significa só "novo" (bloqueio dos
+  // últimos 7 dias) e o badge de avisos — nunca "ativo comum" (isso é inativo/cinza).
   risco: "#B42318", riscoFundo: "#FBEAE8",
   resolvido: "#2F7A4D", resolvidoFundo: "#E6F2EA",
   atencao: "#865708", atencaoFundo: "#F4E4C2",
@@ -76,8 +79,6 @@ const F = {
 };
 
 const SEMANTICA = [
-  // "Ativo" (bloqueio comum) ainda cai aqui por `STATUS_SEM_ID` — isso muda no Passo 5 (vira inativo/cinza;
-  // risco passa a valer só para "Novo" e para o badge de avisos).
   { id: "risco", nome: "Risco", uso: "Novo (bloqueio dos últimos 7 dias), badge de avisos", cor: S.risco, fundo: S.riscoFundo, ratio: "5,7:1", icone: "alerta" },
   { id: "atencao", nome: "Atenção", uso: "Aguardando decisão, parado há mais de 90 dias, vence este ano, delta negativo", cor: S.atencao, fundo: S.atencaoFundo, ratio: "5,4:1", icone: "relogio" },
   { id: "curso", nome: "Em curso", uso: "Em andamento, em execução, seguindo, vigente", cor: S.curso, fundo: S.cursoFundo, ratio: "7,2:1", icone: "seta" },

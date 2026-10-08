@@ -256,21 +256,6 @@ function FeedItem({ cliente, text, time, sem, tag, onClick, last, t }) {
   );
 }
 
-/* Lista de processos ou bloqueios com filtros rápidos e ordenação */
-function Chip({ ativo, onClick, children }) {
-  const ref = React.useRef(null);
-  // O filtro já escolhido (por exemplo, vindo do Início) aparece na tela, mesmo no fim da faixa.
-  React.useEffect(() => { if (ativo && ref.current?.scrollIntoView) ref.current.scrollIntoView({ inline: "center", block: "nearest" }); }, []);
-  return (
-    <button ref={ref} onClick={onClick} aria-pressed={ativo} className="shrink-0 rounded-full"
-            style={{ height: 40, padding: "0 14px", fontFamily: F.ui, fontSize: 15, fontWeight: ativo ? 600 : 500, whiteSpace: "nowrap",
-                     background: ativo ? S.marca : S.cartao, color: ativo ? "#FFFFFF" : S.ink, boxShadow: ativo ? "none" : CARD.boxShadow }}>
-      {children}
-    </button>
-  );
-}
-const LinhaChips = ({ children }) => <div className="flex gap-2 overflow-x-auto no-scrollbar" style={{ margin: "0 -32px", padding: "4px 32px" }}>{children}</div>;
-
 // Processos: não tem mais filtro nem lista estática. É uma página só — o campo de busca já
 // mostra, ao digitar, organizações, processos e bloqueios juntos (a mesma lógica de sempre).
 const SecaoBusca = ({ title, children }) => (
@@ -349,56 +334,10 @@ function ProcessosTela({ onBack, onOpenProcesso, onOpenBloqueio, onOpenOrg }) {
   );
 }
 
-function ListaGenerica({ tipo, onBack, onOpenOrg, followed, onOpenProcesso, onOpenBloqueio }) {
-  if (tipo === "processos") return <ProcessosTela onBack={onBack} onOpenProcesso={onOpenProcesso} onOpenBloqueio={onOpenBloqueio} onOpenOrg={onOpenOrg} />;
-
-  const [cliente, setCliente] = useState("todos");
-  const [recorte, setRecorte] = useState("todos");
-  const [ordem, setOrdem] = useState("recentes");
-  const recortes = [["todos", "Todos"], ["Ativo", "Ativos"], ["Levantado", "Levantados"]];
-  const ordens = [["recentes", "Mais recentes"], ["valor", "Maior valor"]];
-  const lista = BLOQUEIOS_LISTA
-    .filter((x) => cliente === "todos" || x.clienteId === cliente)
-    .filter((x) => recorte === "todos" || x.status === recorte)
-    .sort({ recentes: (a, b) => b.data - a.data, valor: (a, b) => b.valorNum - a.valorNum }[ordem]);
-  const ativosTotal = BLOQUEIOS_LISTA.filter((b) => b.status === "Ativo").length;
-
-  return (
-    <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 60 }}>
-      <Faixa bleed={32} onBack={onBack} backLabel="Início" titulo="Bloqueios"
-             sub={`${ativosTotal} ativos de ${BLOQUEIOS_LISTA.length} na base`} />
-      <div className="flex flex-col gap-2" role="group" aria-label="Filtros">
-        <LinhaChips>
-          <Chip ativo={cliente === "todos"} onClick={() => setCliente("todos")}>Todos os clientes</Chip>
-          {ORG_ORDER.map((id) => <Chip key={id} ativo={cliente === id} onClick={() => setCliente(id)}>{ORGS[id].name}</Chip>)}
-        </LinhaChips>
-        <LinhaChips>
-          {recortes.map(([id, rot]) => <Chip key={id} ativo={recorte === id} onClick={() => setRecorte(id)}>{rot}</Chip>)}
-        </LinhaChips>
-      </div>
-      <div className="flex items-center justify-between gap-2" style={{ margin: "18px 0 10px" }}>
-        <p role="status" style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2 }}>{lista.length} {lista.length === 1 ? "bloqueio" : "bloqueios"}</p>
-        <label className="flex items-center gap-2" style={{ fontFamily: F.ui, fontSize: 15, color: S.texto2 }}>
-          Ordenar
-          <select id={`ordem-${tipo}`} value={ordem} onChange={(e) => setOrdem(e.target.value)}
-                  style={{ height: 40, borderRadius: 12, padding: "0 10px", fontFamily: F.ui, fontSize: 15, fontWeight: 600, color: S.ink, background: S.cartao, boxShadow: CARD.boxShadow, border: "none" }}>
-            {ordens.map(([id, rot]) => <option key={id} value={id}>{rot}</option>)}
-          </select>
-        </label>
-      </div>
-      {lista.length === 0 ? (
-        <p style={{ fontFamily: F.ui, fontSize: 16, color: S.texto2, lineHeight: 1.5 }}>Nada com esses filtros. Toque em "Todos os clientes" ou em outro recorte.</p>
-      ) : (
-        <div style={CARD}>
-          {lista.map((item, i) => (
-            <LinhaLista key={item.id} onClick={() => onOpenBloqueio(item, "bloqueios")} last={i === lista.length - 1} sem={semDe(item.status)}
-                        icone={<LockIcon size={18} color={semDe(item.status).cor} />} titulo={<span style={{ fontSize: 17, fontVariantNumeric: "tabular-nums" }}>{item.valor}</span>}
-                        detalhe={`${item.cliente} · ${fmtData(item.data)}`} direita={<Badge text={item.status} />} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
+// Hoje só sobra "processos" aqui (Bloqueios ganhou tela própria, src/telas/Bloqueios.jsx, no
+// redesenho v3). Mantido por compatibilidade com o `key` que o App.jsx já usa para esta view.
+function ListaGenerica({ onBack, onOpenOrg, onOpenProcesso, onOpenBloqueio }) {
+  return <ProcessosTela onBack={onBack} onOpenProcesso={onOpenProcesso} onOpenBloqueio={onOpenBloqueio} onOpenOrg={onOpenOrg} />;
 }
 
 function AcompanhandoLista({ items, onOpen, onBack }) {
