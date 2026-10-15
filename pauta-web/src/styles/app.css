@@ -127,6 +127,15 @@ button{font:inherit;color:inherit}
 .ph p{margin:10px 0 0;color:var(--ink-2);font-size:14.5px;max-width:68ch;text-wrap:pretty}
 .ph-act{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 
+/* perfil do cliente: banner gerado (sem foto real) + avatar de iniciais sobreposto, estilo perfil */
+.cli-hero{position:relative;height:150px;border-radius:var(--r3);overflow:hidden;background:var(--ink);isolation:isolate}
+.cli-hero i{position:absolute;border-radius:50%;filter:blur(30px);background:var(--acc)}
+.cli-hero i.a{width:58%;aspect-ratio:1;right:-12%;top:-35%;opacity:.55}
+.cli-hero i.b{width:42%;aspect-ratio:1;left:6%;bottom:-40%;opacity:.3}
+.cli-avatar{position:absolute;left:28px;bottom:-32px;width:80px;height:80px;border-radius:50%;background:color-mix(in oklab,var(--acc) 72%,var(--ink) 28%);color:#fff;display:grid;place-items:center;font-family:var(--serif);font-size:24px;letter-spacing:-.01em;border:4px solid var(--bg);z-index:1}
+.cli-head{padding-top:46px}
+@media (max-width:640px){.cli-hero{height:120px}.cli-avatar{width:64px;height:64px;font-size:19px;left:18px;bottom:-26px}.cli-head{padding-top:36px}}
+
 /* ---------- botões ---------- */
 .btn{border:1px solid transparent;font-size:13px;font-weight:500;border-radius:var(--r1);padding:7px 13px;display:inline-flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;white-space:nowrap;transition:background .15s var(--ease),border-color .15s var(--ease),color .15s,transform .1s}
 .btn:active{transform:translateY(1px)}

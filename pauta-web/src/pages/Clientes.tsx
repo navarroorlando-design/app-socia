@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import type { ClienteId, ResumoContrato } from '../data/types';
 import type { SetContexto } from '../app/AppCtx';
 import { Icon } from '../components/Icon';
@@ -8,6 +8,8 @@ import { Vigencia } from '../components/pecas';
 import { D, PARADO, PROGS, PROG_COR, fe, hojeB, ti, type Go, type NavOpts } from '../domain/base';
 import { MESC, fmtK, fmtK0, plural, sum } from '../domain/format';
 import { modelo } from '../features/assistente/modelos';
+
+const ACENTO: Record<ClienteId, string> = { afne: 'var(--c1)', gnosis: 'var(--c3)', fas: 'var(--c2)', igedes: 'var(--good)' };
 
 export function Clientes({ opts, go, perguntar, setCtx }: { opts: NavOpts; go: Go; perguntar: (q: string) => void; setCtx: SetContexto }) {
   const [cli, setCli] = useState<ClienteId>(opts.cli || 'gnosis');
@@ -21,7 +23,11 @@ export function Clientes({ opts, go, perguntar, setCtx }: { opts: NavOpts; go: G
       <nav className="tabs fill-in" aria-label="Clientes">
         {ti.map(id => <button key={id} aria-current={cli === id} onClick={() => setCli(id)}>{fe[id].name}</button>)}
       </nav>
-      <header className="ph fill-in" key={'h' + cli}>
+      <div className="cli-hero fill-in" key={'b' + cli} style={{ '--acc': ACENTO[cli] } as CSSProperties} role="img" aria-label={`Perfil de ${c.name}`}>
+        <i className="a" /><i className="b" />
+        <div className="cli-avatar" aria-hidden="true">{c.initials}</div>
+      </div>
+      <header className="ph cli-head fill-in" key={'h' + cli}>
         <div>
           <h1>{c.name}</h1>
           <p>
