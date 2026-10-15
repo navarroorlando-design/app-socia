@@ -28,6 +28,8 @@ async def main(steps):
         )
         if MOCK:
             await pg.add_init_script(MOCK)
+        if _os.environ.get("VISITA"):
+            await pg.add_init_script("try{localStorage.setItem('socios:ultimaVisita', new Date(Date.now()-%s*864e5).toISOString())}catch(e){}" % _os.environ["VISITA"])
         await pg.goto(_os.environ.get("URL", URL))
         await pg.wait_for_timeout(1200)
         for i, st in enumerate(steps):

@@ -2,7 +2,7 @@
 
 Referência única do que tiramos dos dois reels e de como virou código. Use este arquivo antes de criar uma tela nova, para reaproveitar o nome, a anatomia e o tempo de cada peça em vez de reinventar.
 
-Última atualização: 15/10/2026 (versão 11).
+Última atualização: 15/10/2026 (versão 12).
 
 ## Fontes
 
@@ -18,6 +18,7 @@ Onde isso foi aplicado:
 - **Pauta Jurídica**: painel de escritório no estilo do Buildex, com o fluxo de IA completo e demonstração automática.
 - **App dos Sócios, versão 10**: os padrões dos vídeos 1 e 2 adaptados à paleta osso/latão/oliva e à tipografia Inter Tight + Newsreader. Componentes com prefixo `V10`.
 - **App dos Sócios, versão 11**: os padrões dos vídeos 3 e 4 e uma revisão de espaço nas telas. Componentes com prefixo `V11`.
+- **App dos Sócios, versão 12**: zoom dos gráficos, caminho do dinheiro em cada bloqueio e resumo "Desde a sua última visita". Componentes com prefixo `V12`.
 
 ---
 
@@ -116,6 +117,10 @@ Cada animação tem um nome, o gatilho, o que muda, a duração e a curva. As cl
 | A23 | **Valor no ponto** | V4 | Dedo ou cursor sobre o gráfico | Pílula escura com o valor acompanha o ponto selecionado; desce para baixo do ponto quando falta espaço em cima | Imediato | Gráficos de linha de série única |
 | A24 | **Período recontando** | V4 | Troca de período no Desempenho | Os quatro indicadores rolam (A20) para os valores do novo período; os gráficos recomeçam no último mês | Mesma do A20 | Desempenho: 2026, 6 meses, 3 meses |
 | A25 | **Abas entre irmãos** (`V11AbasClientes`) | V3 | Toque em outro cliente | A aba ativa vai para o centro da faixa; os números da página rolam para os do novo cliente | Rolagem suave; números como A20 | Página do cliente |
+| A26 | **Gráfico ampliado** (`V12Zoom`) | adaptação de A19 | Botão de lupa no canto do gráfico, ou "Ampliar o gráfico" no Desempenho | O cartão do gráfico cresce até a tela inteira e o conteúdo aparece em seguida; ao fechar, encolhe de volta ao cartão | Abrir .42 s · `cubic-bezier(.2,.8,.2,1)`; conteúdo .25 s (+.18 s); fechar .34 s | Todos os gráficos dos relatórios da IA e do Desempenho |
+| A27 | **Valor que segue o dedo** | V4 | Arrastar um dedo sobre o gráfico ampliado | O mês e o valor no topo (44 px) mudam enquanto o dedo passa; o ponto escolhido cresce e uma linha vertical marca o mês | Imediato; vibração curta ao trocar de mês, onde o aparelho permite | Gráfico ampliado |
+| A28 | **Pinça muda o período** | — | Dois dedos se afastando ou se aproximando | O número de meses visíveis cai ou sobe (mínimo 3), centrado entre os dedos; a linha se redesenha | Redesenho .5 s | Gráfico ampliado; toque duplo volta a mostrar tudo; há botões "Tudo / 6 meses / 3 meses" e "Antes / Depois" para quem não usa gestos |
+| A29 | **Caminho do dinheiro** (`V12Caminho`) | — | Abrir um bloqueio | A barra se divide em perdido, devolvido e ainda bloqueado; cada parte cresce da esquerda, 120 ms entre partes | .7 s · `cubic-bezier(.2,.8,.2,1)` | Detalhe e folha do bloqueio |
 
 ### Trechos de CSS para copiar
 
@@ -264,6 +269,16 @@ Formato do bloco que a IA escreve:
 
 A Lexend foi trocada porque as formas arredondadas e largas deixavam o app com cara de material escolar.
 
+### Cores do caminho do dinheiro (versão 12)
+
+| Parte | Cor | Uso |
+|---|---|---|
+| Ainda bloqueado | `#B5832A` | O que segue preso na conta do cliente |
+| Devolvido | `#2F7A4D` | O que voltou ao cliente, inclusive desbloqueio parcial |
+| Perdido | `#B42318` | O que foi transferido ao credor e não volta |
+
+Sobre o bloco escuro, devolvido e perdido aparecem em tons claros (`#9FD5B4` e `#F4A79C`) para manter o contraste.
+
 ### Espaço (versão 11)
 
 - Margem lateral de **20 px** em todas as telas (era 32 px nas listas e 24 px na Início). No celular de 390 px, cada cartão ganha 24 px de largura.
@@ -302,6 +317,18 @@ A Lexend foi trocada porque as formas arredondadas e largas deixavam o app com c
 | Abas entre clientes | `V11AbasClientes` | Página do cliente |
 | Desempenho por período | `V11serie`, `V11levantados`, `V11PERIODOS` | 2026, 6 meses, 3 meses |
 | Linha que se desenha e valor no ponto | classes `v11-traco` e `v11-area` em `sw` | Gráficos de linha da IA |
+
+### Versão 12
+
+| Componente | Função no código | Onde aparece |
+|---|---|---|
+| Gráfico ampliado | `V12Zoom`, `V12ZoomConteudo`, `V12BotaoAmpliar`, `V12AmpliarDesempenho` | Lupa nos gráficos (`X1` recebe `ampliar` com os dados normalizados); botão no Desempenho |
+| Dados do caminho do dinheiro | `V12dinheiro` | Calculado sobre a base: cada bloqueio ganha `original`, `devolvido`, `perdido` e as datas de cada um |
+| Caminho do dinheiro | `V12Caminho` | Detalhe e folha do bloqueio |
+| Devolvido e perdido no ano | `V12LinhaPerdas` | Bloco escuro de Bloqueios e da página do cliente |
+| Desde a sua última visita | `V12Novidades`, `V12visita` | Primeiro bloco da Início; a última visita é gravada quando o app sai da tela |
+
+Também mudou: a aba "Com perda" em Bloqueios; o estado "Perdido" e "Devolvido em parte" nos bloqueios encerrados; no contrato, os números-chave viraram Bloqueado hoje, Devolvido e Perdido; a IA ganhou as métricas `valor_perdido` e `valor_devolvido`.
 
 ### O que ficou de fora, de propósito
 

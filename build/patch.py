@@ -1008,5 +1008,335 @@ rep("oe.default.createElement(Yw, { meses: r, carteiraInicial: s }),", "oe.defau
 rep("oe.default.createElement($w, { meses: r }),", "oe.default.createElement($w, { key: r[0].mes, meses: r }),")
 rep("oe.default.createElement(Zw, { meses: r }),", "oe.default.createElement(Zw, { key: r[0].mes, meses: r }),")
 rep_in("  function nE({", "  function oE(", '"\\xCDndice de \\xEAxito em 2026",', '"\\xCDndice de \\xEAxito no per\\xEDodo",')
+
+
+# =====================================================================
+# VERSÃO 12
+# =====================================================================
+V12 = open("/home/claude/v10/v12.js", encoding="utf-8").read()
+rep("  function lF() {", V12 + "\n  function lF() {")
+rep("${V10Css}\n${V11Css}\n  `,", "${V10Css}\n${V11Css}\n${V12Css}\n  `,")
+
+# ---- Dados: caminho do dinheiro em cada bloqueio ----
+rep(
+    """    for (let e = 0; e < 34; e++) Tn.push(Wf("b" + (e + 6), t[Math.floor(ic() * t.length)]));
+  }""",
+    """    for (let e = 0; e < 34; e++) Tn.push(Wf("b" + (e + 6), t[Math.floor(ic() * t.length)]));
+  }
+  V12dinheiro(Tn);""",
+)
+# Somas de "levantado" passam a contar só o que voltou ao cliente; e o perdido aparece ao lado.
+rep(
+    """      levantado: i.filter((r) => r.status === "Levantado").reduce((r, s) => r + s.valorNum, 0),""",
+    """      levantado: i.reduce((r, s) => r + (s.devolvido || 0), 0),
+      perdido: i.reduce((r, s) => r + (s.perdido || 0), 0),""",
+)
+rep(
+    """      levantado: o.filter((a) => a.status === "Levantado").reduce((a, r) => a + r.valorNum, 0),""",
+    """      levantado: o.reduce((a, r) => a + (r.devolvido || 0), 0),
+      perdido: o.reduce((a, r) => a + (r.perdido || 0), 0),""",
+)
+rep(
+    """      W = Tn.filter((K) => K.status === "Levantado").reduce((K, rt) => K + rt.valorNum, 0),""",
+    """      W = Tn.reduce((K, rt) => K + (rt.devolvido || 0), 0),""",
+)
+rep("          levantadoValor: b.reduce((_, Y) => _ + Y.valorNum, 0),\n          levantadoQtd: b.length,",
+    "          levantadoValor: b.reduce((_, Y) => _ + (Y.devolvido || 0), 0),\n          levantadoQtd: b.filter((Y) => Y.devolvido > 0).length,")
+rep(
+    """    let t = Tn.filter((o) => o.status === "Levantado" && o.liberadoEm),
+      e = t.reduce((o, i) => o + i.valorNum, 0),""",
+    """    let t = Tn.filter((o) => o.status === "Levantado" && o.liberadoEm && o.devolvido > 0),
+      e = t.reduce((o, i) => o + i.devolvido, 0),""",
+)
+
+# ---- Estado do bloqueio: perdido e devolvido em parte ----
+rep(
+    """    return t.status === "Levantado"
+      ? "levantado\"""",
+    """    return t.status === "Levantado"
+      ? t.perdido > 0
+        ? t.devolvido > 0
+          ? "parcial"
+          : "perdido"
+        : "levantado\"""",
+)
+rep(
+    'YS = { novo: "risco", parado: "atencao", ativo: "inativo", levantado: "resolvido" };',
+    'YS = { novo: "risco", parado: "atencao", ativo: "inativo", levantado: "resolvido", perdido: "risco", parcial: "atencao" };',
+)
+rep(
+    'var Hv = { novo: "Novo", parado: "Parado", ativo: "Ativo", levantado: "Levantado" },',
+    'var Hv = { novo: "Novo", parado: "Parado", ativo: "Ativo", levantado: "Devolvido", perdido: "Perdido", parcial: "Devolvido em parte" },',
+)
+
+# ---- IA: métricas de valor perdido e devolvido ----
+rep_in(
+    "  function Zv({",
+    "  function $v(",
+    """    if (t === "passivo_estimado")
+      return {""",
+    """    if (t === "valor_perdido" || t === "valor_devolvido") {
+      let V12c = t === "valor_perdido" ? "perdido" : "devolvido";
+      return {
+        linhas: Tn.filter((p) => p[V12c] > 0 && p[V12c + "Em"])
+          .map((p) => ({ ...p, mes: p[V12c + "Em"].getMonth() }))
+          .filter(d),
+        valorDe: (p) => p[V12c],
+        unidade: "BRL",
+        cli: c,
+      };
+    }
+    if (t === "passivo_estimado")
+      return {""",
+)
+rep(
+    """                "processos_parados",
+                "passivo_estimado",
+              ],""",
+    """                "processos_parados",
+                "passivo_estimado",
+                "valor_perdido",
+                "valor_devolvido",
+              ],""",
+    2,
+)
+rep('                passivo_estimado: "passivo estimado",', '                passivo_estimado: "passivo estimado",\n                valor_perdido: "valor perdido",\n                valor_devolvido: "valor devolvido",')
+rep(
+    "- Se pedirem algo que a base n\\xE3o tem (prazos,",
+    "- Valor perdido = metrica valor_perdido (dinheiro bloqueado que foi transferido ao credor e n\\xE3o volta ao cliente). Valor devolvido = metrica valor_devolvido (liberado de volta ao cliente, inclusive desbloqueios parciais). As duas contam pelo m\\xEAs em que aconteceram; use-as quando perguntarem quanto o cliente perdeu ou recuperou.\n- Se pedirem algo que a base n\\xE3o tem (prazos,",
+)
+
+# ---- Detalhe e folha do bloqueio: caminho do dinheiro ----
+rep(
+    """            sub:
+              t.status === "Ativo"
+                ? "Valor ainda bloqueado na conta do cliente"
+                : "Valor j\\xE1 liberado para o cliente",""",
+    """            sub:
+              t.status === "Ativo"
+                ? t.devolvido > 0 || t.perdido > 0
+                  ? `Ainda bloqueado, de ${Xt(t.original)} bloqueados no in\\xEDcio`
+                  : "Valor ainda bloqueado na conta do cliente"
+                : t.perdido > 0
+                  ? t.devolvido > 0
+                    ? "Encerrado: parte devolvida, parte perdida"
+                    : "Valor transferido ao credor: perdido"
+                  : "Valor j\\xE1 devolvido ao cliente",""",
+)
+rep(
+    """              rotulo: "Contrato de gest\\xE3o",
+              valor: t.contrato,
+              last: !0,
+            }),
+          ),
+        ),""",
+    """              rotulo: "Contrato de gest\\xE3o",
+              valor: t.contrato,
+              last: !0,
+            }),
+          ),
+          V12h(V12Caminho, { b: t }),
+        ),""",
+)
+rep_in(
+    "  function Fw({",
+    "  function Mw({",
+    """            ["Sistema", t.sistema],
+          ],
+        }),
+      ),""",
+    """            ["Sistema", t.sistema],
+          ],
+        }),
+      ),
+      V12h(V12Caminho, { b: t, compacto: !0 }),""",
+)
+
+# ---- Bloqueios: aba "Perdas", abrir já num estado, devolvido e perdido no bloco escuro ----
+rep(
+    """    contratoInicial: r,
+  }) {
+    let [s, l] = (0, Lt.useState)("Ativo"),""",
+    """    contratoInicial: r,
+    statusInicial: V12st,
+  }) {
+    let [s, l] = (0, Lt.useState)(V12st || "Ativo"),""",
+)
+rep(
+    """      vt = { Ativo: B.length, Levantado: Q.length, todos: z.length },
+      jt = [
+        { id: "Ativo", label: `Ativos (${vt.Ativo})` },
+        { id: "Levantado", label: `Levantados (${vt.Levantado})` },
+        { id: "todos", label: `Todos (${vt.todos})` },
+      ],""",
+    """      vt = { Ativo: B.length, Levantado: Q.length, todos: z.length },
+      jt = [
+        { id: "Ativo", label: "Ativos" },
+        { id: "Levantado", label: "Encerrados" },
+        { id: "perda", label: "Com perda" },
+        { id: "todos", label: "Todos" },
+      ],""",
+)
+rep(
+    """        .filter((G) => s === "todos" || G.status === s)""",
+    """        .filter((G) => s === "todos" || (s === "perda" ? G.perdido > 0 : G.status === s))""",
+)
+rep(
+    """          c ? (pt.find((V11x) => V11x.id === c) || { n: 0 }).n : B.length,
+          " bloqueios ativos",
+        ),""",
+    """          c ? (pt.find((V11x) => V11x.id === c) || { n: 0 }).n : B.length,
+          " bloqueios ativos",
+        ),
+        V12h(V12LinhaPerdas, {
+          devolvido: z.filter((V12x) => !c || V12x.clienteId === c).reduce((V12a, V12x) => V12a + (V12x.devolvido || 0), 0),
+          perdido: z.filter((V12x) => !c || V12x.clienteId === c).reduce((V12a, V12x) => V12a + (V12x.perdido || 0), 0),
+        }),""",
+)
+rep(
+    """                                  clienteInicial: r?.clienteId,""",
+    """                                  clienteInicial: r?.clienteId,
+                                  statusInicial: r?.status,""",
+)
+
+# ---- Página do cliente e do contrato ----
+rep(
+    """                style: { height: 8, borderRadius: 999, width: `${Math.max(2, N)}%`, background: v.osso },
+              }),
+            ),
+          ),
+        ),
+        Vt.default.createElement(Ma, { id: "osPerfil" }),""",
+    """                style: { height: 8, borderRadius: 999, width: `${Math.max(2, N)}%`, background: v.osso },
+              }),
+            ),
+            V12h(V12LinhaPerdas, { devolvido: g.levantado, perdido: g.perdido }),
+          ),
+        ),
+        Vt.default.createElement(Ma, { id: "osPerfil" }),""",
+)
+rep(
+    """              ["Bloqueado hoje", bn(d.bloqueadoAtivo)],
+              ["Processos", String(d.processos.length)],
+              ["Levantado", bn(d.levantado)],""",
+    """              ["Bloqueado hoje", bn(d.bloqueadoAtivo)],
+              ["Devolvido", bn(d.levantado)],
+              ["Perdido", d.perdido ? bn(d.perdido) : "Nada"],""",
+)
+
+# ---- Início: "Desde a sua última visita" ----
+rep(
+    """    y2 = {
+      resumo: "Bloqueado hoje",""",
+    """    y2 = {
+      novidades: "Desde a sua \\xFAltima visita",
+      resumo: "Bloqueado hoje",""",
+)
+rep(
+    """      G = {
+        ia: V10perg""",
+    """      G = {
+        novidades: ht.default.createElement(V12Novidades, { seguidos: r, onList: t, onAcompanhando: d }),
+        ia: V10perg""",
+)
+rep(
+    """      perguntar: (tt) => Dr(tt, { nova: !0 }),
+    };""",
+    """      perguntar: (tt) => Dr(tt, { nova: !0 }),
+      abrirBloqueios: (tt) => {
+        s({ status: tt }), o("inicio"), a("bloqueios");
+      },
+    };""",
+)
+
+# ---- Zoom: botão nos gráficos e o visualizador ----
+rep(
+    """  var X1 = ({ titulo: t, sub: e, children: n, legenda: o }) =>
+      Wt.default.createElement(
+        "figure",
+        { className: "my-4", style: { ...Tt, padding: 18, margin: "16px 0" } },
+        t &&
+          Wt.default.createElement(
+            "figcaption",
+            { style: { fontFamily: L.ui, fontSize: 16, fontWeight: 600, color: v.ink, lineHeight: 1.3 } },
+            t,
+          ),""",
+    """  var X1 = ({ titulo: t, sub: e, children: n, legenda: o, ampliar: V12a }) =>
+      Wt.default.createElement(
+        "figure",
+        { className: "my-4", style: { ...Tt, padding: 18, margin: "16px 0", position: "relative" } },
+        V12a && V12h(V12BotaoAmpliar, { dados: V12a }),
+        t &&
+          Wt.default.createElement(
+            "figcaption",
+            { style: { fontFamily: L.ui, fontSize: 16, fontWeight: 600, color: v.ink, lineHeight: 1.3, paddingRight: V12a ? 48 : 0 } },
+            t,
+          ),""",
+)
+rep(
+    """      { titulo: t, sub: e, legenda: l ? o.map((c, d) => [c.rotulo, Z1[d]]) : null },""",
+    """      {
+        titulo: t,
+        sub: e,
+        legenda: l ? o.map((c, d) => [c.rotulo, Z1[d]]) : null,
+        ampliar: {
+          tipo: "categorias",
+          estilo: "barras",
+          titulo: t,
+          rotulos: n,
+          series: o.map((c, d) => ({ rotulo: c.rotulo || t, cor: l ? Z1[d] : iw, valores: c.valores.map(Number) })),
+          unidade: i,
+        },
+      },""",
+)
+rep_in(
+    "  function rw({",
+    "  function sw({",
+    """      { titulo: t, sub: e, legenda: n.map((l, c) => [l, c2(l, c)]) },""",
+    """      {
+        titulo: t,
+        sub: e,
+        legenda: n.map((l, c) => [l, c2(l, c)]),
+        ampliar: {
+          tipo: "categorias",
+          estilo: "empilhado",
+          titulo: t,
+          rotulos: o.map((l) => l.rotulo),
+          series: n.map((l, c) => ({ rotulo: l, cor: c2(l, c), valores: o.map((d) => d.valores[c]) })),
+          unidade: i,
+        },
+      },""",
+)
+rep(
+    """      { titulo: t, sub: e, legenda: A ? o.map((W, I) => [W.rotulo, _(I)]) : null },""",
+    """      {
+        titulo: t,
+        sub: e,
+        legenda: A ? o.map((W, I) => [W.rotulo, _(I)]) : null,
+        ampliar: {
+          tipo: "tempo",
+          estilo: "linha",
+          titulo: t,
+          rotulos: n,
+          series: o.map((W, I) => ({ rotulo: W.rotulo, cor: _(I), valores: W.valores.map(Number) })),
+          unidade: i,
+        },
+      },""",
+)
+rep_in(
+    "  function nE({",
+    "  function oE(",
+    """      e === "exito" &&
+        oe.default.createElement(""",
+    """      V12h(V12AmpliarDesempenho, { sel: e, meses: r }),
+      e === "exito" &&
+        oe.default.createElement(""",
+)
+rep(
+    """                Ct.default.createElement(V11Palco, null),""",
+    """                Ct.default.createElement(V11Palco, null),
+                Ct.default.createElement(V12Zoom, null),""",
+)
+
 open(OUT, "w", encoding="utf-8").write(s)
-print("patch ok (v11)")
+print("patch ok (v12)")

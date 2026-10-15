@@ -687,7 +687,19 @@
       });
     return V10h(
       X1,
-      { titulo: t, sub: e, legenda: n.map((l, c) => [l, c2(l, c)]) },
+      {
+        titulo: t,
+        sub: e,
+        legenda: n.map((l, c) => [l, c2(l, c)]),
+        ampliar: {
+          tipo: "tempo",
+          estilo: "empilhado",
+          titulo: t,
+          rotulos: o.map((g) => g.rotulo),
+          series: n.map((p, c) => ({ rotulo: p, cor: c2(p, c), valores: o.map((g) => g.valores[c]) })),
+          unidade: i,
+        },
+      },
       V10h(
         "svg",
         { viewBox: `0 0 ${W} ${H}`, width: "100%", role: "img", "aria-label": `${t}. Toque numa coluna para ver os valores.`, style: { display: "block", overflow: "visible" } },
@@ -804,7 +816,8 @@
         contas.map((c, i) => {
           let ativo = c.bloqueios.filter((b) => b.status === "Ativo"),
             vAtivo = ativo.reduce((a, b) => a + b.valorNum, 0),
-            vLev = c.bloqueios.filter((b) => b.status === "Levantado").reduce((a, b) => a + b.valorNum, 0),
+            vLev = c.bloqueios.reduce((a, b) => a + (b.devolvido || 0), 0),
+            vPerd = c.bloqueios.reduce((a, b) => a + (b.perdido || 0), 0),
             abre = aberta === c.id;
           return V10h(
             "div",
@@ -855,8 +868,14 @@
                 vLev > 0 &&
                   V10h(
                     "p",
-                    { style: { fontFamily: L.ui, fontSize: 14, color: v.resolvido, marginBottom: 8 } },
-                    `${bn(vLev)} j\xE1 levantado nesta conta`,
+                    { style: { fontFamily: L.ui, fontSize: 14, color: v.resolvido, marginBottom: 4 } },
+                    `${bn(vLev)} devolvido nesta conta`,
+                  ),
+                vPerd > 0 &&
+                  V10h(
+                    "p",
+                    { style: { fontFamily: L.ui, fontSize: 14, color: v.risco, marginBottom: 8 } },
+                    `${bn(vPerd)} perdido, transferido ao credor`,
                   ),
                 c.bloqueios.length === 0
                   ? V10h("p", { style: { fontFamily: L.ui, fontSize: 14, color: v.texto2 } }, "Nenhum bloqueio registrado nesta conta.")
@@ -874,7 +893,11 @@
                           { style: { fontFamily: L.ui, fontSize: 14, color: v.ink } },
                           Co(b.data),
                           " \xB7 ",
-                          V10h("span", { style: { color: b.status === "Ativo" ? v.risco : v.resolvido } }, b.status === "Ativo" ? "bloqueado" : "levantado"),
+                          V10h(
+                            "span",
+                            { style: { color: b.status === "Ativo" ? v.atencao : b.perdido > 0 ? v.risco : v.resolvido } },
+                            b.status === "Ativo" ? "bloqueado" : b.perdido > 0 ? (b.devolvido > 0 ? "devolvido em parte" : "perdido") : "devolvido",
+                          ),
                         ),
                         V10h(
                           "span",
