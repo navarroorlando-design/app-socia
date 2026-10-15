@@ -2,7 +2,7 @@
 
 Referência única do que tiramos dos dois reels e de como virou código. Use este arquivo antes de criar uma tela nova, para reaproveitar o nome, a anatomia e o tempo de cada peça em vez de reinventar.
 
-Última atualização: 15/10/2026.
+Última atualização: 15/10/2026 (versão 11).
 
 ## Fontes
 
@@ -10,11 +10,14 @@ Referência única do que tiramos dos dois reels e de como virou código. Use es
 |---|---|---|
 | **Vídeo 1 — FlowAI** (reel de tanjimislam27) | Dashboard de automação de workflows com IA, em tema claro. Painel de notificações que abre pela direita. | 15,9 s |
 | **Vídeo 2 — Buildex** (reel de sujon.co e oripioagency) | CRM imobiliário com IA. Caixa "Intelligent Box" que leva a uma conversa, depois a cartões, um modal de ação e uma confirmação. | 35,6 s |
+| **Vídeo 3 — App de saúde** (reel de 60fps.design) | Grade de quatro blocos coloridos (atividade, coração, sono, passos). Cada bloco cresce até virar a própria tela. | 12,8 s |
+| **Vídeo 4 — Fernly** (reel de prem465135) | Painel de projetos em verde. Números que acompanham mudanças, odômetro, cartões que se reorganizam ao filtrar, gráfico com leitura pelo dedo, troca de período. | 30,4 s |
 
 Onde isso foi aplicado:
 
 - **Pauta Jurídica**: painel de escritório no estilo do Buildex, com o fluxo de IA completo e demonstração automática.
-- **App dos Sócios, versão 10**: os padrões adaptados à paleta osso/latão/oliva e à tipografia Inter Tight + Newsreader. Os componentes novos levam o prefixo `V10`.
+- **App dos Sócios, versão 10**: os padrões dos vídeos 1 e 2 adaptados à paleta osso/latão/oliva e à tipografia Inter Tight + Newsreader. Componentes com prefixo `V10`.
+- **App dos Sócios, versão 11**: os padrões dos vídeos 3 e 4 e uma revisão de espaço nas telas. Componentes com prefixo `V11`.
 
 ---
 
@@ -54,6 +57,32 @@ Granularidade do Semantic IxD: controles atômicos → widgets → arquétipo de
 | `RecommendationModal` | Widget | Resumo do imóvel; "Recommended Leads" com checkbox, avatar, nome, cidade e "% Match" verde; campo de nota com menção `@Client` destacada; Cancel e Next | Leads desmarcados somem; a nota aparece depois da seleção |
 | `SuccessModal` | Widget | Check verde grande; "Recommendation sent"; texto; lista de destinatários com "Delivered" verde; View Leads e Done | — |
 
+### Vídeo 3 — App de saúde
+
+**Arquétipo:** grade de blocos (bento) com detalhe em tela cheia.
+
+| Componente | Nível | Anatomia | Estados vistos |
+|---|---|---|---|
+| `MetricTile` | Widget | Bloco quadrado com cor própria por métrica; ícone ou ilustração grande com o número no centro; três linhas de rótulo e valor embaixo | Selo de check verde no sono |
+| `MetricDetail` | Arquétipo | Mesma cor do bloco em tela cheia; abas entre métricas irmãs (Activity, Heart, Sleep, Steps); faixa da semana com valor por dia; número grande; três números secundários; gráfico de barras do dia | Dia atual marcado |
+| `DayPager` | Controle | Pílula "Today" com dias anteriores e seguintes | — |
+
+### Vídeo 4 — Fernly
+
+**Arquétipo:** Executive Dashboard com sidebar e várias telas (Tarefas, Calendário, Analytics, Equipe, Ajustes).
+
+| Componente | Nível | Anatomia | Estados vistos |
+|---|---|---|---|
+| `StatTile` | Widget | Quatro números (Total, Ended, Running, Pending) com seta; o primeiro em verde escuro | Valores que mudam juntos ao criar projeto |
+| `ProjectAnalytics` | Widget | Barras arredondadas em pílula, as do passado listradas | — |
+| `TimeTracker` | Widget | Cartão verde escuro com textura de linhas; cronômetro grande; pausar e parar | Dígitos rolando |
+| `ProgressGauge` | Widget | Meio anel com porcentagem | — |
+| `KanbanBoard` | Widget | Colunas Todo, In Progress, In Review, Done | Cartão sendo arrastado |
+| `TeamGrid` | Widget | Cartões de pessoa com avatar, cargo e ações; chips de área | Filtro por área |
+| `ThroughputChart` | Widget | Área verde com linha deste período e pontilhada do anterior; dica escura com o valor do dia | Linha vertical acompanhando o cursor |
+| `PeriodSwitch` | Controle | 7D, 30D, 90D | Números recontando |
+| `AccentPicker` | Controle | Forest, Ocean, Plum, Ember | Recolore o app inteiro |
+
 ---
 
 ## 2. Catálogo de animações
@@ -80,6 +109,13 @@ Cada animação tem um nome, o gatilho, o que muda, a duração e a curva. As cl
 | A16 | **Troca de aba** | V1 | Abas Todos/Erros/Sucesso | Conteúdo some e entra (A1 por grupo) | .6 s | Filtros das Notificações |
 | A17 | **Zoom entre telas** (Pauta `vin` / `vback`) | V1 e V2 | Painel ↔ conversa | Entrada `scale .985` com desfoque; volta `scale 1.025` com desfoque | .55–.6 s | Pauta |
 | A18 | **Toast** (Pauta) | — | Fim do fluxo | Pílula sobe de 12 px com leve salto | .45 s · `cubic-bezier(.2,.9,.3,1.2)` | Pauta: "Tarefa criada para…" |
+| A19 | **Bloco vira a tela** (`V11Palco`) | V3 | Toque num atalho da Início | Uma cópia do atalho, na cor dele, cresce até ocupar a tela e some sobre a tela nova. Ao voltar, a tela encolhe até o atalho de origem | Abrir .42 s, fechar .46 s · `cubic-bezier(.2,.8,.2,1)`; o rótulo some nos primeiros .2 s | Atalhos Processos, Bloqueios, Passivo e Desempenho |
+| A20 | **Odômetro** (`V11Odo`) | V4 | Valor aparece ou muda | Cada algarismo é uma fita de 0 a 9 que rola até o dígito certo; da direita para a esquerda, 35 ms entre algarismos | .75 s · `cubic-bezier(.2,.8,.2,1)` | Valor bloqueado ao filtrar por cliente; indicadores do Desempenho; página do cliente |
+| A21 | **Cartões encontram o lugar** (`V11useFlip`) | V4 | Mudança de filtro | Quem continua desliza da posição antiga para a nova; quem chega surge com leve escala, 40 ms entre itens | .42 s deslizar, .36 s surgir · `cubic-bezier(.2,.8,.2,1)` | Lista de Processos; Notificações |
+| A22 | **Linha se desenha** (`v11-traco`) | V4 | Gráfico de linha aparece | O traço avança da esquerda para a direita; a área sob a linha aparece no fim | 1,1 s (+.15 s) · `cubic-bezier(.4,0,.2,1)`; área .6 s (+.9 s) | Gráficos de linha dos relatórios da IA |
+| A23 | **Valor no ponto** | V4 | Dedo ou cursor sobre o gráfico | Pílula escura com o valor acompanha o ponto selecionado; desce para baixo do ponto quando falta espaço em cima | Imediato | Gráficos de linha de série única |
+| A24 | **Período recontando** | V4 | Troca de período no Desempenho | Os quatro indicadores rolam (A20) para os valores do novo período; os gráficos recomeçam no último mês | Mesma do A20 | Desempenho: 2026, 6 meses, 3 meses |
+| A25 | **Abas entre irmãos** (`V11AbasClientes`) | V3 | Toque em outro cliente | A aba ativa vai para o centro da faixa; os números da página rolam para os do novo cliente | Rolagem suave; números como A20 | Página do cliente |
 
 ### Trechos de CSS para copiar
 
@@ -121,6 +157,24 @@ Cada animação tem um nome, o gatilho, o que muda, a duração e a curva. As cl
 }
 ```
 
+```css
+/* A20 — odômetro: cada algarismo é uma fita de 0 a 9 */
+.v11-odo-col{ display:inline-block; height:1.12em; line-height:1.12em; overflow:hidden; vertical-align:top; }
+.v11-odo-fita{ display:flex; flex-direction:column; transition: transform .75s cubic-bezier(.2,.8,.2,1); }
+/* a fita recebe transform: translateY(-dígito * 10%) */
+
+/* A22 — linha que se desenha (o path recebe pathLength="1") */
+.v11-traco{ stroke-dasharray:1; stroke-dashoffset:1; animation: v11traco 1.1s .15s cubic-bezier(.4,0,.2,1) forwards; }
+@keyframes v11traco{ to{ stroke-dashoffset:0; } }
+```
+
+### Bloco vira a tela (A19) e cartões encontram o lugar (A21)
+
+Os dois usam a Web Animations API (`element.animate`) e medem posições com `getBoundingClientRect`.
+
+- **A19:** ao tocar no atalho, guarda a posição dele e desenha por cima de tudo um retângulo na mesma cor, que anima de `left/top/width/height` do atalho até a tela inteira. Na volta, faz o caminho inverso até o atalho com a mesma etiqueta (`data-v11-morf`). Se o atalho estiver fora da vista, rola a Início até ele antes de encolher.
+- **A21 (técnica FLIP):** antes de mudar o filtro, guarda a posição de cada item marcado com `data-flip`. Depois da mudança, cada item que continua começa deslocado para a posição antiga e anima até a nova; quem chegou surge.
+
 ### Digitação (A6) em JavaScript
 
 ```js
@@ -146,6 +200,8 @@ function digitar(texto, set, aoFim) {
 - **Um momento forte por fluxo.** O salto do check (A14) é reservado à conclusão de uma ação. Não usar em carregamentos comuns.
 - **Movimento reduzido sempre respeitado.** Toda classe nova entra no bloco `prefers-reduced-motion`.
 - **Animação nunca esconde informação.** Nada fica em `opacity: 0` esperando rolagem; a tela parada já mostra tudo.
+- **Odômetro só onde o número muda.** Usar em valores que a sócia pode alterar com um toque (filtro, período, cliente). Leitores de tela recebem o valor completo, não os algarismos soltos.
+- **Bloco vira a tela só a partir de um bloco.** A transição de volta acontece apenas quando a tela foi aberta por um atalho; vindo de outro lugar, a volta é a comum.
 
 ---
 
@@ -208,6 +264,12 @@ Formato do bloco que a IA escreve:
 
 A Lexend foi trocada porque as formas arredondadas e largas deixavam o app com cara de material escolar.
 
+### Espaço (versão 11)
+
+- Margem lateral de **20 px** em todas as telas (era 32 px nas listas e 24 px na Início). No celular de 390 px, cada cartão ganha 24 px de largura.
+- **Uma superfície escura por tela.** Em Bloqueios, o título saiu do bloco escuro; o bloco que fica concentra o valor, os chips e a divisão por cliente.
+- **Telas de lista mostram a lista ao entrar.** Em Processos, abaixo da busca vêm os filtros com contagem e a lista inteira, em vez de só sugestões.
+
 ### Forma
 
 - Raio: cartões 20–24 px; cartões de resultado 18–20 px; pílulas 999 px; checkbox 6–7 px.
@@ -228,3 +290,22 @@ A Lexend foi trocada porque as formas arredondadas e largas deixavam o app com c
 | Filtro das notificações | `V10GRUPOS`, `V10grupo` | Notificações: Todos, Bloqueios, Movimentações, STF, Avisos e IA |
 | Barramento de ações | `V10Bus` | Liga cartões e folha ao estado do app (seguir, alertas, navegação) |
 | Correção da transição | `P1` | A tela atual passa a usar sempre os dados mais recentes |
+
+### Versão 11
+
+| Componente | Função no código | Onde aparece |
+|---|---|---|
+| Bloco vira a tela | `V11Palco`, `V11morfar`, `V11voltar` | Atalhos da Início ↔ Processos, Bloqueios, Passivo, Desempenho |
+| Odômetro | `V11Odo` | Bloqueios, Desempenho, página do cliente |
+| Cartões encontram o lugar | `V11useFlip` | Lista de Processos, Notificações |
+| Lista de processos com filtros | `V11ListaProcessos`, `V11RECORTES` | Tela Processos: Todos, Trabalhista, Cível, Administrativo, STF, Parados 90+, Com bloqueio |
+| Abas entre clientes | `V11AbasClientes` | Página do cliente |
+| Desempenho por período | `V11serie`, `V11levantados`, `V11PERIODOS` | 2026, 6 meses, 3 meses |
+| Linha que se desenha e valor no ponto | classes `v11-traco` e `v11-area` em `sw` | Gráficos de linha da IA |
+
+### O que ficou de fora, de propósito
+
+- **Kanban e arrastar:** o app é só leitura.
+- **Cronômetro:** sem uso no app.
+- **Troca de cor de destaque:** a paleta tem significado (latão só para a IA, cores de status fixas).
+- **Faixa da semana com valores:** viraria calendário, e a sócia não quer prazos.
