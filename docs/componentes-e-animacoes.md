@@ -1,0 +1,230 @@
+# Componentes e animações extraídos dos vídeos
+
+Referência única do que tiramos dos dois reels e de como virou código. Use este arquivo antes de criar uma tela nova, para reaproveitar o nome, a anatomia e o tempo de cada peça em vez de reinventar.
+
+Última atualização: 15/10/2026.
+
+## Fontes
+
+| Vídeo | O que mostra | Duração |
+|---|---|---|
+| **Vídeo 1 — FlowAI** (reel de tanjimislam27) | Dashboard de automação de workflows com IA, em tema claro. Painel de notificações que abre pela direita. | 15,9 s |
+| **Vídeo 2 — Buildex** (reel de sujon.co e oripioagency) | CRM imobiliário com IA. Caixa "Intelligent Box" que leva a uma conversa, depois a cartões, um modal de ação e uma confirmação. | 35,6 s |
+
+Onde isso foi aplicado:
+
+- **Pauta Jurídica**: painel de escritório no estilo do Buildex, com o fluxo de IA completo e demonstração automática.
+- **App dos Sócios, versão 10**: os padrões adaptados à paleta osso/latão/oliva e à tipografia Inter Tight + Newsreader. Os componentes novos levam o prefixo `V10`.
+
+---
+
+## 1. Inventário de componentes
+
+Granularidade do Semantic IxD: controles atômicos → widgets → arquétipo de tela.
+
+### Vídeo 1 — FlowAI
+
+**Arquétipo:** Executive Dashboard com sidebar fixa e painel lateral sob demanda.
+
+| Componente | Nível | Anatomia | Estados vistos |
+|---|---|---|---|
+| `SidebarNav` | Widget | Logo; grupo "Workspaces" (Dashboard, Workflow Library com badge 28, Workflow Canvas, Templates, Analytics, Team Members com badge 35+, Integrations); grupo "Agent Managements" (Settings, Help, Appearance com toggle de tema); lista "Workflow Runs" com ponto colorido; uso "885/1000" com botão Upgrade; perfil no rodapé | Item ativo em pílula cinza; badges azul e verde |
+| `TopBar` | Widget | Breadcrumb; `InputSearch`; botão "Ask AI" com ícone de brilho; sino com badge | Sino ativo (preto) quando o painel está aberto |
+| `StatCard` | Widget | Ícone pequeno, rótulo, número grande, rodapé com variação "+12% from last week" | Variação verde ou vermelha |
+| `WorkflowTable` | Widget | Nome com ponto colorido, Trigger, Total Runs, Success %, Last Run com relógio, Status em pílula "Active", ações View/Edit | Success % em verde, âmbar ou vermelho conforme a faixa |
+| `TemplateCard` | Widget | Ilustração, título, badge de status, avatares | Active, Paused |
+| `NotificationDrawer` | Widget | Título "Notification", "Mark all read", fechar; abas segmentadas All/Error/Success/Info com contador; itens com ícone de status, título, descrição truncada, tempo e chip do tipo | Aba ativa em cartão branco sobre trilho cinza |
+| `ButtonPrimary` | Controle | Pílula preta com ícone "+" ("Created Workflow") | — |
+| `DateChip` | Controle | Pílula branca com calendário ("27 April, 2026") | — |
+
+### Vídeo 2 — Buildex
+
+**Arquétipo:** Executive Dashboard com navegação em pílulas no topo e uma tela de conversa com IA em tela cheia.
+
+| Componente | Nível | Anatomia | Estados vistos |
+|---|---|---|---|
+| `TopNavPills` | Widget | Logo; pílulas Dashboard, Listing, Lead, Analytics, Portfolio, Deals, Ask AI; à direita busca, sino com badge, sol/lua e avatar | Ativa em pílula preta |
+| `PerformanceCard` | Widget | Barras empilhadas em roxo (3 tons) ligadas por faixas translúcidas; total no topo de cada barra; legenda; à direita uma lista de KPIs (Total Revenue grande, depois Active Leads, Active Listing, Total Closed com variação verde) | — |
+| `UpcomingSchedule` | Widget | Faixa de dias da semana com o dia atual em pílula preta; eventos em pílulas com ícone, título, subtítulo, bandeira de prioridade e horário | Prioridade High, Medium, Low |
+| `IntelligentBox` | Widget | Cartão **preto** com título e dois botões redondos (brilho e expandir); painel branco interno com 3 chips de sugestão de ícone colorido; ilustração de prédios em matriz de pontos; campo "Ask Anything…" com botão enviar | Botão enviar cinza vazio, preto com texto |
+| `ActiveListingTable` | Widget | Foto, nome, endereço, tipo, unidades, custo, avatares de leads, views, status | Available, Pending |
+| `ChatBubbleUser` | Controle | Bolha preta alinhada à direita | — |
+| `ThinkingIndicator` | Controle | Ícone de brilho mais "Thinking…" | Animado |
+| `ResultCardCarousel` | Widget | Saudação pequena, frase-resumo em negrito, explicação; chips de filtro removíveis; botão "Send"; cartões com foto, nome, preço, descrição, quartos, banheiros e área; paginação "3/12" com setas; ações curtir, não curtir e compartilhar | Cartão selecionado com borda roxa |
+| `RecommendationModal` | Widget | Resumo do imóvel; "Recommended Leads" com checkbox, avatar, nome, cidade e "% Match" verde; campo de nota com menção `@Client` destacada; Cancel e Next | Leads desmarcados somem; a nota aparece depois da seleção |
+| `SuccessModal` | Widget | Check verde grande; "Recommendation sent"; texto; lista de destinatários com "Delivered" verde; View Leads e Done | — |
+
+---
+
+## 2. Catálogo de animações
+
+Cada animação tem um nome, o gatilho, o que muda, a duração e a curva. As classes `v10-*` estão no App dos Sócios; as do Pauta estão entre parênteses quando o nome é diferente.
+
+| # | Nome | Origem | Gatilho | O que muda | Duração · curva | Onde usamos |
+|---|---|---|---|---|---|---|
+| A1 | **Surgir do desfoque** (`v10-surge`; Pauta `rev`) | V1 e V2 | Bloco entra na tela | `opacity 0→1`, `translateY 10px→0`, `blur 6px→0` | .6 s · `cubic-bezier(.2,.8,.2,1)` | Seções do relatório da IA, cartões, itens de lista, notificações |
+| A2 | **Cascata** | V1 e V2 | Vários itens irmãos entram juntos | A1 com atraso por índice | 80 ms por item, teto de 10 itens | Cartões de processo, linhas da confirmação, grupos de notificação |
+| A3 | **Contador** | V1 | Número grande aparece | Valor sobe de 0 até o final | 900–1200 ms · ease-out cúbico | Hero "Bloqueado hoje" (já existia), KPIs do Pauta |
+| A4 | **Barra cresce** (`v10-cresce`; Pauta `grow`) | V2 | Gráfico aparece | `scaleY .04→1` a partir da base | .8 s · `cubic-bezier(.2,.8,.2,1)`, 70 ms entre colunas | Gráfico empilhado por mês |
+| A5 | **Faixas de ligação** (`v10-faixa`) | V2 | Depois das barras | `opacity 0→1` das faixas entre colunas, na cor do segmento com 17–20 % de opacidade | .7 s com .45 s de atraso | Gráfico empilhado por mês |
+| A6 | **Digitação** | V2 | Toque num chip de sugestão | Texto aparece letra por letra, com cursor piscando | 22 ms por letra, +14 ms no espaço, +90 ms na pontuação, ±16 ms aleatório | Caixa "Pergunte à IA" na Início; nota do modal no Pauta |
+| A7 | **Botão enviar acende** | V2 | Campo deixa de estar vazio | Fundo cinza → preto, `scale 1→1.06` | .25 s | Caixa da IA, compositor do chat |
+| A8 | **Pensando com brilho** (`v10-brilho` + `v10-pulsa`) | V2 | IA começou a responder | Gradiente corre pelo texto; ícone de brilho pulsa e gira 18° | 1,6 s linear infinito · 1,3 s ease-in-out infinito | "Analisando a pergunta…" / "Consultando a base…" |
+| A9 | **Etapas reais** | V2 | Cada chamada de função da IA | Nova linha surge (A1); a última tem spinner, as anteriores viram check verde | Spinner 1 s linear | Lista de consultas sob "Consultando a base…"; ao terminar vira "N consultas à base" |
+| A10 | **Painel lateral desliza** | V1 | Toque no sino | Painel entra pela direita sobre o conteúdo desfocado | ~.3 s | Pauta (referência); no App dos Sócios virou folha inferior |
+| A11 | **Folha inferior** (`guia-sheet`) | adaptação de A10 | Escolher ação | `translateY 100%→0`; fundo com véu e `blur(3px)` | .26 s · `cubic-bezier(.2,.8,.2,1)` | Folha "O que fazer com este processo" |
+| A12 | **Modal entra** (Pauta `pop`) | V2 | Abrir recomendação | `scale .94→1`, `translateY 10px→0`, `blur 6px→0` | .42 s · `cubic-bezier(.2,.9,.25,1.05)` | Modal "Medida recomendada" do Pauta |
+| A13 | **Marcar checkbox** (`v10-marca`) | V2 | Toque na opção | Fundo vazio → preto; o check se desenha (`stroke-dashoffset 24→0`) | .3 s com .05 s de atraso | Opções da folha de ação |
+| A14 | **Check de sucesso** (`v10-pop` + `v10-risco`) | V2 | Ação concluída | Círculo verde `scale .3→1` com salto; anel que se expande e some; o check se desenha | .6 s · `cubic-bezier(.3,1.7,.5,1)`; anel 1,1 s (+.2 s); traço .4 s (+.35 s) | Tela "Pronto" |
+| A15 | **Volta com destaque** (`v10-destaque`) | V2 (status na tabela) | Volta à lista depois da ação | Fundo da linha em latão claro `#F2E8D3`, que se apaga | 2,4 s ease-out | "Processos que acompanho" |
+| A16 | **Troca de aba** | V1 | Abas Todos/Erros/Sucesso | Conteúdo some e entra (A1 por grupo) | .6 s | Filtros das Notificações |
+| A17 | **Zoom entre telas** (Pauta `vin` / `vback`) | V1 e V2 | Painel ↔ conversa | Entrada `scale .985` com desfoque; volta `scale 1.025` com desfoque | .55–.6 s | Pauta |
+| A18 | **Toast** (Pauta) | — | Fim do fluxo | Pílula sobe de 12 px com leve salto | .45 s · `cubic-bezier(.2,.9,.3,1.2)` | Pauta: "Tarefa criada para…" |
+
+### Trechos de CSS para copiar
+
+```css
+/* A1 — surgir do desfoque */
+.v10-surge{ animation: v10surge .6s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes v10surge{ from{ opacity:0; transform:translateY(10px); filter:blur(6px); } }
+
+/* A4 + A5 — barras e faixas */
+.v10-cresce{ transform-box:fill-box; transform-origin:50% 100%; animation: v10cresce .8s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes v10cresce{ from{ transform:scaleY(.04); } }
+.v10-faixa{ animation: v10fade .7s .45s both; }
+@keyframes v10fade{ from{ opacity:0; } }
+
+/* A8 — pensando com brilho */
+.v10-brilho{ background:linear-gradient(90deg,#8C877C 0%,#1A1916 45%,#8C877C 90%); background-size:220% 100%;
+  -webkit-background-clip:text; background-clip:text; color:transparent; animation: v10brilho 1.6s linear infinite; }
+@keyframes v10brilho{ from{ background-position:120% 0; } to{ background-position:-120% 0; } }
+.v10-pulsa{ animation: v10pulsa 1.3s ease-in-out infinite; }
+@keyframes v10pulsa{ 50%{ transform:scale(.78) rotate(18deg); opacity:.6; } }
+
+/* A14 — check de sucesso */
+.v10-pop{ animation: v10pop .6s cubic-bezier(.3,1.7,.5,1) both; position:relative; }
+.v10-pop::after{ content:""; position:absolute; inset:0; border-radius:999px; border:2px solid #2F7A4D; animation: v10anel 1.1s .2s ease-out both; }
+@keyframes v10pop{ from{ transform:scale(.3); opacity:0; } }
+@keyframes v10anel{ from{ transform:scale(1); opacity:.7; } to{ transform:scale(1.8); opacity:0; } }
+.v10-risco path{ stroke-dasharray:24; stroke-dashoffset:24; animation: v10risco .4s .35s ease-out forwards; }
+@keyframes v10risco{ to{ stroke-dashoffset:0; } }
+
+/* A15 — volta com destaque */
+.v10-destaque{ animation: v10destaque 2.4s ease-out; }
+@keyframes v10destaque{ 0%,35%{ background:#F2E8D3; } 100%{ background:transparent; } }
+
+/* Movimento reduzido: tudo para, e o check aparece já desenhado */
+@media (prefers-reduced-motion: reduce){
+  .v10-surge,.v10-cresce,.v10-faixa,.v10-brilho,.v10-pulsa,.v10-pop,.v10-pop::after,.v10-destaque{ animation:none !important; }
+  .v10-brilho{ color:#1A1916; background:none; }
+  .v10-risco path{ stroke-dashoffset:0 !important; animation:none !important; }
+}
+```
+
+### Digitação (A6) em JavaScript
+
+```js
+// Digita um texto letra por letra; devolve uma função que cancela.
+function digitar(texto, set, aoFim) {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) { set(texto); aoFim?.(); return () => {}; }
+  let i = 0, vivo = true;
+  const passo = () => {
+    if (!vivo) return;
+    i++; set(texto.slice(0, i));
+    if (i >= texto.length) return aoFim?.();
+    const c = texto[i - 1];
+    setTimeout(passo, 22 + (c === " " ? 14 : 0) + (/[,.?]/.test(c) ? 90 : 0) + Math.random() * 16);
+  };
+  passo();
+  return () => { vivo = false; };
+}
+```
+
+### Regras de uso
+
+- **Cascata só na primeira vez.** O relatório da IA aplica atraso por índice apenas quando abre pronto (relatório fixado). Durante a escrita ao vivo, cada bloco surge sem atraso, conforme chega.
+- **Um momento forte por fluxo.** O salto do check (A14) é reservado à conclusão de uma ação. Não usar em carregamentos comuns.
+- **Movimento reduzido sempre respeitado.** Toda classe nova entra no bloco `prefers-reduced-motion`.
+- **Animação nunca esconde informação.** Nada fica em `opacity: 0` esperando rolagem; a tela parada já mostra tudo.
+
+---
+
+## 3. Padrão de IA: pedido → ação → confirmação
+
+O que fez a IA do Buildex parecer inteligente não foi um efeito isolado, foram três camadas de retorno em sequência.
+
+1. **Pedido.** Chips de sugestão digitam a pergunta (A6) e o botão acende (A7). A pergunta vira bolha escura à direita.
+2. **Trabalho visível.** "Consultando a base…" com brilho (A8) e a lista de consultas reais (A9). No App dos Sócios, as etapas vêm das funções que a IA chama (`consultar_dados`, `consultar_cruzado`, `listar_processos`), não de um texto inventado.
+3. **Resultado acionável.** Resumo, gráficos e cartões em cascata (A1, A2). O cartão é selecionável e um botão "Escolher o que fazer" abre a folha de ação (A11).
+4. **Confirmação.** Check verde (A14), lista do que foi feito com status "Ativo", e um caminho de volta que destaca o item alterado (A15).
+
+**Regra do App dos Sócios que não muda:** a IA nunca é a fonte do número. No bloco de cartões ela só indica **quais** processos mostrar (números CNJ); valores, dias parado e status vêm da base.
+
+Formato do bloco que a IA escreve:
+
+````
+```acoes
+{"titulo": "Processos para acompanhar", "processos": ["0000000-00.2026.5.01.0000"]}
+```
+````
+
+---
+
+## 4. Tokens
+
+### Paleta do Buildex (usada no Pauta)
+
+| Papel | Claro | Escuro |
+|---|---|---|
+| Fundo da página | `#F2F1F5` | `#0D0C11` |
+| Cartão | `#FFFFFF` | `#17161D` |
+| Texto / apoio | `#15131A` / `#605D6D` | `#F1EFF6` / `#A7A3B5` |
+| Linha | `#E8E6EE` | `#2A2833` |
+| Roxo da série (3 tons) | `#6A2C96` · `#9B4FCB` · `#C99BEB` | `#8D4BC5` · `#B07AE4` · `#D6B1F4` |
+| Botão principal | preto `#15131A` | claro `#F1EFF6` |
+| Caixa da IA | `#15131A` | `#211F29` |
+| Bom / ruim / atenção / informação | `#1D9A55` / `#D13C58` / `#B4700C` / `#2E6BD8` | `#43C981` / `#F26E86` / `#E6A645` / `#72A2F6` |
+
+### Paleta do App dos Sócios (inalterada na versão 10)
+
+| Papel | Valor |
+|---|---|
+| Papel (fundo) | `#F2EFE9` |
+| Cartão | `#FFFDF9` |
+| Texto / apoio | `#1A1916` / `#57544C` |
+| Linha | `#E6E1D6` |
+| Marca (hero escuro) | `#1F1E1A` |
+| Oliva (caixa da IA na Início) | `#565449` |
+| Latão, **exclusivo da IA** | `#765614`, fundo `#F2E8D3` |
+| Dourado do ícone da IA sobre fundo escuro | `#E8C27A` |
+| Risco / Atenção / Em curso / Resolvido | `#B42318` / `#865708` / `#1F4E8C` / `#2F7A4D` |
+
+### Tipografia
+
+| Projeto | Títulos | Interface e números | Dados (CNJ) |
+|---|---|---|---|
+| Buildex / Pauta | Inter 500, −0,03em | Inter | — |
+| App dos Sócios v10 | **Newsreader** 500, −0,02em (saudação 400 e 500) | **Inter Tight**; valores grandes em 500 com −0,035em e algarismos tabulares | IBM Plex Mono |
+
+A Lexend foi trocada porque as formas arredondadas e largas deixavam o app com cara de material escolar.
+
+### Forma
+
+- Raio: cartões 20–24 px; cartões de resultado 18–20 px; pílulas 999 px; checkbox 6–7 px.
+- Sombra: suave e única (`0 1px 2px` + `0 4px 14px`), aplicada só no que é objeto separado.
+- Ícones: traço fino de 1,7–1,8 px, estilo Lucide.
+
+---
+
+## 5. Mapa no código do App dos Sócios v10
+
+| Componente | Função no código | Onde aparece |
+|---|---|---|
+| Caixa da IA na Início | `V10CaixaIA` | Bloco "Pergunte à IA", entre o resumo e os atalhos; aceita personalização da ordem |
+| Cartões de processos | `V10Cartoes` | Bloco ```` ```acoes ```` dentro do relatório da IA |
+| Folha de ação + confirmação | `V10Folha`, `V10Opcao` | Abre por cartão ou por linha de tabela da IA |
+| Gráfico empilhado por mês | `V10EmpilhadoMes` | Tipo "empilhado" com `agrupar_por: "mes"` |
+| Contas bancárias | `V10Contas`, `V10contas` | Tela do contrato de gestão, antes de "Processos deste contrato" |
+| Filtro das notificações | `V10GRUPOS`, `V10grupo` | Notificações: Todos, Bloqueios, Movimentações, STF, Avisos e IA |
+| Barramento de ações | `V10Bus` | Liga cartões e folha ao estado do app (seguir, alertas, navegação) |
+| Correção da transição | `P1` | A tela atual passa a usar sempre os dados mais recentes |
