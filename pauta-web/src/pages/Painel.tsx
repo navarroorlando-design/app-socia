@@ -37,27 +37,29 @@ export function Painel({ go, perguntar }: { go: Go; perguntar: (q: string) => vo
   ];
   return (
     <div className="page v-in">
-      <header className="ph fill-in">
-        <div>
-          <h1>{greeting()}, Orlando.</h1>
-          <p>
-            {altas ? <b>{plural(altas, 'assunto pede', 'assuntos pedem')} atenção hoje. </b> : null}
-            {fmtK(ir.bloqueadoAtivo)} seguem bloqueados em {ativos.length} bloqueios, e {parados} processos estão parados há mais de {PARADO} dias.
-          </p>
-          <div className="meta"><span>Base de {fmtDL(Hn)}</span><span>{ti.length} clientes</span><span>{Se.length} processos</span><span>{contratos} contratos de gestão</span></div>
-        </div>
-      </header>
+      <div className="hero fill-in">
+        <header className="ph">
+          <div>
+            <h1>{greeting()}, Orlando.</h1>
+            <p>
+              {altas ? <b>{plural(altas, 'assunto pede', 'assuntos pedem')} atenção hoje. </b> : null}
+              {fmtK(ir.bloqueadoAtivo)} seguem bloqueados em {ativos.length} bloqueios, e {parados} processos estão parados há mais de {PARADO} dias.
+            </p>
+          </div>
+        </header>
 
-      <form className="askin fill-in" style={{ animationDelay: '40ms' }} onSubmit={e => { e.preventDefault(); if (q.trim()) { perguntar(q); setQ(''); } }}>
-        <svg className="spark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" dangerouslySetInnerHTML={{ __html: ICON_PATHS.sparkle }} />
-        <input id="ask-painel" aria-label="Pergunte ao assistente" placeholder="Pergunte ao assistente, por exemplo: quanto o Instituto Gnosis perdeu em setembro?" value={q} onChange={e => setQ(e.target.value)} />
-        <span className="kbd hide-sm">⌘.</span>
-        <button type="submit" className={'send' + (q.trim() ? ' ready' : '')} aria-label="Perguntar" disabled={!q.trim()}><Icon n="up" s={15} w={2} /></button>
-      </form>
-      <div className="chips fill-in" style={{ animationDelay: '60ms' }}>
-        {chips.map((c, i) => (
-          <button key={i} className="sug" onClick={() => perguntar(c.q)}><span aria-hidden="true">{c.ic}</span>{c.t}</button>
-        ))}
+        <form className="askin" onSubmit={e => { e.preventDefault(); if (q.trim()) { perguntar(q); setQ(''); } }}>
+          <svg className="spark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" dangerouslySetInnerHTML={{ __html: ICON_PATHS.sparkle }} />
+          <input id="ask-painel" aria-label="Pergunte ao assistente" placeholder="Pergunte ao assistente, por exemplo: quanto o Instituto Gnosis perdeu em setembro?" value={q} onChange={e => setQ(e.target.value)} />
+          <span className="kbd hide-sm">⌘.</span>
+          <button type="submit" className={'send' + (q.trim() ? ' ready' : '')} aria-label="Perguntar" disabled={!q.trim()}><Icon n="up" s={15} w={2} /></button>
+        </form>
+        <div className="chips">
+          {chips.map((c, i) => (
+            <button key={i} className="sug" onClick={() => perguntar(c.q)}><span aria-hidden="true">{c.ic}</span>{c.t}</button>
+          ))}
+        </div>
+        <div className="meta"><span>Base de {fmtDL(Hn)}</span><span>{ti.length} clientes</span><span>{Se.length} processos</span><span>{contratos} contratos de gestão</span></div>
       </div>
 
       <div className="split fill-in" style={{ animationDelay: '80ms' }}>

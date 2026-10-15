@@ -1,18 +1,19 @@
 /* Layout: barra lateral fixa (navegação + clientes) | área principal com barra superior fina | assistente acoplado à direita.
-   Linguagem: papel quente quase monocromático, serifa leve nos títulos e nos números, linhas finas no lugar de sombras,
-   cor só para estado (dessaturada) e latão reservado à IA. */
+   Linguagem: papel claro e azul-marinho editorial (como um dossiê impresso), serifa leve nos títulos e nos números,
+   linhas finas no lugar de sombras, cor só para estado (dessaturada) e argila reservada à IA. O marinho também carrega
+   o "hero" do Painel, criando contraste real entre o que é manchete e o que é apoio. */
 :root{
-  --bg:#F5F3EF; --surface:#FFFFFF; --surface-2:#F8F7F4; --surface-3:#EFECE6; --sunk:#F1EEE8;
-  --ink:#1B1916; --ink-2:#5C5850; --ink-3:#8C877E; --ink-4:#B4AFA6;
-  --line:#E7E3DC; --line-2:#D8D3CA; --line-3:#C9C3B8;
-  --cta:#1B1916; --cta-ink:#FAF8F4;
-  --ai:#8A6A2E; --ai-soft:#F4EEE2; --ai-ink:#6E5320;
-  --good:#3E6B4C; --good-soft:#EAF0EA; --bad:#9B3D33; --bad-soft:#F5E9E6; --warn:#8F6A2A; --warn-soft:#F4EEE2; --info:#3F5A7A; --info-soft:#E9EDF2;
-  --m-bloq:#6E695F; --m-dev:#4F7D5C; --m-per:#A9473B;
-  --c1:#2A2723; --c2:#8C867B; --c3:#CBC5BA;
-  --p-prov:#A9473B; --p-poss:#C1A57A; --p-rem:#D9D4CB;
-  --shadow-pop:0 18px 48px -12px rgba(27,25,22,.22),0 2px 6px rgba(27,25,22,.06);
-  --scrim:rgba(27,25,22,.28);
+  --bg:#F7F4EE; --surface:#FFFFFF; --surface-2:#F8F6F1; --surface-3:#EEEAE1; --sunk:#F1EDE3;
+  --ink:#20242E; --ink-2:#565B68; --ink-3:#878C97; --ink-4:#B8BAC1;
+  --line:#E4E0D6; --line-2:#D4CFC2; --line-3:#C4BEAE;
+  --cta:#20242E; --cta-ink:#F7F4EE;
+  --ai:#BD7A53; --ai-soft:#F2E3D7; --ai-ink:#834E2E;
+  --good:#4C7A5A; --good-soft:#E7EFE9; --bad:#A14A3D; --bad-soft:#F4E5E1; --warn:#9C6B33; --warn-soft:#F2E8DA; --info:#3C5675; --info-soft:#E6EAF0;
+  --m-bloq:#6C7280; --m-dev:#4C7A5A; --m-per:#A14A3D;
+  --c1:#20242E; --c2:#BD7A53; --c3:#8792A6;
+  --p-prov:#A14A3D; --p-poss:#BD7A53; --p-rem:#D4CFC2;
+  --shadow-pop:0 18px 48px -12px rgba(20,22,30,.22),0 2px 6px rgba(20,22,30,.06);
+  --scrim:rgba(20,22,30,.28);
   --serif:"Newsreader",ui-serif,"Iowan Old Style",Georgia,serif;
   --font:"Inter Tight Variable","Inter Tight",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
@@ -20,29 +21,29 @@
   --ease:cubic-bezier(.2,0,0,1);
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0F0E0D; --surface:#171614; --surface-2:#1C1B19; --surface-3:#25231F; --sunk:#131211;
-  --ink:#F3F1EC; --ink-2:#B5B0A7; --ink-3:#86817A; --ink-4:#5E5A54;
-  --line:#2A2825; --line-2:#36332F; --line-3:#46423C;
-  --cta:#F3F1EC; --cta-ink:#141311;
-  --ai:#D4B47E; --ai-soft:#2A2419; --ai-ink:#E2C99A;
-  --good:#A9C9A9; --good-soft:#1B261D; --bad:#E0A3A3; --bad-soft:#2E1C1A; --warn:#D8BE93; --warn-soft:#2A2419; --info:#A9BCD6; --info-soft:#1B2130;
-  --m-bloq:#A39E94; --m-dev:#8DBB98; --m-per:#D9877B;
-  --c1:#EDEAE4; --c2:#9A958C; --c3:#57534D;
-  --p-prov:#D9877B; --p-poss:#B79B6E; --p-rem:#4A4741;
-  --shadow-pop:0 24px 60px -12px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.06);
-  --scrim:rgba(0,0,0,.55); color-scheme:dark}}
+  --bg:#13161D; --surface:#1A1E27; --surface-2:#1F2330; --surface-3:#2A2F3D; --sunk:#15181F;
+  --ink:#F0EEE7; --ink-2:#B2B6BE; --ink-3:#82868F; --ink-4:#565A63;
+  --line:#272B36; --line-2:#323744; --line-3:#434957;
+  --cta:#F0EEE7; --cta-ink:#181B22;
+  --ai:#E0A273; --ai-soft:#2E2419; --ai-ink:#EFC49C;
+  --good:#A7CDAF; --good-soft:#1C2A20; --bad:#E3A79C; --bad-soft:#2E1E1A; --warn:#D9B583; --warn-soft:#2A2419; --info:#A9BEDA; --info-soft:#1C2433;
+  --m-bloq:#A3A7AF; --m-dev:#8FC79A; --m-per:#DA9284;
+  --c1:#EDEAE2; --c2:#E0A273; --c3:#8FA0C2;
+  --p-prov:#DA9284; --p-poss:#E0A273; --p-rem:#434957;
+  --shadow-pop:0 24px 60px -12px rgba(2,3,6,.7),0 0 0 1px rgba(255,255,255,.06);
+  --scrim:rgba(2,3,6,.55); color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0F0E0D; --surface:#171614; --surface-2:#1C1B19; --surface-3:#25231F; --sunk:#131211;
-  --ink:#F3F1EC; --ink-2:#B5B0A7; --ink-3:#86817A; --ink-4:#5E5A54;
-  --line:#2A2825; --line-2:#36332F; --line-3:#46423C;
-  --cta:#F3F1EC; --cta-ink:#141311;
-  --ai:#D4B47E; --ai-soft:#2A2419; --ai-ink:#E2C99A;
-  --good:#A9C9A9; --good-soft:#1B261D; --bad:#E0A3A3; --bad-soft:#2E1C1A; --warn:#D8BE93; --warn-soft:#2A2419; --info:#A9BCD6; --info-soft:#1B2130;
-  --m-bloq:#A39E94; --m-dev:#8DBB98; --m-per:#D9877B;
-  --c1:#EDEAE4; --c2:#9A958C; --c3:#57534D;
-  --p-prov:#D9877B; --p-poss:#B79B6E; --p-rem:#4A4741;
-  --shadow-pop:0 24px 60px -12px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.06);
-  --scrim:rgba(0,0,0,.55); color-scheme:dark}
+  --bg:#13161D; --surface:#1A1E27; --surface-2:#1F2330; --surface-3:#2A2F3D; --sunk:#15181F;
+  --ink:#F0EEE7; --ink-2:#B2B6BE; --ink-3:#82868F; --ink-4:#565A63;
+  --line:#272B36; --line-2:#323744; --line-3:#434957;
+  --cta:#F0EEE7; --cta-ink:#181B22;
+  --ai:#E0A273; --ai-soft:#2E2419; --ai-ink:#EFC49C;
+  --good:#A7CDAF; --good-soft:#1C2A20; --bad:#E3A79C; --bad-soft:#2E1E1A; --warn:#D9B583; --warn-soft:#2A2419; --info:#A9BEDA; --info-soft:#1C2433;
+  --m-bloq:#A3A7AF; --m-dev:#8FC79A; --m-per:#DA9284;
+  --c1:#EDEAE2; --c2:#E0A273; --c3:#8FA0C2;
+  --p-prov:#DA9284; --p-poss:#E0A273; --p-rem:#434957;
+  --shadow-pop:0 24px 60px -12px rgba(2,3,6,.7),0 0 0 1px rgba(255,255,255,.06);
+  --scrim:rgba(2,3,6,.55); color-scheme:dark}
 
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -498,6 +499,28 @@ body{font-size:15px}
 .meta{display:flex;flex-wrap:wrap;gap:4px 0;margin-top:14px;font-size:13px;color:var(--ink-3)}
 .meta span+span::before{content:"";display:inline-block;width:3px;height:3px;border-radius:50%;background:var(--ink-4);margin:0 12px;vertical-align:3px}
 .kbd.hide-sm{margin-inline-end:4px}
+
+/* hero: a saudação do Painel ganha peso de manchete sobre marinho; o resto da tela vira apoio */
+.hero{background:linear-gradient(160deg,var(--ink) 0%,color-mix(in oklab,var(--ink) 90%,var(--ai) 14%) 100%);border-radius:var(--r3);padding:40px 40px 26px;display:flex;flex-direction:column}
+.hero .ph{align-items:flex-start}
+.hero .ph h1{color:var(--cta-ink)}
+.hero .ph p{color:color-mix(in oklab,var(--cta-ink) 76%,transparent)}
+.hero .ph p b{color:var(--cta-ink)}
+.hero .meta{color:color-mix(in oklab,var(--cta-ink) 52%,transparent);border-top:1px solid color-mix(in oklab,var(--cta-ink) 16%,transparent);padding-top:14px;margin-top:20px}
+.hero .meta span+span::before{background:color-mix(in oklab,var(--cta-ink) 38%,transparent)}
+.hero .askin{margin-top:22px;background:color-mix(in oklab,var(--cta-ink) 9%,transparent);border-color:color-mix(in oklab,var(--cta-ink) 20%,transparent)}
+.hero .askin:focus-within{border-color:color-mix(in oklab,var(--cta-ink) 36%,transparent);box-shadow:0 0 0 4px color-mix(in oklab,var(--cta-ink) 12%,transparent)}
+.hero .askin input{color:var(--cta-ink)}
+.hero .askin input::placeholder{color:color-mix(in oklab,var(--cta-ink) 50%,transparent)}
+.hero .askin svg.spark{color:var(--ai)}
+.hero .askin .kbd{background:color-mix(in oklab,var(--cta-ink) 14%,transparent);color:color-mix(in oklab,var(--cta-ink) 72%,transparent);border-color:transparent}
+.hero .send{background:color-mix(in oklab,var(--cta-ink) 14%,transparent);color:color-mix(in oklab,var(--cta-ink) 70%,transparent)}
+.hero .send.ready{background:var(--ai);color:#fff}
+.hero .chips{margin-top:12px}
+.hero .chips .sug{background:color-mix(in oklab,var(--cta-ink) 7%,transparent);border-color:color-mix(in oklab,var(--cta-ink) 18%,transparent);color:color-mix(in oklab,var(--cta-ink) 84%,transparent)}
+.hero .chips .sug:hover{border-color:color-mix(in oklab,var(--cta-ink) 36%,transparent);background:color-mix(in oklab,var(--cta-ink) 14%,transparent);color:var(--cta-ink)}
+.hero .chips .sug svg{color:var(--ai)}
+@media (max-width:640px){.hero{padding:28px 22px 22px;border-radius:var(--r2)}}
 
 /* seções sem caixa: título serifado + espaço */
 .sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px 20px;margin-bottom:18px;flex-wrap:wrap}
