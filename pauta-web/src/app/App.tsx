@@ -102,6 +102,7 @@ export function App() {
     },
     dlOk,
     abrirCanvas: setCanvasProc,
+    abrirBusca: () => setBusca(true),
     aoVivo,
   };
 

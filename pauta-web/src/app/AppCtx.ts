@@ -13,12 +13,13 @@ export interface AppCtxValue {
   baixar: (arquivo: string, dados: string) => void;
   dlOk: boolean;
   abrirCanvas: (processoId: string) => void;
+  abrirBusca: () => void;
   /* Gráfico da resposta mais recente do assistente, em qualquer tela — o Painel reflete a última pergunta relevante sem precisar fixar */
   aoVivo: AoVivo | null;
 }
 
 export const AppCtx = createContext<AppCtxValue>({
-  seg: [], toggleSeg: () => {}, pins: [], togglePin: () => {}, baixar: () => {}, dlOk: false, abrirCanvas: () => {}, aoVivo: null,
+  seg: [], toggleSeg: () => {}, pins: [], togglePin: () => {}, baixar: () => {}, dlOk: false, abrirCanvas: () => {}, abrirBusca: () => {}, aoVivo: null,
 });
 export const useApp = () => useContext(AppCtx);
 

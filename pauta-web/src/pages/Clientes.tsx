@@ -23,21 +23,18 @@ export function Clientes({ opts, go, perguntar, setCtx }: { opts: NavOpts; go: G
       <nav className="tabs fill-in" aria-label="Clientes">
         {ti.map(id => <button key={id} aria-current={cli === id} onClick={() => setCli(id)}>{fe[id].name}</button>)}
       </nav>
-      <div className="cli-hero fill-in" key={'b' + cli} style={{ '--acc': ACENTO[cli] } as CSSProperties} role="img" aria-label={`Perfil de ${c.name}`}>
-        <i className="a" /><i className="b" />
+      <header className="ph cli-head fill-in" key={'h' + cli} style={{ '--acc': ACENTO[cli] } as CSSProperties}>
         <div className="cli-avatar" aria-hidden="true">{c.initials}</div>
-      </div>
-      <header className="ph cli-head fill-in" key={'h' + cli}>
         <div>
           <h1>{c.name}</h1>
           <p>
             Passivo estimado de <b>{fmtK(a.passivo.total)}</b> em {plural(a.processos.length, 'processo', 'processos')}{parados ? `, ${parados} parados há mais de ${PARADO} dias` : ''}.
             {' '}Hoje há <b>{fmtK0(a.bloqueadoAtivo)}</b> bloqueados; em 2026 voltaram {fmtK0(a.levantado)} e foram perdidos {fmtK0(a.perdido)}.
           </p>
-        </div>
-        <div className="ph-act">
-          <button className="btn ghost" onClick={() => go('processos', { cli })}><Icon n="scale" s={14} />Processos</button>
-          <button className="btn ai" onClick={() => perguntar(modelo('raio').p(cli))}><Icon n="sparkle" s={14} />Raio-x com o assistente</button>
+          <div className="ph-act">
+            <button className="btn ghost" onClick={() => go('processos', { cli })}><Icon n="scale" s={14} />Processos</button>
+            <button className="btn ai" onClick={() => perguntar(modelo('raio').p(cli))}><Icon n="sparkle" s={14} />Raio-x com o assistente</button>
+          </div>
         </div>
       </header>
       <div className="pane fill-in" key={'m' + cli} style={{ paddingBottom: 12 }}>
@@ -53,7 +50,7 @@ export function Clientes({ opts, go, perguntar, setCtx }: { opts: NavOpts; go: G
         <div className="surface">
           {enc.length ? (
             <div className="tbl-wrap">
-              <table className="grid">
+              <table className="tbl-grid">
                 <thead><tr><th>Contrato</th><th className="hide-md">Área</th><th>Como terminou</th><th>Resultado</th><th className="r">Em discussão</th><th className="r">Revertido</th></tr></thead>
                 <tbody>
                   {enc.map(e => (

@@ -31,7 +31,7 @@ export const toneDe = (t: string) =>
 
 /* Telas e o que cada uma recebe ao ser aberta */
 export type View = 'painel' | 'processos' | 'bloqueios' | 'clientes' | 'reclamacoes' | 'desempenho' | 'ia' | 'componentes';
-export interface NavOpts { sel?: string; cli?: ClienteId; aba?: string; parados?: boolean }
+export interface NavOpts { sel?: string; cli?: ClienteId; aba?: string; parados?: boolean; sigo?: boolean }
 export type Go = (view: View, opts?: NavOpts) => void;
 
 /* Novidades dos últimos 7 dias da base */

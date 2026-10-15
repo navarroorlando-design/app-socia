@@ -18,14 +18,15 @@ import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 
 export function Painel({ go, perguntar }: { go: Go; perguntar: (q: string) => void }) {
-  const { pins, aoVivo } = useApp();
+  const { pins, aoVivo, seg, abrirBusca } = useApp();
   const [sel, setSel] = useState<number | null>(null);
   const [q, setQ] = useState('');
   const atencaoIA = useAtencaoIA();
+  const dataLonga = (d => d.charAt(0).toUpperCase() + d.slice(1))(Hn.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }));
+  const seguidos = Se.filter(p => seg.includes(p.id));
   const meses = MESC.slice(0, Hn.getMonth() + 1).map(m => m[0].toUpperCase() + m.slice(1));
   const series = AREAS.slice(0, 3).map(a => ({ label: a, color: AREA_COR[a], vals: meses.map((_, i) => sum(Tn.filter(b => b.mes === i && b.area === a), b => b.original)) }));
   const h = sel == null ? meses.length - 1 : sel;
-  const ativos = Tn.filter(b => b.status === 'Ativo');
   const parados = D.nc(Se).length;
   const dev = sum(Tn, b => b.devolvido), per = sum(Tn, b => b.perdido), orig = sum(Tn, b => b.original);
   const altas = atencaoIA.itens.filter(a => a.sev === 3).length;
@@ -43,15 +44,27 @@ export function Painel({ go, perguntar }: { go: Go; perguntar: (q: string) => vo
   return (
     <div className="page v-in">
       <div className="hero fill-in">
-        <header className="ph">
-          <div>
-            <h1>{greeting()}, Orlando.</h1>
-            <p>
-              {altas ? <b>{plural(altas, 'assunto pede', 'assuntos pedem')} atenção hoje. </b> : null}
-              {fmtK(ir.bloqueadoAtivo)} seguem bloqueados em {ativos.length} bloqueios, e {parados} processos estão parados há mais de {PARADO} dias.
-            </p>
+        <div className="greet">
+          <span className="eyebrow">{dataLonga}</span>
+          <h1>{greeting()}, <b>Orlando.</b></h1>
+        </div>
+
+        <div className="resumo-card">
+          <span className="rc-label">Bloqueado hoje, em todos os clientes</span>
+          <span className="rc-fig num">{fmtR(ir.bloqueadoAtivo)}</span>
+          <div className="rc-badges">
+            {altas ? <Badge variant="bad"><Icon n="flag" s={11} />{plural(altas, 'assunto pede', 'assuntos pedem')} atenção hoje</Badge> : null}
+            {parados ? <Badge variant="warn"><Icon n="clock" s={11} />{plural(parados, 'parado', 'parados')} há +{PARADO} dias</Badge> : null}
+            {seguidos.length ? <Badge variant="ai"><Icon n="bookmark" s={11} />{plural(seguidos.length, 'que você segue', 'que você segue')}</Badge> : null}
           </div>
-        </header>
+        </div>
+
+        <div className="shortcuts">
+          <button className="shortcut" onClick={abrirBusca}><i><Icon n="search" s={17} /></i>Buscar</button>
+          <button className="shortcut" onClick={() => go('processos', { sigo: true })}><i><Icon n="bookmark" s={17} /></i>Sigo</button>
+          <button className="shortcut" onClick={() => go('bloqueios', { aba: 'todos' })}><i><Icon n="lock" s={17} /></i>Bloqueios</button>
+          <button className="shortcut ai" onClick={() => document.getElementById('ask-painel')?.focus()}><i><Icon n="sparkle" s={17} /></i>Perguntar</button>
+        </div>
 
         <form className="askin" onSubmit={e => { e.preventDefault(); if (q.trim()) { perguntar(q); setQ(''); } }}>
           <svg className="spark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" dangerouslySetInnerHTML={{ __html: ICON_PATHS.sparkle }} />
@@ -68,6 +81,28 @@ export function Painel({ go, perguntar }: { go: Go; perguntar: (q: string) => vo
         </div>
         <div className="meta"><span>Base de {fmtDL(Hn)}</span><span>{ti.length} clientes</span><span>{Se.length} processos</span><span>{contratos} contratos de gestão</span></div>
       </div>
+
+      {seguidos.length ? (
+        <section className="fill-in">
+          <div className="sec-h"><h2>Processos que você segue</h2><button className="link" onClick={() => go('processos', { sigo: true })}>Ver todos <Icon n="right" s={13} /></button></div>
+          <div className="surface">
+            <div className="list" style={{ padding: '2px 20px' }}>
+              {seguidos.slice(0, 5).map(p => (
+                <button key={p.id} className="li" onClick={() => go('processos', { sel: p.id })}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
+                    <span className="li-ic"><Icon n="file" s={15} /></span>
+                    <span style={{ minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+                      <span className="t">{p.cliente}</span>
+                      <span className="s">{p.desc}</span>
+                    </span>
+                  </span>
+                  <span className="w">{p.lastUpdate}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       {aoVivo ? (
         <section className="fill-in" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>

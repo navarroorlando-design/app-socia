@@ -9,7 +9,7 @@ export function MatrizClientes({ go }: { go: Go }) {
   const rows: Linha[] = ti.map(id => ({ id, a: D.aa(id), parados: Se.filter(p => p.clienteId === id && p.diasParado >= PARADO).length }));
   const mx = (f: (r: Linha) => number) => Math.max(1, ...rows.map(f));
   const cols: [string, (r: Linha) => number, string][] = [
-    ['Passivo estimado', r => r.a.passivo.total, 'var(--brand)'],
+    ['Passivo estimado', r => r.a.passivo.total, 'var(--info)'],
     ['Bloqueado hoje', r => r.a.bloqueadoAtivo, MONEY.bloqueado],
     ['Devolvido', r => r.a.levantado, MONEY.devolvido],
     ['Perdido', r => r.a.perdido, MONEY.perdido],

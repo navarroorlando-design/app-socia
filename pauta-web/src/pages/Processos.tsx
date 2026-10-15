@@ -24,7 +24,7 @@ export function Processos({ opts, go, perguntar, setCtx }: Props) {
   const [q, setQ] = useState('');
   const [cli, setCli] = useState<ClienteId | null>(opts.cli || null);
   const [area, setArea] = useState<Area | null>(null);
-  const [vis, setVis] = useState<Vis>(opts.parados ? 'parados' : 'todos');
+  const [vis, setVis] = useState<Vis>(opts.sigo ? 'sigo' : opts.parados ? 'parados' : 'todos');
   const [ordem, setOrdem] = useState<[Col, 1 | -1]>(opts.parados ? ['parado', -1] : ['parado', 1]);
   const [agrupar, setAgrupar] = useState(false);
   const [sel, setSel] = useState<string | null>(opts.sel || null);
@@ -88,7 +88,7 @@ export function Processos({ opts, go, perguntar, setCtx }: Props) {
       <div className="md">
         <section className="surface fill-in" style={{ animationDelay: '60ms' }}>
           <div className="tbl-wrap">
-            <table className="sel fixed grid">
+            <table className="sel fixed tbl-grid">
               <colgroup><col style={{ width: 44 }} /><col style={{ width: '32%' }} /><col style={{ width: '22%' }} /><col style={{ width: '12%' }} /><col style={{ width: '17%' }} /><col style={{ width: '17%' }} /></colgroup>
               <thead>
                 <tr>

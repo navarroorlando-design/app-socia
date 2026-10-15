@@ -58,7 +58,7 @@ export function Bloqueios({ opts, go, setCtx }: { opts: NavOpts; go: Go; setCtx:
             <label className="search"><Icon n="search" s={14} /><input id="bloq-q" placeholder="Cliente, contrato ou processo" value={q} onChange={e => setQ(e.target.value)} /></label>
           </div>
           <div className="tbl-wrap">
-            <table className="sel fixed grid">
+            <table className="sel fixed tbl-grid">
               <colgroup><col style={{ width: 86 }} /><col /><col className="hide-md" style={{ width: '24%' }} /><col style={{ width: '16%' }} /><col style={{ width: '16%' }} /><col style={{ width: '19%' }} /></colgroup>
               <thead><tr><th>Data</th><th>Cliente · contrato</th><th className="hide-md">Processo</th><th className="r">Bloqueado</th><th className="r">Hoje</th><th>Situação</th></tr></thead>
               <tbody>
