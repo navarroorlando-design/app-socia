@@ -2,9 +2,10 @@
 @import "tw-animate-css";
 
 /* Layout: barra lateral fixa (navegação + clientes) | área principal com barra superior fina | assistente acoplado à direita.
-   Linguagem: papel claro e azul-marinho editorial (como um dossiê impresso), serifa leve nos títulos e nos números,
-   linhas finas no lugar de sombras, cor só para estado (dessaturada) e argila reservada à IA. O marinho também carrega
-   o "hero" do Painel, criando contraste real entre o que é manchete e o que é apoio.
+   Linguagem: base quase branca, cartões brancos, serifa leve nos títulos e nos números, linhas finas no lugar de
+   sombras. Verde-azulado (teal) reservado à IA, sálvia para o que é bom, âmbar para atenção, terracota para perda —
+   paleta de dashboard claro, não mais o marinho editorial. O "hero" do Painel usa --ink (quase preto) como bloco
+   escuro de contraste, o mesmo tom do cartão escuro de destaque desse estilo de dashboard.
    Tailwind + shadcn/ui entram para os componentes novos (Button, Card, Chart…); os tokens abaixo continuam a fonte
    única de cor e são só reexpostos para o Tailwind pelo @theme inline, então os dois sistemas compartilham paleta e tema. */
 @theme inline{
@@ -23,17 +24,18 @@
 }
 
 :root{
-  --bg:#F7F4EE; --surface:#FFFFFF; --surface-2:#F8F6F1; --surface-3:#EEEAE1; --sunk:#F1EDE3;
-  --ink:#20242E; --ink-2:#565B68; --ink-3:#878C97; --ink-4:#B8BAC1;
-  --line:#E4E0D6; --line-2:#D4CFC2; --line-3:#C4BEAE;
-  --cta:#20242E; --cta-ink:#F7F4EE;
-  --ai:#BD7A53; --ai-soft:#F2E3D7; --ai-ink:#834E2E;
-  --good:#4C7A5A; --good-soft:#E7EFE9; --bad:#A14A3D; --bad-soft:#F4E5E1; --warn:#9C6B33; --warn-soft:#F2E8DA; --info:#3C5675; --info-soft:#E6EAF0;
-  --m-bloq:#6C7280; --m-dev:#4C7A5A; --m-per:#A14A3D;
-  --c1:#20242E; --c2:#BD7A53; --c3:#8792A6;
-  --p-prov:#A14A3D; --p-poss:#BD7A53; --p-rem:#D4CFC2;
-  --shadow-pop:0 18px 48px -12px rgba(20,22,30,.22),0 2px 6px rgba(20,22,30,.06);
-  --scrim:rgba(20,22,30,.28);
+  --bg:#F5F6F3; --surface:#FFFFFF; --surface-2:#F8F9F5; --surface-3:#EEF0E9; --sunk:#F1F2ED;
+  --ink:#181B17; --ink-2:#565C52; --ink-3:#888D81; --ink-4:#BABDB2;
+  --line:#E4E6DF; --line-2:#D4D7CC; --line-3:#C3C7BA;
+  --cta:#181B17; --cta-ink:#F6F7F2;
+  --ai:#2E6F64; --ai-soft:#DCEEE8; --ai-ink:#1C4A42;
+  --brand:var(--ai); --brand-soft:var(--ai-soft);
+  --good:#5B8A4E; --good-soft:#E3ECDA; --bad:#AE5038; --bad-soft:#F3E2DB; --warn:#C98A2E; --warn-soft:#F8ECD6; --info:#6670AD; --info-soft:#E6E7F4;
+  --m-bloq:#7A8572; --m-dev:#5B8A4E; --m-per:#AE5038;
+  --c1:#2E6F64; --c2:#A8B363; --c3:#8488BC;
+  --p-prov:#AE5038; --p-poss:#C98A2E; --p-rem:#D4D7CC;
+  --shadow-pop:0 18px 48px -12px rgba(20,22,18,.22),0 2px 6px rgba(20,22,18,.06);
+  --scrim:rgba(20,22,18,.28);
   --serif:"Newsreader",ui-serif,"Iowan Old Style",Georgia,serif;
   --font:"Inter Tight Variable","Inter Tight",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
@@ -41,29 +43,31 @@
   --ease:cubic-bezier(.2,0,0,1);
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#13161D; --surface:#1A1E27; --surface-2:#1F2330; --surface-3:#2A2F3D; --sunk:#15181F;
-  --ink:#F0EEE7; --ink-2:#B2B6BE; --ink-3:#82868F; --ink-4:#565A63;
-  --line:#272B36; --line-2:#323744; --line-3:#434957;
-  --cta:#F0EEE7; --cta-ink:#181B22;
-  --ai:#E0A273; --ai-soft:#2E2419; --ai-ink:#EFC49C;
-  --good:#A7CDAF; --good-soft:#1C2A20; --bad:#E3A79C; --bad-soft:#2E1E1A; --warn:#D9B583; --warn-soft:#2A2419; --info:#A9BEDA; --info-soft:#1C2433;
-  --m-bloq:#A3A7AF; --m-dev:#8FC79A; --m-per:#DA9284;
-  --c1:#EDEAE2; --c2:#E0A273; --c3:#8FA0C2;
-  --p-prov:#DA9284; --p-poss:#E0A273; --p-rem:#434957;
-  --shadow-pop:0 24px 60px -12px rgba(2,3,6,.7),0 0 0 1px rgba(255,255,255,.06);
-  --scrim:rgba(2,3,6,.55); color-scheme:dark}}
+  --bg:#141713; --surface:#1B1F1A; --surface-2:#202420; --surface-3:#2A2F29; --sunk:#171A15;
+  --ink:#F1F2EC; --ink-2:#B3B6AB; --ink-3:#84887C; --ink-4:#565A50;
+  --line:#282C26; --line-2:#333830; --line-3:#44493F;
+  --cta:#F1F2EC; --cta-ink:#1A1D18;
+  --ai:#5FB3A4; --ai-soft:#1E332E; --ai-ink:#A9DBCE;
+  --brand:var(--ai); --brand-soft:var(--ai-soft);
+  --good:#A2C98F; --good-soft:#22301D; --bad:#E0A58E; --bad-soft:#33211A; --warn:#E6B972; --warn-soft:#332818; --info:#A7ABD9; --info-soft:#22243A;
+  --m-bloq:#A6AC9C; --m-dev:#A2C98F; --m-per:#E0A58E;
+  --c1:#5FB3A4; --c2:#C4CE86; --c3:#A7ABD9;
+  --p-prov:#E0A58E; --p-poss:#E6B972; --p-rem:#44493F;
+  --shadow-pop:0 24px 60px -12px rgba(2,3,2,.7),0 0 0 1px rgba(255,255,255,.06);
+  --scrim:rgba(2,3,2,.55); color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#13161D; --surface:#1A1E27; --surface-2:#1F2330; --surface-3:#2A2F3D; --sunk:#15181F;
-  --ink:#F0EEE7; --ink-2:#B2B6BE; --ink-3:#82868F; --ink-4:#565A63;
-  --line:#272B36; --line-2:#323744; --line-3:#434957;
-  --cta:#F0EEE7; --cta-ink:#181B22;
-  --ai:#E0A273; --ai-soft:#2E2419; --ai-ink:#EFC49C;
-  --good:#A7CDAF; --good-soft:#1C2A20; --bad:#E3A79C; --bad-soft:#2E1E1A; --warn:#D9B583; --warn-soft:#2A2419; --info:#A9BEDA; --info-soft:#1C2433;
-  --m-bloq:#A3A7AF; --m-dev:#8FC79A; --m-per:#DA9284;
-  --c1:#EDEAE2; --c2:#E0A273; --c3:#8FA0C2;
-  --p-prov:#DA9284; --p-poss:#E0A273; --p-rem:#434957;
-  --shadow-pop:0 24px 60px -12px rgba(2,3,6,.7),0 0 0 1px rgba(255,255,255,.06);
-  --scrim:rgba(2,3,6,.55); color-scheme:dark}
+  --bg:#141713; --surface:#1B1F1A; --surface-2:#202420; --surface-3:#2A2F29; --sunk:#171A15;
+  --ink:#F1F2EC; --ink-2:#B3B6AB; --ink-3:#84887C; --ink-4:#565A50;
+  --line:#282C26; --line-2:#333830; --line-3:#44493F;
+  --cta:#F1F2EC; --cta-ink:#1A1D18;
+  --ai:#5FB3A4; --ai-soft:#1E332E; --ai-ink:#A9DBCE;
+  --brand:var(--ai); --brand-soft:var(--ai-soft);
+  --good:#A2C98F; --good-soft:#22301D; --bad:#E0A58E; --bad-soft:#33211A; --warn:#E6B972; --warn-soft:#332818; --info:#A7ABD9; --info-soft:#22243A;
+  --m-bloq:#A6AC9C; --m-dev:#A2C98F; --m-per:#E0A58E;
+  --c1:#5FB3A4; --c2:#C4CE86; --c3:#A7ABD9;
+  --p-prov:#E0A58E; --p-poss:#E6B972; --p-rem:#44493F;
+  --shadow-pop:0 24px 60px -12px rgba(2,3,2,.7),0 0 0 1px rgba(255,255,255,.06);
+  --scrim:rgba(2,3,2,.55); color-scheme:dark}
 
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -466,47 +470,6 @@ table.fixed td{overflow:hidden;text-overflow:ellipsis}
 table.fixed td .sub{max-width:100%}
 .thread{padding-bottom:48px}
 .ac .mono{white-space:nowrap;font-size:11.5px}
-
-/* ===== v3: cena = sócia num escritório claro, monitor grande, de dia, revisando exposição antes de reunião com cliente.
-   Fundo quase branco puxado para o azul-ardósia da marca (não creme); leitura confortável (15 px, contraste ≥ 4,5:1). ===== */
-:root{
-  --bg:oklch(0.982 0.003 240); --surface:oklch(1 0 0); --surface-2:oklch(0.975 0.004 240); --surface-3:oklch(0.945 0.006 240); --sunk:oklch(0.966 0.005 240);
-  --ink:oklch(0.22 0.016 248); --ink-2:oklch(0.40 0.014 248); --ink-3:oklch(0.50 0.012 248); --ink-4:oklch(0.70 0.010 248);
-  --line:oklch(0.915 0.006 240); --line-2:oklch(0.87 0.008 240); --line-3:oklch(0.78 0.010 240);
-  --brand:oklch(0.40 0.075 245); --brand-soft:oklch(0.95 0.02 245);
-  --cta:oklch(0.27 0.045 248); --cta-ink:oklch(0.99 0 0);
-  --ai:oklch(0.56 0.095 78); --ai-soft:oklch(0.955 0.03 85); --ai-ink:oklch(0.42 0.08 72);
-  --good:oklch(0.50 0.10 155); --good-soft:oklch(0.95 0.03 155); --bad:oklch(0.50 0.15 28); --bad-soft:oklch(0.955 0.025 28);
-  --warn:oklch(0.55 0.11 65); --warn-soft:oklch(0.96 0.03 75); --info:oklch(0.48 0.08 248); --info-soft:oklch(0.955 0.02 248);
-  --m-bloq:oklch(0.52 0.05 248); --m-dev:oklch(0.58 0.11 155); --m-per:oklch(0.56 0.16 28);
-  --c1:oklch(0.40 0.075 245); --c2:oklch(0.62 0.06 240); --c3:oklch(0.82 0.035 240);
-  --p-prov:oklch(0.56 0.16 28); --p-poss:oklch(0.76 0.10 75); --p-rem:oklch(0.86 0.012 248);
-  --r2:10px; --r3:12px;
-}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:oklch(0.17 0.008 248); --surface:oklch(0.205 0.009 248); --surface-2:oklch(0.225 0.01 248); --surface-3:oklch(0.26 0.012 248); --sunk:oklch(0.155 0.008 248);
-  --ink:oklch(0.95 0.005 248); --ink-2:oklch(0.80 0.008 248); --ink-3:oklch(0.68 0.01 248); --ink-4:oklch(0.50 0.01 248);
-  --line:oklch(0.28 0.01 248); --line-2:oklch(0.33 0.012 248); --line-3:oklch(0.42 0.014 248);
-  --brand:oklch(0.74 0.09 240); --brand-soft:oklch(0.28 0.04 245);
-  --cta:oklch(0.92 0.01 248); --cta-ink:oklch(0.18 0.01 248);
-  --ai:oklch(0.80 0.10 80); --ai-soft:oklch(0.28 0.04 80); --ai-ink:oklch(0.86 0.08 82);
-  --good:oklch(0.78 0.11 155); --good-soft:oklch(0.27 0.04 155); --bad:oklch(0.74 0.13 28); --bad-soft:oklch(0.28 0.05 28);
-  --warn:oklch(0.80 0.10 75); --warn-soft:oklch(0.28 0.04 75); --info:oklch(0.78 0.07 245); --info-soft:oklch(0.27 0.03 245);
-  --m-bloq:oklch(0.70 0.06 245); --m-dev:oklch(0.74 0.12 155); --m-per:oklch(0.70 0.14 28);
-  --c1:oklch(0.74 0.09 240); --c2:oklch(0.56 0.06 240); --c3:oklch(0.39 0.04 240);
-  --p-prov:oklch(0.70 0.14 28); --p-poss:oklch(0.74 0.09 75); --p-rem:oklch(0.40 0.012 248); color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:oklch(0.17 0.008 248); --surface:oklch(0.205 0.009 248); --surface-2:oklch(0.225 0.01 248); --surface-3:oklch(0.26 0.012 248); --sunk:oklch(0.155 0.008 248);
-  --ink:oklch(0.95 0.005 248); --ink-2:oklch(0.80 0.008 248); --ink-3:oklch(0.68 0.01 248); --ink-4:oklch(0.50 0.01 248);
-  --line:oklch(0.28 0.01 248); --line-2:oklch(0.33 0.012 248); --line-3:oklch(0.42 0.014 248);
-  --brand:oklch(0.74 0.09 240); --brand-soft:oklch(0.28 0.04 245);
-  --cta:oklch(0.92 0.01 248); --cta-ink:oklch(0.18 0.01 248);
-  --ai:oklch(0.80 0.10 80); --ai-soft:oklch(0.28 0.04 80); --ai-ink:oklch(0.86 0.08 82);
-  --good:oklch(0.78 0.11 155); --good-soft:oklch(0.27 0.04 155); --bad:oklch(0.74 0.13 28); --bad-soft:oklch(0.28 0.05 28);
-  --warn:oklch(0.80 0.10 75); --warn-soft:oklch(0.28 0.04 75); --info:oklch(0.78 0.07 245); --info-soft:oklch(0.27 0.03 245);
-  --m-bloq:oklch(0.70 0.06 245); --m-dev:oklch(0.74 0.12 155); --m-per:oklch(0.70 0.14 28);
-  --c1:oklch(0.74 0.09 240); --c2:oklch(0.56 0.06 240); --c3:oklch(0.39 0.04 240);
-  --p-prov:oklch(0.70 0.14 28); --p-poss:oklch(0.74 0.09 75); --p-rem:oklch(0.40 0.012 248); color-scheme:dark}
 
 body{font-size:15px}
 .nv{font-size:14px}
