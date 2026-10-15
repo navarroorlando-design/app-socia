@@ -100,7 +100,7 @@ export function App() {
   return (
     <AppCtx.Provider value={ctxValue}>
       <div className="shell">
-        <Lateral view={view} go={go} dark={dark} toggleTheme={() => setTheme(dark ? 'light' : 'dark')} />
+        <Lateral view={view} go={go} ai={ai} dark={dark} toggleTheme={() => setTheme(dark ? 'light' : 'dark')} />
         <div className="main">
           <div className="bar">
             <div className="crumb"><span>Pauta</span><span>/</span><b>{NOMES[view]}</b>{mostraCtx ? <><span>/</span><span>{ctx.label}</span></> : null}</div>
