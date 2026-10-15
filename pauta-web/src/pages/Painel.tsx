@@ -18,7 +18,7 @@ import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 
 export function Painel({ go, perguntar }: { go: Go; perguntar: (q: string) => void }) {
-  const { pins } = useApp();
+  const { pins, aoVivo } = useApp();
   const [sel, setSel] = useState<number | null>(null);
   const [q, setQ] = useState('');
   const atencaoIA = useAtencaoIA();
@@ -68,6 +68,18 @@ export function Painel({ go, perguntar }: { go: Go; perguntar: (q: string) => vo
         </div>
         <div className="meta"><span>Base de {fmtDL(Hn)}</span><span>{ti.length} clientes</span><span>{Se.length} processos</span><span>{contratos} contratos de gestão</span></div>
       </div>
+
+      {aoVivo ? (
+        <section className="fill-in" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div className="sec-h">
+            <h2>Da sua última pergunta</h2>
+            <span className="cnt">“{aoVivo.pergunta.length > 70 ? aoVivo.pergunta.slice(0, 70) + '…' : aoVivo.pergunta}”</span>
+            <span className="grow" />
+            <button className="link" onClick={() => go('ia')}>Ver conversa <Icon n="right" s={13} /></button>
+          </div>
+          <div className="row r11"><Grafico src={aoVivo.src} onOpen={abrirNum} /></div>
+        </section>
+      ) : null}
 
       <div className="split fill-in" style={{ animationDelay: '80ms' }}>
         <section className="pane">

@@ -66,6 +66,19 @@ export function dadosGrafico(g: SpecGrafico): DadosGrafico {
   };
 }
 
+/* Último gráfico de uma resposta pronta (para o Painel refletir a pergunta mais recente) */
+export function ultimoGrafico(texto: string): { src: string; titulo: string } | null {
+  const blocos = splitBlocks(texto).filter(b => b.k === 'grafico');
+  if (!blocos.length) return null;
+  const v = blocos[blocos.length - 1].v || '';
+  try {
+    const g = JSON.parse(v) as SpecGrafico;
+    return { src: v, titulo: g.titulo || 'Indicadores' };
+  } catch {
+    return null;
+  }
+}
+
 export const csvDe = (rows: Celula[][]) =>
   rows.map(r => r.map(v => { const s = v == null ? '' : String(v); return /[;"\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; }).join(';')).join('\n');
 

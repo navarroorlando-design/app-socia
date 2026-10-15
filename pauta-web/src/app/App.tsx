@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { AppCtx, type AppCtxValue, type ContextoTela, type Fixado } from './AppCtx';
+import { useEffect, useMemo, useState } from 'react';
+import { AppCtx, type AppCtxValue, type AoVivo, type ContextoTela, type Fixado } from './AppCtx';
 import { Busca } from './Busca';
 import { Lateral } from './Lateral';
 import { NAV, NOMES, VIEWS } from './nav';
@@ -8,6 +8,7 @@ import type { NavOpts, View } from '../domain/base';
 import { downloadsPromise, type ErroClaude } from '../lib/claude';
 import { gravar, ler, useStore } from '../lib/store';
 import { AssistentePage, Conversa } from '../features/assistente/Conversa';
+import { ultimoGrafico } from '../features/assistente/blocos';
 import { useAI } from '../features/assistente/useAI';
 import { Painel } from '../pages/Painel';
 import { Processos } from '../pages/Processos';
@@ -36,6 +37,14 @@ export function App() {
   const [dlOk, setDlOk] = useState(false);
   const [ctx, setCtx] = useState<ContextoTela>({ label: 'Painel', nota: '' });
   const ai = useAI();
+  const aoVivo = useMemo<AoVivo | null>(() => {
+    const conv = ai.convs[0];
+    const ultima = conv?.msgs[conv.msgs.length - 1];
+    if (!ultima || ultima.role !== 'assistant' || ultima.status !== 'ok' || !ultima.text) return null;
+    const g = ultimoGrafico(ultima.text);
+    if (!g) return null;
+    return { ...g, pergunta: conv!.msgs[conv!.msgs.length - 2]?.text || conv!.titulo || '' };
+  }, [ai.convs]);
 
   const setDock = (v: boolean | ((d: boolean) => boolean)) => setDockState(d => { const n = typeof v === 'function' ? v(d) : v; gravar('pauta:dock', n); return n; });
 
@@ -93,6 +102,7 @@ export function App() {
     },
     dlOk,
     abrirCanvas: setCanvasProc,
+    aoVivo,
   };
 
   const { view, opts } = nav;

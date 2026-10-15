@@ -2,6 +2,7 @@ import { createContext, useContext } from 'react';
 import type { ClienteId } from '../data/types';
 
 export interface Fixado { id: string; src: string; titulo: string }
+export interface AoVivo { src: string; titulo: string; pergunta: string }
 
 /* Estado compartilhado entre telas: processos seguidos, gráficos fixados no Painel e downloads */
 export interface AppCtxValue {
@@ -12,10 +13,12 @@ export interface AppCtxValue {
   baixar: (arquivo: string, dados: string) => void;
   dlOk: boolean;
   abrirCanvas: (processoId: string) => void;
+  /* Gráfico da resposta mais recente do assistente, em qualquer tela — o Painel reflete a última pergunta relevante sem precisar fixar */
+  aoVivo: AoVivo | null;
 }
 
 export const AppCtx = createContext<AppCtxValue>({
-  seg: [], toggleSeg: () => {}, pins: [], togglePin: () => {}, baixar: () => {}, dlOk: false, abrirCanvas: () => {},
+  seg: [], toggleSeg: () => {}, pins: [], togglePin: () => {}, baixar: () => {}, dlOk: false, abrirCanvas: () => {}, aoVivo: null,
 });
 export const useApp = () => useContext(AppCtx);
 
