@@ -2,10 +2,9 @@
 @import "tw-animate-css";
 
 /* Layout: barra lateral fixa (navegação + clientes) | área principal com barra superior fina | assistente acoplado à direita.
-   Linguagem: base quase branca, cartões brancos, serifa leve nos títulos e nos números, linhas finas no lugar de
-   sombras. Verde-azulado (teal) reservado à IA, sálvia para o que é bom, âmbar para atenção, terracota para perda —
-   paleta de dashboard claro, não mais o marinho editorial. O "hero" do Painel usa --ink (quase preto) como bloco
-   escuro de contraste, o mesmo tom do cartão escuro de destaque desse estilo de dashboard.
+   Linguagem: marinho quase preto + um único acento dourado-latão desaturado — o padrão de private banking/fintech
+   premium (base escura "midnight navy", um acento metálico contido, nunca cor viva). Estados em tons profundos e
+   dessaturados (musgo, vinho, âmbar escuro), não verde/vermelho de alerta. Sem cor saturada em lugar nenhum.
    Tailwind + shadcn/ui entram para os componentes novos (Button, Card, Chart…); os tokens abaixo continuam a fonte
    única de cor e são só reexpostos para o Tailwind pelo @theme inline, então os dois sistemas compartilham paleta e tema. */
 @theme inline{
@@ -24,18 +23,18 @@
 }
 
 :root{
-  --bg:#F5F6F3; --surface:#FFFFFF; --surface-2:#F8F9F5; --surface-3:#EEF0E9; --sunk:#F1F2ED;
-  --ink:#181B17; --ink-2:#565C52; --ink-3:#888D81; --ink-4:#BABDB2;
-  --line:#E4E6DF; --line-2:#D4D7CC; --line-3:#C3C7BA;
-  --cta:#181B17; --cta-ink:#F6F7F2;
-  --ai:#2E6F64; --ai-soft:#DCEEE8; --ai-ink:#1C4A42;
+  --bg:#F6F4EF; --surface:#FFFFFF; --surface-2:#F8F6F0; --surface-3:#EEEAE0; --sunk:#F1EEE6;
+  --ink:#13161D; --ink-2:#4D5160; --ink-3:#80859A; --ink-4:#B4B7C2;
+  --line:#E4E1D8; --line-2:#D4D0C3; --line-3:#C3BFB0;
+  --cta:#13161D; --cta-ink:#F6F4EF;
+  --ai:#A6854E; --ai-soft:#F1E8D4; --ai-ink:#6E5323;
   --brand:var(--ai); --brand-soft:var(--ai-soft);
-  --good:#5B8A4E; --good-soft:#E3ECDA; --bad:#AE5038; --bad-soft:#F3E2DB; --warn:#C98A2E; --warn-soft:#F8ECD6; --info:#6670AD; --info-soft:#E6E7F4;
-  --m-bloq:#7A8572; --m-dev:#5B8A4E; --m-per:#AE5038;
-  --c1:#2E6F64; --c2:#A8B363; --c3:#8488BC;
-  --p-prov:#AE5038; --p-poss:#C98A2E; --p-rem:#D4D7CC;
-  --shadow-pop:0 18px 48px -12px rgba(20,22,18,.22),0 2px 6px rgba(20,22,18,.06);
-  --scrim:rgba(20,22,18,.28);
+  --good:#3F6B4F; --good-soft:#E4ECE4; --bad:#8C3A32; --bad-soft:#F1E1DE; --warn:#A3732B; --warn-soft:#F3E8D6; --info:#44607D; --info-soft:#E6EBEF;
+  --m-bloq:#6B6F7D; --m-dev:#3F6B4F; --m-per:#8C3A32;
+  --c1:#13161D; --c2:#A6854E; --c3:#5B6478;
+  --p-prov:#8C3A32; --p-poss:#A6854E; --p-rem:#D4D0C3;
+  --shadow-pop:0 18px 48px -12px rgba(10,11,16,.24),0 2px 6px rgba(10,11,16,.07);
+  --scrim:rgba(10,11,16,.3);
   --serif:"Newsreader",ui-serif,"Iowan Old Style",Georgia,serif;
   --font:"Inter Tight Variable","Inter Tight",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
@@ -43,31 +42,31 @@
   --ease:cubic-bezier(.2,0,0,1);
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#141713; --surface:#1B1F1A; --surface-2:#202420; --surface-3:#2A2F29; --sunk:#171A15;
-  --ink:#F1F2EC; --ink-2:#B3B6AB; --ink-3:#84887C; --ink-4:#565A50;
-  --line:#282C26; --line-2:#333830; --line-3:#44493F;
-  --cta:#F1F2EC; --cta-ink:#1A1D18;
-  --ai:#5FB3A4; --ai-soft:#1E332E; --ai-ink:#A9DBCE;
+  --bg:#0B0D13; --surface:#12151D; --surface-2:#161A23; --surface-3:#1E222D; --sunk:#0E1017;
+  --ink:#F0EEE6; --ink-2:#B7B9C4; --ink-3:#888C9C; --ink-4:#565A6B;
+  --line:#20242F; --line-2:#2A2F3C; --line-3:#383E4D;
+  --cta:#F0EEE6; --cta-ink:#12151D;
+  --ai:#D4B679; --ai-soft:#2A2419; --ai-ink:#E9D4A0;
   --brand:var(--ai); --brand-soft:var(--ai-soft);
-  --good:#A2C98F; --good-soft:#22301D; --bad:#E0A58E; --bad-soft:#33211A; --warn:#E6B972; --warn-soft:#332818; --info:#A7ABD9; --info-soft:#22243A;
-  --m-bloq:#A6AC9C; --m-dev:#A2C98F; --m-per:#E0A58E;
-  --c1:#5FB3A4; --c2:#C4CE86; --c3:#A7ABD9;
-  --p-prov:#E0A58E; --p-poss:#E6B972; --p-rem:#44493F;
-  --shadow-pop:0 24px 60px -12px rgba(2,3,2,.7),0 0 0 1px rgba(255,255,255,.06);
-  --scrim:rgba(2,3,2,.55); color-scheme:dark}}
+  --good:#8FBF9F; --good-soft:#1C2A20; --bad:#D99089; --bad-soft:#2E1C1A; --warn:#D4AD66; --warn-soft:#2E2718; --info:#8DA3C2; --info-soft:#1C2433;
+  --m-bloq:#A2A5B3; --m-dev:#8FBF9F; --m-per:#D99089;
+  --c1:#8089A3; --c2:#D4B679; --c3:#9A9DAD;
+  --p-prov:#D99089; --p-poss:#D4B679; --p-rem:#383E4D;
+  --shadow-pop:0 24px 60px -12px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.06);
+  --scrim:rgba(0,0,0,.6); color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#141713; --surface:#1B1F1A; --surface-2:#202420; --surface-3:#2A2F29; --sunk:#171A15;
-  --ink:#F1F2EC; --ink-2:#B3B6AB; --ink-3:#84887C; --ink-4:#565A50;
-  --line:#282C26; --line-2:#333830; --line-3:#44493F;
-  --cta:#F1F2EC; --cta-ink:#1A1D18;
-  --ai:#5FB3A4; --ai-soft:#1E332E; --ai-ink:#A9DBCE;
+  --bg:#0B0D13; --surface:#12151D; --surface-2:#161A23; --surface-3:#1E222D; --sunk:#0E1017;
+  --ink:#F0EEE6; --ink-2:#B7B9C4; --ink-3:#888C9C; --ink-4:#565A6B;
+  --line:#20242F; --line-2:#2A2F3C; --line-3:#383E4D;
+  --cta:#F0EEE6; --cta-ink:#12151D;
+  --ai:#D4B679; --ai-soft:#2A2419; --ai-ink:#E9D4A0;
   --brand:var(--ai); --brand-soft:var(--ai-soft);
-  --good:#A2C98F; --good-soft:#22301D; --bad:#E0A58E; --bad-soft:#33211A; --warn:#E6B972; --warn-soft:#332818; --info:#A7ABD9; --info-soft:#22243A;
-  --m-bloq:#A6AC9C; --m-dev:#A2C98F; --m-per:#E0A58E;
-  --c1:#5FB3A4; --c2:#C4CE86; --c3:#A7ABD9;
-  --p-prov:#E0A58E; --p-poss:#E6B972; --p-rem:#44493F;
-  --shadow-pop:0 24px 60px -12px rgba(2,3,2,.7),0 0 0 1px rgba(255,255,255,.06);
-  --scrim:rgba(2,3,2,.55); color-scheme:dark}
+  --good:#8FBF9F; --good-soft:#1C2A20; --bad:#D99089; --bad-soft:#2E1C1A; --warn:#D4AD66; --warn-soft:#2E2718; --info:#8DA3C2; --info-soft:#1C2433;
+  --m-bloq:#A2A5B3; --m-dev:#8FBF9F; --m-per:#D99089;
+  --c1:#8089A3; --c2:#D4B679; --c3:#9A9DAD;
+  --p-prov:#D99089; --p-poss:#D4B679; --p-rem:#383E4D;
+  --shadow-pop:0 24px 60px -12px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.06);
+  --scrim:rgba(0,0,0,.6); color-scheme:dark}
 
 *{box-sizing:border-box}
 html,body{height:100%}
