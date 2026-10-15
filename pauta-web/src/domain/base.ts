@@ -30,7 +30,7 @@ export const toneDe = (t: string) =>
   /perdid|credor/i.test(t) ? 'bad' : /liberad|levantad|devolv|deferid|procedente/i.test(t) ? 'good' : /bloqueio/i.test(t) ? 'warn' : '';
 
 /* Telas e o que cada uma recebe ao ser aberta */
-export type View = 'painel' | 'processos' | 'bloqueios' | 'clientes' | 'reclamacoes' | 'desempenho' | 'ia';
+export type View = 'painel' | 'processos' | 'bloqueios' | 'clientes' | 'reclamacoes' | 'desempenho' | 'ia' | 'componentes';
 export interface NavOpts { sel?: string; cli?: ClienteId; aba?: string; parados?: boolean }
 export type Go = (view: View, opts?: NavOpts) => void;
 

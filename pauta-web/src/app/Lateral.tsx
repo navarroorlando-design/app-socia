@@ -56,6 +56,7 @@ export function Lateral({ view, go, ai, dark, toggleTheme }: { view: View; go: G
         ))}
       </nav>
       <div className="side-foot">
+        <button className="nv" aria-current={view === 'componentes' ? 'page' : undefined} onClick={() => go('componentes')}><Icon n="grid" s={16} />Componentes</button>
         <button className="nv" onClick={toggleTheme}><Icon n={dark ? 'sun' : 'moon'} s={16} />{dark ? 'Tema claro' : 'Tema escuro'}</button>
         <div className="me"><span className="avatar">OM</span><span><b>Orlando</b><small>Somente leitura</small></span></div>
       </div>

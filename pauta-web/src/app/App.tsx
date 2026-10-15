@@ -16,6 +16,7 @@ import { Clientes } from '../pages/Clientes';
 import { Reclamacoes } from '../pages/Reclamacoes';
 import { Desempenho } from '../pages/Desempenho';
 import { Canvas } from '../features/canvas/Canvas';
+import { Showcase } from '../pages/Showcase';
 
 const temaSalvo = () => { try { return localStorage.getItem('pauta-theme'); } catch { return null; } };
 
@@ -24,7 +25,7 @@ export function App() {
   const [sysDark, setSysDark] = useState(() => window.matchMedia('(prefers-color-scheme: dark)').matches);
   const [nav, setNav] = useState<{ view: View; opts: NavOpts; n: number }>(() => {
     const h = location.hash.slice(1) as View;
-    return { view: VIEWS.includes(h) ? h : 'painel', opts: {}, n: 0 };
+    return { view: VIEWS.includes(h) || h === 'componentes' ? h : 'painel', opts: {}, n: 0 };
   });
   const [busca, setBusca] = useState(false);
   const [dock, setDockState] = useState<boolean>(() => ler('pauta:dock', false));
@@ -65,7 +66,7 @@ export function App() {
     setNav(n => ({ view, opts, n: n.n + 1 }));
     window.scrollTo({ top: 0, behavior: 'auto' });
     try { history.replaceState(null, '', '#' + view); } catch { /* sem histórico */ }
-    if (view === 'painel' || view === 'ia') setCtx({ label: NOMES[view], nota: '' });
+    if (view === 'painel' || view === 'ia' || view === 'componentes') setCtx({ label: NOMES[view] || 'Componentes', nota: '' });
   };
   const perguntar = (q: string) => { if (nav.view !== 'ia') setDock(true); ai.ask(q, { ctx: ctx && ctx.nota ? ctx : null }); };
 
@@ -103,7 +104,7 @@ export function App() {
         <Lateral view={view} go={go} ai={ai} dark={dark} toggleTheme={() => setTheme(dark ? 'light' : 'dark')} />
         <div className="main">
           <div className="bar">
-            <div className="crumb"><span>Pauta</span><span>/</span><b>{NOMES[view]}</b>{mostraCtx ? <><span>/</span><span>{ctx.label}</span></> : null}</div>
+            <div className="crumb"><span>Pauta</span><span>/</span><b>{NOMES[view] || 'Componentes'}</b>{mostraCtx ? <><span>/</span><span>{ctx.label}</span></> : null}</div>
             <span className="grow" />
             <button className="kbtn" onClick={() => setBusca(true)} aria-label="Buscar"><Icon n="search" s={14} /><span className="g">Buscar ou perguntar</span><span className="kbd">⌘K</span></button>
             {view !== 'ia' ? <button className="btn ai sm" aria-pressed={dock} onClick={() => setDock(d => !d)} title="Assistente (⌘.)"><Icon n="sparkle" s={14} />Assistente</button> : null}
@@ -118,6 +119,7 @@ export function App() {
               : view === 'clientes' ? <Clientes {...props} />
               : view === 'reclamacoes' ? <Reclamacoes {...props} />
               : view === 'desempenho' ? <Desempenho setCtx={setCtx} />
+              : view === 'componentes' ? <Showcase />
               : <AssistentePage ai={ai} go={go} />}
           </main>
         </div>
