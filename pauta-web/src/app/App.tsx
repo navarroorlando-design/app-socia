@@ -15,6 +15,7 @@ import { Bloqueios } from '../pages/Bloqueios';
 import { Clientes } from '../pages/Clientes';
 import { Reclamacoes } from '../pages/Reclamacoes';
 import { Desempenho } from '../pages/Desempenho';
+import { Canvas } from '../features/canvas/Canvas';
 
 const temaSalvo = () => { try { return localStorage.getItem('pauta-theme'); } catch { return null; } };
 
@@ -30,6 +31,7 @@ export function App() {
   const [seg, setSeg] = useStore<string[]>('pauta:seguidos', []);
   const [pins, setPins] = useStore<Fixado[]>('pauta:fixados', []);
   const [toast, setToast] = useState<string | null>(null);
+  const [canvasProc, setCanvasProc] = useState<string | null>(null);
   const [dlOk, setDlOk] = useState(false);
   const [ctx, setCtx] = useState<ContextoTela>({ label: 'Painel', nota: '' });
   const ai = useAI();
@@ -89,6 +91,7 @@ export function App() {
       }
     },
     dlOk,
+    abrirCanvas: setCanvasProc,
   };
 
   const { view, opts } = nav;
@@ -130,6 +133,7 @@ export function App() {
           </aside>
         ) : null}
         {busca ? <Busca onClose={() => setBusca(false)} go={go} perguntar={perguntar} /> : null}
+        {canvasProc ? <Canvas processoId={canvasProc} go={go} onClose={() => setCanvasProc(null)} /> : null}
         {toast ? <div className="toast" role="status"><Icon n="check" s={14} w={2} />{toast}</div> : null}
       </div>
     </AppCtx.Provider>

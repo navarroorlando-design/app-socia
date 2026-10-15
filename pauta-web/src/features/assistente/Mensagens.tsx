@@ -38,7 +38,7 @@ export function MD({ text }: { text: string }) {
 
 /* Cartões de processos apontados pelo assistente (bloco ```acoes) */
 export function Acoes({ src, onOpen }: { src: string; onOpen: (numero: string) => void }) {
-  const { seg, toggleSeg } = useApp();
+  const { seg, toggleSeg, abrirCanvas } = useApp();
   let a: { titulo?: string; processos?: string[] };
   try { a = JSON.parse(src); } catch { return null; }
   const ps = (a.processos || []).map(procByNum).filter((p): p is NonNullable<typeof p> => !!p).slice(0, 6);
@@ -57,7 +57,8 @@ export function Acoes({ src, onOpen }: { src: string; onOpen: (numero: string) =
                 <span>{p.diasParado >= PARADO ? `Parado há ${p.diasParado} dias` : `Últ. mov. ${quando(p.lastUpdate)}`}</span>
                 <span className="num" style={{ color: 'var(--ink)' }}>{bl ? fmtK(bl) + ' bloq.' : 'sem bloqueio'}</span>
               </div>
-              <div className="r">
+              <div className="r" style={{ flexWrap: 'wrap' }}>
+                <button className="btn ai sm" onClick={() => abrirCanvas(p.id)}><Icon n="panel" s={13} />Ver dossiê no Canvas</button>
                 <button className="btn ghost sm" onClick={() => onOpen(p.numero)}>Abrir processo</button>
                 <button className={'btn sm ' + (seg.includes(p.id) ? 'on' : 'quiet')} onClick={() => toggleSeg(p.id)}><Icon n="bookmark" s={13} />{seg.includes(p.id) ? 'Seguindo' : 'Seguir'}</button>
               </div>

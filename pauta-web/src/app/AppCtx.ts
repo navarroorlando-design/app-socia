@@ -11,10 +11,11 @@ export interface AppCtxValue {
   togglePin: (src: string, titulo: string) => void;
   baixar: (arquivo: string, dados: string) => void;
   dlOk: boolean;
+  abrirCanvas: (processoId: string) => void;
 }
 
 export const AppCtx = createContext<AppCtxValue>({
-  seg: [], toggleSeg: () => {}, pins: [], togglePin: () => {}, baixar: () => {}, dlOk: false,
+  seg: [], toggleSeg: () => {}, pins: [], togglePin: () => {}, baixar: () => {}, dlOk: false, abrirCanvas: () => {},
 });
 export const useApp = () => useContext(AppCtx);
 

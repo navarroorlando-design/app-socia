@@ -394,6 +394,11 @@ table.sel tbody tr[aria-selected="true"] td:first-child{box-shadow:inset 2px 0 0
 .dock .md-t{font-size:13.5px}
 .dock .hb-r{grid-template-columns:minmax(80px,38%) minmax(0,1fr) auto;gap:10px}
 
+/* canvas: dossiê deslizando ao lado da conversa */
+.canvas{position:fixed;inset-block:0;inset-inline-end:0;width:clamp(380px,45vw,720px);border-inline-start:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;overflow:hidden;z-index:65;box-shadow:var(--shadow-pop);animation:slidein .28s var(--ease) both}
+.canvas-body{flex:1;min-height:0;overflow:auto;padding:22px 24px 32px;scrollbar-width:thin}
+@media (max-width:760px){.canvas{width:100%}}
+
 /* ---------- seleção flutuante ---------- */
 .selbar{position:fixed;inset-inline:0;bottom:calc(24px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center;z-index:40;pointer-events:none}
 .selbar>div{pointer-events:auto;display:flex;align-items:center;gap:12px;background:var(--cta);color:var(--cta-ink);border-radius:var(--r2);padding:8px 8px 8px 16px;box-shadow:var(--shadow-pop);font-size:13px;animation:rise .25s var(--ease) both}

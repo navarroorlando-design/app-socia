@@ -130,7 +130,7 @@ export function Processos({ opts, go, perguntar, setCtx }: Props) {
 
 type Aba = 'resumo' | 'movs' | 'bloq';
 function ProcDetail({ p, go, perguntar }: { p: Processo; go: Go; perguntar: (q: string) => void }) {
-  const { seg, toggleSeg } = useApp();
+  const { seg, toggleSeg, abrirCanvas } = useApp();
   const [tab, setTab] = useState<Aba>('resumo');
   const bl = bloqDe(p), seguindo = seg.includes(p.id);
   return (
@@ -142,6 +142,7 @@ function ProcDetail({ p, go, perguntar }: { p: Processo; go: Go; perguntar: (q: 
         <div className="dacts">
           <button className={'btn sm ' + (seguindo ? 'on' : 'ghost')} onClick={() => toggleSeg(p.id)} aria-pressed={seguindo}><Icon n="bookmark" s={13} />{seguindo ? 'Seguindo' : 'Seguir'}</button>
           <button className="btn ai sm" onClick={() => perguntar(`Conte a história do processo ${p.numero} por fases, com as datas das movimentações e o que aconteceu com os bloqueios.`)}><Icon n="sparkle" s={13} />Contar a história</button>
+          <button className="btn ghost sm" onClick={() => abrirCanvas(p.id)}><Icon n="panel" s={13} />Abrir no Canvas</button>
         </div>
       </div>
       <div className="ptabs" role="tablist">

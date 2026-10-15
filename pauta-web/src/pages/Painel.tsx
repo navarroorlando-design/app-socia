@@ -11,6 +11,7 @@ import { Atencao } from '../features/atencao/Atencao';
 import { ATENCAO } from '../features/atencao/regras';
 import { MatrizClientes } from '../features/clientes/MatrizClientes';
 import { Grafico } from '../features/assistente/Grafico';
+import { modelo } from '../features/assistente/modelos';
 
 export function Painel({ go, perguntar }: { go: Go; perguntar: (q: string) => void }) {
   const { pins } = useApp();
@@ -25,6 +26,15 @@ export function Painel({ go, perguntar }: { go: Go; perguntar: (q: string) => vo
   const altas = ATENCAO.filter(a => a.sev === 3).length;
   const contratos = sum(ti, id => fe[id].contratos.length);
   const abrirNum = (num: string) => { const pr = procByNum(num); if (pr) go('processos', { sel: pr.id }); };
+  const semPedido = ATENCAO.filter(a => a.k === 'pedido').length;
+  const stfPendentes = za.filter(r => r.liminar === 'Pendente').length;
+  const clienteTop = ti.map(id => ({ id, bloq: D.aa(id).bloqueadoAtivo })).sort((a, b) => b.bloq - a.bloq)[0];
+  const chips: { ic: string; t: string; q: string }[] = [
+    { ic: '🔴', t: `${plural(semPedido, 'bloqueio', 'bloqueios')} sem pedido há +15 dias`, q: 'Quais bloqueios ativos estão há mais de 15 dias sem pedido de desbloqueio protocolado? Mostre os processos em cartões, do maior valor para o menor.' },
+    { ic: '⚖️', t: `${plural(stfPendentes, 'liminar pendente', 'liminares pendentes')} no STF`, q: modelo('stf').p() },
+    { ic: '📊', t: 'Balanço de êxito e retenção do mês', q: 'Monte um balanço do mês: o que foi devolvido e perdido, a variação do valor bloqueado e o índice de êxito e retenção da carteira.' },
+    { ic: '🏢', t: `Dossiê: ${fe[clienteTop.id].name}`, q: modelo('raio').p(clienteTop.id) },
+  ];
   return (
     <div className="page v-in">
       <header className="ph fill-in">
@@ -44,6 +54,11 @@ export function Painel({ go, perguntar }: { go: Go; perguntar: (q: string) => vo
         <span className="kbd hide-sm">⌘.</span>
         <button type="submit" className={'send' + (q.trim() ? ' ready' : '')} aria-label="Perguntar" disabled={!q.trim()}><Icon n="up" s={15} w={2} /></button>
       </form>
+      <div className="chips fill-in" style={{ animationDelay: '60ms' }}>
+        {chips.map((c, i) => (
+          <button key={i} className="sug" onClick={() => perguntar(c.q)}><span aria-hidden="true">{c.ic}</span>{c.t}</button>
+        ))}
+      </div>
 
       <div className="split fill-in" style={{ animationDelay: '80ms' }}>
         <section className="pane">
