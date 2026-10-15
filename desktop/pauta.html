@@ -442,6 +442,240 @@ table.fixed td{overflow:hidden;text-overflow:ellipsis}
 table.fixed td .sub{max-width:100%}
 .thread{padding-bottom:48px}
 .ac .mono{white-space:nowrap;font-size:11.5px}
+
+/* ===== v3: cena = sócia num escritório claro, monitor grande, de dia, revisando exposição antes de reunião com cliente.
+   Fundo quase branco puxado para o azul-ardósia da marca (não creme); leitura confortável (15 px, contraste ≥ 4,5:1). ===== */
+:root{
+  --bg:oklch(0.982 0.003 240); --surface:oklch(1 0 0); --surface-2:oklch(0.975 0.004 240); --surface-3:oklch(0.945 0.006 240); --sunk:oklch(0.966 0.005 240);
+  --ink:oklch(0.22 0.016 248); --ink-2:oklch(0.40 0.014 248); --ink-3:oklch(0.50 0.012 248); --ink-4:oklch(0.70 0.010 248);
+  --line:oklch(0.915 0.006 240); --line-2:oklch(0.87 0.008 240); --line-3:oklch(0.78 0.010 240);
+  --brand:oklch(0.40 0.075 245); --brand-soft:oklch(0.95 0.02 245);
+  --cta:oklch(0.27 0.045 248); --cta-ink:oklch(0.99 0 0);
+  --ai:oklch(0.56 0.095 78); --ai-soft:oklch(0.955 0.03 85); --ai-ink:oklch(0.42 0.08 72);
+  --good:oklch(0.50 0.10 155); --good-soft:oklch(0.95 0.03 155); --bad:oklch(0.50 0.15 28); --bad-soft:oklch(0.955 0.025 28);
+  --warn:oklch(0.55 0.11 65); --warn-soft:oklch(0.96 0.03 75); --info:oklch(0.48 0.08 248); --info-soft:oklch(0.955 0.02 248);
+  --m-bloq:oklch(0.52 0.05 248); --m-dev:oklch(0.58 0.11 155); --m-per:oklch(0.56 0.16 28);
+  --c1:oklch(0.40 0.075 245); --c2:oklch(0.62 0.06 240); --c3:oklch(0.82 0.035 240);
+  --p-prov:oklch(0.56 0.16 28); --p-poss:oklch(0.76 0.10 75); --p-rem:oklch(0.86 0.012 248);
+  --r2:10px; --r3:12px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:oklch(0.17 0.008 248); --surface:oklch(0.205 0.009 248); --surface-2:oklch(0.225 0.01 248); --surface-3:oklch(0.26 0.012 248); --sunk:oklch(0.155 0.008 248);
+  --ink:oklch(0.95 0.005 248); --ink-2:oklch(0.80 0.008 248); --ink-3:oklch(0.68 0.01 248); --ink-4:oklch(0.50 0.01 248);
+  --line:oklch(0.28 0.01 248); --line-2:oklch(0.33 0.012 248); --line-3:oklch(0.42 0.014 248);
+  --brand:oklch(0.74 0.09 240); --brand-soft:oklch(0.28 0.04 245);
+  --cta:oklch(0.92 0.01 248); --cta-ink:oklch(0.18 0.01 248);
+  --ai:oklch(0.80 0.10 80); --ai-soft:oklch(0.28 0.04 80); --ai-ink:oklch(0.86 0.08 82);
+  --good:oklch(0.78 0.11 155); --good-soft:oklch(0.27 0.04 155); --bad:oklch(0.74 0.13 28); --bad-soft:oklch(0.28 0.05 28);
+  --warn:oklch(0.80 0.10 75); --warn-soft:oklch(0.28 0.04 75); --info:oklch(0.78 0.07 245); --info-soft:oklch(0.27 0.03 245);
+  --m-bloq:oklch(0.70 0.06 245); --m-dev:oklch(0.74 0.12 155); --m-per:oklch(0.70 0.14 28);
+  --c1:oklch(0.74 0.09 240); --c2:oklch(0.56 0.06 240); --c3:oklch(0.39 0.04 240);
+  --p-prov:oklch(0.70 0.14 28); --p-poss:oklch(0.74 0.09 75); --p-rem:oklch(0.40 0.012 248); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:oklch(0.17 0.008 248); --surface:oklch(0.205 0.009 248); --surface-2:oklch(0.225 0.01 248); --surface-3:oklch(0.26 0.012 248); --sunk:oklch(0.155 0.008 248);
+  --ink:oklch(0.95 0.005 248); --ink-2:oklch(0.80 0.008 248); --ink-3:oklch(0.68 0.01 248); --ink-4:oklch(0.50 0.01 248);
+  --line:oklch(0.28 0.01 248); --line-2:oklch(0.33 0.012 248); --line-3:oklch(0.42 0.014 248);
+  --brand:oklch(0.74 0.09 240); --brand-soft:oklch(0.28 0.04 245);
+  --cta:oklch(0.92 0.01 248); --cta-ink:oklch(0.18 0.01 248);
+  --ai:oklch(0.80 0.10 80); --ai-soft:oklch(0.28 0.04 80); --ai-ink:oklch(0.86 0.08 82);
+  --good:oklch(0.78 0.11 155); --good-soft:oklch(0.27 0.04 155); --bad:oklch(0.74 0.13 28); --bad-soft:oklch(0.28 0.05 28);
+  --warn:oklch(0.80 0.10 75); --warn-soft:oklch(0.28 0.04 75); --info:oklch(0.78 0.07 245); --info-soft:oklch(0.27 0.03 245);
+  --m-bloq:oklch(0.70 0.06 245); --m-dev:oklch(0.74 0.12 155); --m-per:oklch(0.70 0.14 28);
+  --c1:oklch(0.74 0.09 240); --c2:oklch(0.56 0.06 240); --c3:oklch(0.39 0.04 240);
+  --p-prov:oklch(0.70 0.14 28); --p-poss:oklch(0.74 0.09 75); --p-rem:oklch(0.40 0.012 248); color-scheme:dark}
+
+body{font-size:15px}
+.nv{font-size:14px}
+.nv[aria-current="page"]{box-shadow:inset 2px 0 0 var(--brand),0 0 0 1px var(--line)}
+.nv[aria-current="page"] svg{color:var(--brand);opacity:1}
+.page{gap:40px;padding-top:40px}
+.ph h1{font-size:clamp(32px,3.2vw,44px)}
+.ph p{font-size:15.5px;line-height:1.6;color:var(--ink-2)}
+.ph p b{font-weight:600;color:var(--ink)}
+.meta{display:flex;flex-wrap:wrap;gap:4px 0;margin-top:14px;font-size:13px;color:var(--ink-3)}
+.meta span+span::before{content:"";display:inline-block;width:3px;height:3px;border-radius:50%;background:var(--ink-4);margin:0 12px;vertical-align:3px}
+.kbd.hide-sm{margin-inline-end:4px}
+
+/* seções sem caixa: título serifado + espaço */
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px 20px;margin-bottom:18px;flex-wrap:wrap}
+.sec-h h2{font-family:var(--serif);font-weight:400;font-size:22px;line-height:1.2;letter-spacing:-.01em;margin:0;text-wrap:balance}
+.surface{background:var(--surface);border:1px solid var(--line);border-radius:var(--r3);min-width:0;overflow:hidden}
+.pane{background:var(--surface);border:1px solid var(--line);border-radius:var(--r3);padding:26px 28px;min-width:0}
+.split{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);background:var(--surface);border:1px solid var(--line);border-radius:var(--r3)}
+.split>.pane{border:0;border-radius:0;background:none}
+.split>.pane+.pane{border-inline-start:1px solid var(--line)}
+.row{gap:40px}
+.r21{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+
+/* pergunta */
+.askin{border-radius:var(--r3);padding:10px 10px 10px 18px;box-shadow:0 1px 2px oklch(0.2 0.02 248 / .05)}
+.askin input{font-size:15.5px}
+
+/* fluxo do dinheiro */
+.flow-head{display:flex;align-items:baseline;gap:12px;margin-bottom:18px;color:var(--ink-2);flex-wrap:wrap}
+.flow-head .fig{font-size:38px}
+.band{animation:fade .9s var(--ease) both;transition:opacity .2s}
+.flow{min-width:0}
+
+/* atenção agora */
+.att-f{display:flex;flex-wrap:wrap;gap:2px 16px;margin:-4px 0 10px;border-bottom:1px solid var(--line)}
+.att-f button{border:0;background:none;padding:6px 0 10px;font-size:13px;color:var(--ink-3);cursor:pointer;border-bottom:1.5px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.att-f button span{color:var(--ink-4);margin-inline-start:3px;font-variant-numeric:tabular-nums}
+.att-f button:hover{color:var(--ink)}
+.att-f button[aria-pressed="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+.att-l{list-style:none;margin:0;padding:0}
+.att-l li+li{border-top:1px solid var(--line)}
+.att-i{display:grid;grid-template-columns:16px 30px minmax(0,1fr) auto;gap:12px;align-items:center;width:100%;border:0;background:none;text-align:left;padding:13px 8px;margin:0 -8px;width:calc(100% + 16px);border-radius:var(--r1);color:var(--ink);cursor:pointer;animation:rise .35s var(--ease) both;transition:background .15s}
+.att-i:hover{background:var(--surface-2)}
+.att-i:hover .att-a{opacity:1}
+.att-ic{width:30px;height:30px;border-radius:8px;background:var(--surface-3);display:grid;place-items:center;color:var(--ink-2)}
+.att-t b{display:block;font-weight:500;font-size:14px;line-height:1.35}
+.att-t small{display:block;font-size:12.5px;color:var(--ink-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px}
+.att-a{font-size:12.5px;color:var(--ink-2);display:inline-flex;align-items:center;gap:4px;opacity:.0;transition:opacity .15s}
+.att-i:focus-visible .att-a{opacity:1}
+.sev{display:inline-flex;align-items:flex-end;gap:2px;height:14px}
+.sev i{width:3px;border-radius:1px;background:var(--line-2)}
+.sev i:nth-child(1){height:6px}.sev i:nth-child(2){height:10px}.sev i:nth-child(3){height:14px}
+.sev.s1 i:nth-child(1){background:var(--ink-3)}
+.sev.s2 i:nth-child(-n+2){background:var(--warn)}
+.sev.s3 i{background:var(--bad)}
+
+/* feed */
+.feed{list-style:none;margin:0;padding:0}
+.feed li+li{border-top:1px solid var(--line)}
+.feed button{display:grid;grid-template-columns:52px 10px minmax(0,1fr);gap:10px;align-items:baseline;width:100%;border:0;background:none;text-align:left;padding:11px 0;color:var(--ink);cursor:pointer}
+.feed button:hover b{text-decoration:underline;text-decoration-color:var(--line-3);text-underline-offset:3px}
+.feed time{font-size:12.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.feed .dot{width:7px;height:7px;border-radius:50%;background:var(--ink-4);align-self:center}
+.dot.bloq{background:var(--m-bloq)} .dot.good{background:var(--m-dev)} .dot.bad{background:var(--m-per)} .dot.ai{background:var(--ai)} .dot.info{background:var(--info)}
+.feed b{display:block;font-weight:500;font-size:14px;line-height:1.35}
+.feed small{display:block;font-size:12.5px;color:var(--ink-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* tabelas */
+table{font-size:14px}
+th{background:var(--surface-2)}
+table.grid td{padding-block:13px}
+.th-b{border:0;background:none;padding:0;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:4px}
+.th-b:hover{color:var(--ink)}
+th[aria-sort="ascending"],th[aria-sort="descending"]{color:var(--ink)}
+th.r .th-b{flex-direction:row-reverse}
+.arr{display:inline-block;width:10px;text-align:center}
+tr.grp td{background:var(--surface-2);padding-block:9px;font-size:13px;color:var(--ink-3);cursor:default}
+tr.grp td b{color:var(--ink);font-weight:600;margin-inline-end:12px}
+table.sel tbody tr.grp:hover td{background:var(--surface-2)}
+.tfoot{display:flex;gap:6px 24px;flex-wrap:wrap;padding:12px 24px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-3);background:var(--surface-2)}
+.tfoot b{color:var(--ink);font-weight:500}
+.mono.strong{color:var(--ink)}
+.seguido{color:var(--ai);margin-inline-start:6px;vertical-align:-1px}
+.aging{display:block;height:4px;border-radius:2px;background:var(--surface-3);overflow:hidden;max-width:120px}
+.aging i{display:block;height:100%;background:var(--ink-4);border-radius:2px;transform-origin:left;animation:fillx .7s var(--ease) both}
+.aging.late i{background:var(--warn)}
+td .sub .money{margin-top:7px;max-width:120px;margin-inline-start:auto;height:4px}
+.matrix td{padding-block:16px}
+.cellbar{display:block;height:3px;border-radius:2px;background:var(--surface-3);margin:8px 0 0 auto;max-width:150px;overflow:hidden}
+.cellbar i{display:block;height:100%;border-radius:2px;transform-origin:left;animation:fillx .8s var(--ease) both}
+
+/* filtros */
+.filters{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.select{position:relative;display:inline-flex;align-items:center}
+.select select{appearance:none;-webkit-appearance:none;height:32px;border:1px solid var(--line-2);border-radius:var(--r1);background:var(--surface);color:var(--ink);font:inherit;font-size:13.5px;padding:0 30px 0 10px;cursor:pointer}
+.select select:hover{border-color:var(--line-3)}
+.select svg{position:absolute;inset-inline-end:9px;pointer-events:none;color:var(--ink-3)}
+.toggle{display:inline-flex;align-items:center;gap:9px;font-size:13.5px;color:var(--ink-2);cursor:pointer;user-select:none}
+.toggle input{position:absolute;opacity:0;width:1px;height:1px}
+.toggle span{width:30px;height:18px;border-radius:9px;background:var(--line-2);position:relative;transition:background .2s var(--ease)}
+.toggle span::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:var(--surface);box-shadow:0 1px 2px oklch(0 0 0 / .2);transition:transform .2s var(--ease)}
+.toggle input:checked+span{background:var(--brand)}
+.toggle input:checked+span::after{transform:translateX(12px)}
+.toggle input:focus-visible+span{outline:2px solid var(--line-3);outline-offset:2px}
+.search input{width:240px;font-size:13.5px}
+.seg button{font-size:13px;padding:5px 12px}
+
+/* painel lateral de detalhe */
+.panel{padding:24px}
+.dh h3{font-size:23px}
+.meta2{font-size:13px;color:var(--ink-3)}
+.ptabs{display:flex;gap:18px;border-bottom:1px solid var(--line);margin-top:4px}
+.ptabs button{border:0;background:none;padding:12px 0 11px;font-size:13.5px;color:var(--ink-3);cursor:pointer;border-bottom:1.5px solid transparent;margin-bottom:-1px}
+.ptabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+.dl{margin:0;padding-top:6px}
+.dl>div{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}
+.dl dt{color:var(--ink-3);font-size:13px}
+.dl dd{margin:0}
+.dl.cols{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding:0;border-top:1px solid var(--line)}
+.dl.cols>div{display:block;border-bottom:0;padding:14px 0}
+.dl.cols>div+div{padding-inline-start:16px;border-inline-start:1px solid var(--line)}
+.dl.cols dt{font-size:12.5px;margin-bottom:3px}
+.dl.cols dd{font-size:16px;font-weight:500}
+.dsec h4{font-family:var(--serif);font-weight:400;font-size:17px;margin:0 0 14px;letter-spacing:-.005em}
+.tl li.now .d{width:9px;height:9px;margin-top:5px;margin-inline-start:-1px}
+
+/* contratos */
+.contract{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);background:var(--surface);border:1px solid var(--line);border-radius:var(--r3)}
+.ct-a{padding:24px 28px;display:flex;flex-direction:column;gap:22px;border-inline-end:1px solid var(--line)}
+.ct-b{padding:24px 28px}
+.contract h3{font-family:var(--serif);font-weight:400;font-size:22px;margin:0;letter-spacing:-.01em}
+.ct-pass{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;color:var(--ink-2);font-size:13.5px}
+.vig-t{position:relative;height:6px;border-radius:3px;background:var(--surface-3)}
+.vig-t i{position:absolute;inset-block:0;inset-inline-start:0;border-radius:3px;background:var(--brand);opacity:.85;transform-origin:left;animation:fillx .9s var(--ease) both}
+.vig-t b{position:absolute;top:-5px;width:2px;height:16px;background:var(--ink);border-radius:1px;transform:translateX(-1px)}
+.vig-l{display:flex;justify-content:space-between;margin-top:9px;font-size:12.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+table.accts{margin-top:22px;font-size:13.5px}
+table.accts th{background:none;padding:8px 0;font-size:11px}
+table.accts td{padding:10px 0}
+table.accts th:first-child,table.accts td:first-child{padding-inline-start:0}
+table.accts th:last-child,table.accts td:last-child{padding-inline-end:0}
+table.accts td .sub{max-width:none}
+
+/* reclamações */
+.rlist{list-style:none;margin:0;padding:0}
+.rlist li+li{border-top:1px solid var(--line)}
+.rlist li>button{display:grid;grid-template-columns:150px minmax(0,1fr) 220px 90px;gap:20px;align-items:center;width:100%;border:0;background:none;text-align:left;padding:16px 24px;color:var(--ink);cursor:pointer;transition:background .15s}
+.rlist.big li>button{grid-template-columns:150px minmax(0,1fr) 260px 90px 20px;padding:20px 24px}
+.rlist li>button:hover{background:var(--surface-2)}
+.rl-t b{display:block;font-weight:500}
+.rl-t small{display:block;font-size:13px;color:var(--ink-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rl-v{text-align:right}
+.chev{color:var(--ink-3);transition:transform .2s var(--ease)}
+.rlist li.open .chev{transform:rotate(180deg)}
+.rl-body{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:40px;padding:6px 24px 28px 194px}
+.rl-body h4{font-family:var(--serif);font-weight:400;font-size:17px;margin:0 0 12px}
+.steps-h{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.steps-h li{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:7px;font-size:11.5px;color:var(--ink-3);min-width:0}
+.steps-h li::before{content:"";position:absolute;top:4px;left:10px;right:-2px;height:1.5px;background:var(--line-2)}
+.steps-h li:last-child::before{display:none}
+.steps-h li.ok::before{background:var(--brand)}
+.steps-h i{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--line-3);background:var(--surface);position:relative;z-index:1}
+.steps-h li.ok i{background:var(--brand);border-color:var(--brand)}
+.steps-h li.now i{border-color:var(--warn);box-shadow:0 0 0 3px var(--warn-soft)}
+.steps-h li.skip i{border-style:dashed}
+.steps-h li.ok span{color:var(--ink-2)}
+.steps-h li.now span{color:var(--warn);font-weight:500}
+.steps-h span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+
+/* tabs de clientes */
+.tabs button{font-size:14.5px}
+
+/* adaptação por largura do conteúdo */
+@container main (max-width:1100px){
+  .split,.contract{grid-template-columns:minmax(0,1fr)}
+  .split>.pane+.pane{border-inline-start:0;border-top:1px solid var(--line)}
+  .ct-a{border-inline-end:0;border-bottom:1px solid var(--line)}
+  .r21,.r3{grid-template-columns:minmax(0,1fr)}
+  .rlist li>button,.rlist.big li>button{grid-template-columns:minmax(0,1fr) 90px;row-gap:12px}
+  .rlist li>button .mono{grid-column:1/-1}
+  .rlist .steps-h{grid-column:1/-1;max-width:360px}
+  .rlist .chev{display:none}
+  .rl-body{grid-template-columns:minmax(0,1fr);padding-inline-start:24px}
+}
+@container main (max-width:640px){.dl.cols{grid-template-columns:repeat(2,minmax(0,1fr))}.dl.cols>div:nth-child(3){padding-inline-start:0;border-inline-start:0}.dl>div{grid-template-columns:120px minmax(0,1fr)}.pane,.ct-a,.ct-b{padding:20px}}
+@media (max-width:640px){.kbd.hide-sm{display:none}.search input{width:150px}}
+.surface .tbl-wrap{margin:0}
+.rlist li>button{grid-template-columns:150px minmax(0,1fr) 300px 90px}
+.rlist.big li>button{grid-template-columns:150px minmax(0,1fr) 320px 90px 20px}
+.rl-body{padding-inline-start:194px}
+table.fixed td:first-child{text-overflow:clip}
+table.grid th{letter-spacing:.05em}
 </style>
 <div id="root"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
@@ -2217,9 +2451,125 @@ function IAPage({ai, go}){
   </div>`;
 }
 
+/* ================= Componentes de domínio ================= */
+
+/* O que pede atenção agora: regras simples sobre a base, ordenadas por gravidade e valor */
+const ATK = {pedido:['Sem pedido de desbloqueio','lock'], parado:['Parado com bloqueio','clock'], stf:['STF','landmark'], vig:['Contrato terminando','file'], prog:['Prognóstico piorou','trend']};
+const ATENCAO = (() => {
+  const out = [];
+  for (const b of Tn.filter(x => x.status === 'Ativo')) {
+    const dias = D.Lr(b.data, Hn), pedido = b.historico.some(h => /pedido de desbloqueio/i.test(h.text));
+    if (!pedido && dias >= 15) out.push({k:'pedido', sev: b.valorNum >= 100000 ? 3 : 2, t:`${fmtR(b.valorNum)} bloqueados há ${dias} dias, sem pedido de desbloqueio`, s:`${b.cliente} · ${b.contrato}`, v:b.valorNum, go:['bloqueios', {sel:b.id, aba:'ativos'}]});
+  }
+  for (const p of Se) { const bl = bloqAtivo(p); if (bl > 0 && p.diasParado >= PARADO) out.push({k:'parado', sev:3, t:`Parado há ${p.diasParado} dias com ${fmtK(bl)} bloqueados`, s:`${p.cliente} · ${p.desc}`, v:bl, go:['processos', {sel:p.id}]}); }
+  for (const r of za) if (r.liminar === 'Pendente') out.push({k:'stf', sev:2, t:`${r.numero}: liminar ainda não apreciada`, s:`${r.cliente} · ${fmtK(r.valorDiscutido)} em discussão`, v:r.valorDiscutido, go:['reclamacoes', {}]});
+  for (const id of ti) for (const c of fe[id].contratos) if (D.Tk(c.vigencia).id === 'atencao') { const k = D.Ws(id, c.orgao); out.push({k:'vig', sev:1, t:`Contrato com ${c.orgao} termina este ano`, s:`${fe[id].name} · passivo de ${fmtK(k.passivo.total)}`, v:k.passivo.total, go:['clientes', {cli:id}]}); }
+  for (const p of Se) if (p.prognosticoAntes && p.prognostico === 'Provável') out.push({k:'prog', sev:2, t:`Prognóstico passou de ${p.prognosticoAntes.era.toLowerCase()} para provável`, s:`${p.cliente} · ${p.desc}`, v:p.valorCausa, go:['processos', {sel:p.id}]});
+  return out.sort((a, b) => b.sev - a.sev || b.v - a.v);
+})();
+
+function Atencao({go, max = 6}){
+  const [f, setF] = useState(null);
+  const tipos = Object.keys(ATK).filter(k => ATENCAO.some(a => a.k === k));
+  const lista = ATENCAO.filter(a => !f || a.k === f);
+  return html`<div className="att">
+    <div className="att-f" role="group" aria-label="Filtrar por tipo">
+      <button aria-pressed=${!f} onClick=${() => setF(null)}>Tudo <span>${ATENCAO.length}</span></button>
+      ${tipos.map(k => html`<button key=${k} aria-pressed=${f === k} onClick=${() => setF(f === k ? null : k)}>${ATK[k][0]} <span>${ATENCAO.filter(a => a.k === k).length}</span></button>`)}
+    </div>
+    <ol className="att-l">${lista.slice(0, max).map((a, i) => html`<li key=${a.k + i}><button className="att-i" onClick=${() => go(...a.go)} style=${{animationDelay: (i * 40) + 'ms'}}>
+      <span className=${'sev s' + a.sev} aria-label=${['', 'Baixa', 'Média', 'Alta'][a.sev] + ' prioridade'}><i></i><i></i><i></i></span>
+      <span className="att-ic"><${Icon} n=${ATK[a.k][1]} s=${15}/></span>
+      <span className="att-t"><b>${a.t}</b><small>${a.s}</small></span>
+      <span className="att-a">Abrir <${Icon} n="right" s=${13}/></span>
+    </button></li>`)}</ol>
+    ${lista.length > max ? html`<p className="cnt" style=${{margin:'10px 0 0'}}>Mais ${lista.length - max} itens com esse filtro.</p>` : null}
+  </div>`;
+}
+
+/* Fluxo do dinheiro: tudo o que foi bloqueado se divide no que segue bloqueado, no que voltou e no que foi perdido */
+function FluxoDinheiro({dev, per, hoje, h = 230, titulo = 'Bloqueado em 2026'}){
+  const [ref, W] = useW(720);
+  const [hov, setHov] = useState(null);
+  const tot = dev + per + hoje || 1;
+  const nodeW = 10, gap = 18, top = 4, H = h - 8;
+  const labW = Math.min(250, W * .38), rightX = W - labW - nodeW;
+  const parts = [['bloqueado', 'Ainda bloqueado', hoje, 'nas contas dos contratos'], ['devolvido', 'Devolvido aos clientes', dev, 'liberado por decisão judicial'], ['perdido', 'Perdido', per, 'transferido a credores']].filter(p => p[2] > 0);
+  const avail = H - gap * (parts.length - 1);
+  let ly = top, ry = top;
+  const bands = parts.map(([k, l, v, s]) => { const lh = v / tot * H, rh = Math.max(4, v / tot * avail); const b = {k, l, v, s, ly, lh, ry, rh}; ly += lh; ry += rh + gap; return b; });
+  // rótulos com espaço mínimo entre si
+  let last = -99; bands.forEach(b => { b.ty = Math.max(b.ry + b.rh / 2, last + 72); last = b.ty; });
+  const hh = Math.max(h, last + 36);
+  const mid = (nodeW + rightX) / 2;
+  return html`<div ref=${ref} className="flow">
+    <svg className="svgc" width=${W} height=${hh} viewBox=${`0 0 ${W} ${hh}`} role="img" aria-label=${`${titulo}: ${fmtR(tot)}. ` + bands.map(b => `${b.l} ${fmtR(b.v)}`).join(', ')} onMouseLeave=${() => setHov(null)}>
+      <rect x="0" y=${top} width=${nodeW} height=${H} rx="2" fill="var(--ink)"/>
+      ${bands.map((b, i) => html`<g key=${b.k} onMouseEnter=${() => setHov(b.k)} style=${{cursor:'default'}}>
+        <path className="band" style=${{animationDelay: (i * 120) + 'ms', opacity: hov && hov !== b.k ? .18 : .32}} fill=${MONEY[b.k === 'bloqueado' ? 'bloqueado' : b.k]}
+          d=${`M${nodeW},${b.ly} C${mid},${b.ly} ${mid},${b.ry} ${rightX},${b.ry} L${rightX},${b.ry + b.rh} C${mid},${b.ry + b.rh} ${mid},${b.ly + b.lh} ${nodeW},${b.ly + b.lh} Z`}/>
+        <rect x=${rightX} y=${b.ry} width=${nodeW} height=${b.rh} rx="2" fill=${MONEY[b.k]}/>
+        <g transform=${`translate(${rightX + nodeW + 16},${b.ty})`} style=${{opacity: hov && hov !== b.k ? .45 : 1, transition:'opacity .2s'}}>
+          <text y="-14" fontSize="12.5" fill="var(--ink-2)">${b.l}</text>
+          <text y="10" fontSize="22" fill="var(--ink)" style=${{fontFamily:'var(--serif)', fontVariantNumeric:'lining-nums tabular-nums'}}>${fmtK(b.v)}</text>
+          <text y="28" fontSize="12" fill="var(--ink-3)">${Math.round(b.v / tot * 100)}% · ${b.s}</text>
+        </g>
+      </g>`)}
+    </svg>
+  </div>`;
+}
+
+/* Matriz de clientes: uma linha por organização, barras dentro da célula na mesma escala da coluna */
+function MatrizClientes({go}){
+  const rows = ti.map(id => ({id, a:D.aa(id), parados:Se.filter(p => p.clienteId === id && p.diasParado >= PARADO).length}));
+  const mx = f => Math.max(1, ...rows.map(r => f(r)));
+  const cols = [
+    ['Passivo estimado', r => r.a.passivo.total, 'var(--brand)'],
+    ['Bloqueado hoje', r => r.a.bloqueadoAtivo, MONEY.bloqueado],
+    ['Devolvido', r => r.a.levantado, MONEY.devolvido],
+    ['Perdido', r => r.a.perdido, MONEY.perdido]
+  ];
+  return html`<div className="tbl-wrap"><table className="sel matrix">
+    <thead><tr><th>Organização</th><th className="r">Processos</th>${cols.map(([l]) => html`<th key=${l} className="r">${l}</th>`)}</tr></thead>
+    <tbody>${rows.map(r => html`<tr key=${r.id} onClick=${() => go('clientes', {cli:r.id})}>
+      <td><span className="who-n">${fe[r.id].name}</span><span className="sub">${plural(fe[r.id].contratos.length, 'contrato de gestão', 'contratos de gestão')}</span></td>
+      <td className="r num">${r.a.processos.length}<span className="sub" style=${{color: r.parados ? 'var(--warn)' : null}}>${r.parados ? plural(r.parados, 'parado', 'parados') : 'nenhum parado'}</span></td>
+      ${cols.map(([l, f, c]) => { const v = f(r), m = mx(f); return html`<td key=${l} className="r num"><span>${v ? fmtK(v) : '—'}</span><span className="cellbar"><i style=${{width: (v / m * 100) + '%', background:c}}></i></span></td>`; })}
+    </tr>`)}</tbody></table></div>`;
+}
+
+/* Vigência do contrato com a marca de hoje */
+function Vigencia({vig}){
+  const [a, b] = String(vig).split('–').map(Number);
+  const ini = new Date(a, 0, 1), fim = new Date(b, 11, 31);
+  const pct = Math.max(0, Math.min(1, (Hn - ini) / (fim - ini)));
+  const enc = Hn > fim;
+  return html`<div className="vig" role="img" aria-label=${`Vigência de ${a} a ${b}. ${enc ? 'Encerrada' : Math.round(pct * 100) + '% decorrido'}`}>
+    <div className="vig-t"><i style=${{width: pct * 100 + '%'}}></i>${enc ? null : html`<b style=${{left: pct * 100 + '%'}}></b>`}</div>
+    <div className="vig-l"><span>${a}</span>${enc ? html`<span>Encerrada em ${b}</span>` : html`<span>Hoje · ${Math.round(pct * 100)}% do prazo</span>`}<span>${b}</span></div>
+  </div>`;
+}
+
+/* Etapas de uma reclamação constitucional */
+function etapasRcl(r){
+  const t = r.movs.map(m => m[1].toLowerCase()).join(' | ');
+  const st = [
+    {l:'Protocolada', ok:/protocolada/.test(t)},
+    {l:'Informações', ok:/informaç/.test(t)},
+    {l:'Liminar', ok: r.liminar === 'Deferida'},
+    {l: r.status === 'Julgada' ? 'Julgada' : 'Julgamento', ok: r.status === 'Julgada'}
+  ];
+  const lastOk = st.map(s => s.ok).lastIndexOf(true);
+  return st.map((s, i) => ({...s, pulou: !s.ok && i < lastOk, atual: !s.ok && i === lastOk + 1}));
+}
+function Etapas({r, compacto}){
+  return html`<ol className=${'steps-h' + (compacto ? ' compact' : '')} aria-label="Etapas">${etapasRcl(r).map((s, i) => html`<li key=${i} className=${s.ok ? 'ok' : s.atual ? 'now' : s.pulou ? 'skip' : ''}>
+    <i></i>${compacto ? null : html`<span>${s.l}</span>`}</li>`)}</ol>`;
+}
+
 /* ================= Painel ================= */
 function Painel({go, perguntar}){
-  const {pins, togglePin} = useContext(AppCtx);
+  const {pins} = useContext(AppCtx);
   const [sel, setSel] = useState(null);
   const [q, setQ] = useState('');
   const meses = MESC.slice(0, Hn.getMonth() + 1).map(m => m[0].toUpperCase() + m.slice(1));
@@ -2227,124 +2577,132 @@ function Painel({go, perguntar}){
   const h = sel == null ? meses.length - 1 : sel;
   const ativos = Tn.filter(b => b.status === 'Ativo');
   const parados = D.nc(Se).length;
-  const dev = sum(Tn, b => b.devolvido), per = sum(Tn, b => b.perdido);
-  const prov = sum(Se.filter(p => p.prognostico === 'Provável'), p => p.valorCausa);
+  const dev = sum(Tn, b => b.devolvido), per = sum(Tn, b => b.perdido), orig = sum(Tn, b => b.original);
+  const altas = ATENCAO.filter(a => a.sev === 3).length;
   return html`<div className="page v-in">
-    <${PH} eyebrow=${`Base atualizada em ${fmtDL(Hn)}`} title=${`${greeting()}, Orlando.`}
-      desc=${`${fmtK(ir.bloqueadoAtivo)} seguem bloqueados em ${ativos.length} bloqueios. ${parados} processos estão parados há mais de ${PARADO} dias, e ${fmtK(per)} já foram perdidos para credores em 2026.`}/>
-    <div className="strip fill-in" style=${{animationDelay:'60ms'}}>
-      <${Fig} label="Bloqueado hoje" value=${ir.bloqueadoAtivo} fmt=${fmtK} sub=${`${ativos.length} bloqueios em ${ti.length} clientes`} onClick=${() => go('bloqueios', {aba:'ativos'})}/>
-      <${Fig} label="Processos" value=${Se.length} fmt=${fmtN} sub=${html`<span className="trend bad">${parados} parados há ${PARADO}+ dias</span>`} onClick=${() => go('processos', {parados:true})}/>
-      <${Fig} label="Passivo estimado" value=${passivoTotal} fmt=${fmtK} sub=${`${fmtK(prov)} provável`} onClick=${() => go('desempenho')}/>
-      <${Fig} label="Perdido em 2026" value=${per} fmt=${fmtK} sub=${html`<span className="trend good">${fmtK(dev)} devolvidos</span>`} onClick=${() => go('bloqueios', {aba:'perda'})}/>
+    <header className="ph fill-in"><div>
+      <h1>${greeting()}, Orlando.</h1>
+      <p>${altas ? html`<b>${plural(altas, 'assunto pede', 'assuntos pedem')} atenção hoje.</b> ` : null}${fmtK(ir.bloqueadoAtivo)} seguem bloqueados em ${ativos.length} bloqueios, e ${parados} processos estão parados há mais de ${PARADO} dias.</p>
+      <div className="meta"><span>Base de ${fmtDL(Hn)}</span><span>${ti.length} clientes</span><span>${Se.length} processos</span><span>${D.Ws ? sum(ti, id => fe[id].contratos.length) : ''} contratos de gestão</span></div>
+    </div></header>
+
+    <form className="askin fill-in" style=${{animationDelay:'40ms'}} onSubmit=${e => { e.preventDefault(); if (q.trim()) { perguntar(q); setQ(''); } }}>
+      <svg className="spark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" dangerouslySetInnerHTML=${{__html:P.sparkle}}></svg>
+      <input id="ask-painel" aria-label="Pergunte ao assistente" placeholder="Pergunte ao assistente, por exemplo: quanto o Instituto Gnosis perdeu em setembro?" value=${q} onInput=${e => setQ(e.target.value)}/>
+      <span className="kbd hide-sm">⌘.</span>
+      <button type="submit" className=${'send' + (q.trim() ? ' ready' : '')} aria-label="Perguntar" disabled=${!q.trim()}><${Icon} n="up" s=${15} w=${2}/></button>
+    </form>
+
+    <div className="split fill-in" style=${{animationDelay:'80ms'}}>
+      <section className="pane">
+        <div className="sec-h"><h2>Para onde foi o dinheiro bloqueado</h2><button className="link" onClick=${() => go('bloqueios', {aba:'todos'})}>Ver bloqueios <${Icon} n="right" s=${13}/></button></div>
+        <div className="flow-head"><span className="fig">${fmtK(orig)}</span><span>bloqueados em 2026, em ${plural(Tn.length, 'bloqueio', 'bloqueios')}</span></div>
+        <${FluxoDinheiro} dev=${dev} per=${per} hoje=${ir.bloqueadoAtivo}/>
+      </section>
+      <section className="pane">
+        <div className="sec-h"><h2>Atenção agora</h2><span className="cnt">${plural(ATENCAO.length, 'item', 'itens')}</span></div>
+        <${Atencao} go=${go} max=${5}/>
+      </section>
     </div>
-    <section className="askbar fill-in" style=${{animationDelay:'120ms'}}>
-      <form className="askin" onSubmit=${e => { e.preventDefault(); if (q.trim()) { perguntar(q); setQ(''); } }}>
-        <svg className="spark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" dangerouslySetInnerHTML=${{__html:P.sparkle}}></svg>
-        <input id="ask-painel" aria-label="Pergunte ao assistente" placeholder="Pergunte ao assistente sobre processos, bloqueios ou contratos" value=${q} onInput=${e => setQ(e.target.value)}/>
-        <button type="submit" className=${'send' + (q.trim() ? ' ready' : '')} aria-label="Perguntar" disabled=${!q.trim()}><${Icon} n="up" s=${15} w=${2}/></button>
-      </form>
-      <div className="tpls">${MODELOS.filter(m => !m.cli).slice(0, 4).map(m => html`<button key=${m.id} className="tpl" onClick=${() => perguntar(m.p())}><${Icon} n="book" s=${13}/>${m.t}</button>`)}</div>
-    </section>
-    <div className="row r21 stretch">
-      <${Card} delay="160ms" title="Bloqueios por mês" sub="Valor bloqueado em 2026, por área" right=${html`<${Legend} items=${series.map(s => [s.label, s.color])}/>`}>
-        <div onMouseLeave=${() => setSel(null)}><${StackBars} h=${290} cats=${meses} series=${series} fmt=${v => fmtK(v).replace('R$ ', '')} sel=${sel} onSel=${setSel} label="Valor bloqueado por mês, por área, em 2026"/></div>
-        <div className="readout"><b>${D.V12mesLongo(meses[h])}</b><span>Total <b className="num">${fmtR(sum(series, s => s.vals[h]))}</b></span>${series.map(s => html`<span key=${s.label}>${s.label} <b className="num">${fmtK0(s.vals[h])}</b></span>`)}</div>
-      <//>
-      <${Card} delay="200ms" title="Últimos 7 dias" sub=${`${fmtD(CORTE)} a ${fmtD(Hn)}`}>
-        <div className="list">${NOVIDADES.slice(0, 7).map((n, i) => html`<button key=${i} className="li" onClick=${() => go(...n.go)}>
-          <span style=${{minWidth:0}}><span className="t"><i className="mark" style=${{'--sc': `var(--${n.tone === 'bloq' ? 'm-bloq' : n.tone === 'good' ? 'm-dev' : n.tone === 'bad' ? 'm-per' : n.tone === 'ai' ? 'ai' : 'info'})`}}></i>${n.t}</span><span className="s">${n.s}</span></span>
-          <span className="w">${fmtD(n.d)}</span></button>`)}</div>
-      <//>
-    </div>
-    ${pins.length ? html`<section className="fill-in" style=${{display:'flex',flexDirection:'column',gap:12}}>
-      <div className="card-h" style=${{margin:0}}><div><h2 style=${{fontSize:14,fontWeight:500,margin:0}}>Fixados por você</h2><div className="sub" style=${{fontSize:12.5,color:'var(--ink-3)'}}>Gráficos das conversas com o assistente, recalculados com a base atual</div></div></div>
-      <div className="row r11">${pins.map(p => html`<div key=${p.id} style=${{display:'flex',flexDirection:'column',gap:6}}><${Grafico} src=${p.src} fixado onOpen=${num => { const pr = procByNum(num); pr && go('processos', {sel:pr.id}); }}/></div>`)}</div>
+
+    ${pins.length ? html`<section className="fill-in" style=${{display:'flex',flexDirection:'column',gap:14}}>
+      <div className="sec-h"><h2>Fixados por você</h2><span className="cnt">Recalculados com a base atual</span></div>
+      <div className="row r11">${pins.map(p => html`<${Grafico} key=${p.id} src=${p.src} fixado onOpen=${num => { const pr = procByNum(num); pr && go('processos', {sel:pr.id}); }}/>`)}</div>
     </section>` : null}
-    <div className="row r21">
-      <${Card} delay="240ms" className="flush" >
-        <div className="card-h" style=${{padding:'20px 24px 0',marginBottom:12}}><div><h2>Bloqueios recentes</h2></div><button className="link" onClick=${() => go('bloqueios', {aba:'todos'})}>Ver os ${Tn.length} bloqueios <${Icon} n="right" s=${13}/></button></div>
-        <div className="tbl-wrap"><table className="sel">
-          <thead><tr><th>Data</th><th>Cliente · contrato</th><th className="hide-md">Processo</th><th className="r">Valor</th><th>Situação</th></tr></thead>
-          <tbody>${Tn.slice(0, 7).map(b => html`<tr key=${b.id} onClick=${() => go('bloqueios', {sel:b.id, aba:'todos'})}>
-            <td className="num muted">${fmtD(b.data)}</td>
-            <td><span className="who-n">${b.cliente}</span><span className="sub">${b.contrato}</span></td>
-            <td className="hide-md"><span className="mono">${procById(b.processoId).numero}</span></td>
-            <td className="r num">${fmtR(b.original)}</td><td><${St} k=${stB(b)}/></td></tr>`)}</tbody>
-        </table></div>
-      <//>
-      <${Card} delay="280ms" title="Clientes" right=${html`<${Legend} items=${[['Devolvido', MONEY.devolvido], ['Perdido', MONEY.perdido], ['Bloqueado', MONEY.bloqueado]]}/>`}>
-        <div className="list">${ti.map(id => { const a = D.aa(id);
-          return html`<button key=${id} className="li" style=${{gridTemplateColumns:'minmax(0,1fr)',gap:8}} onClick=${() => go('clientes', {cli:id})}>
-            <span style=${{display:'flex',justifyContent:'space-between',gap:12}}><span className="t">${fe[id].name}</span><span className="num">${fmtK(a.bloqueadoAtivo)}</span></span>
-            <${MoneyBar} devolvido=${a.levantado} perdido=${a.perdido} bloqueado=${a.bloqueadoAtivo}/>
-            <span className="s">${a.processos.length} processos · passivo ${fmtK(a.passivo.total)}</span></button>`; })}</div>
-      <//>
+
+    <div className="row r21 fill-in" style=${{animationDelay:'120ms'}}>
+      <section>
+        <div className="sec-h"><h2>Bloqueios por mês</h2><${Legend} items=${series.map(s => [s.label, s.color])}/></div>
+        <div onMouseLeave=${() => setSel(null)}><${StackBars} h=${250} cats=${meses} series=${series} fmt=${v => fmtK(v).replace('R$ ', '')} sel=${sel} onSel=${setSel} label="Valor bloqueado por mês, por área, em 2026"/></div>
+        <div className="readout"><b>${D.V12mesLongo(meses[h])}</b><span>Total <b className="num">${fmtR(sum(series, s => s.vals[h]))}</b></span>${series.map(s => html`<span key=${s.label}>${s.label} <b className="num">${fmtK0(s.vals[h])}</b></span>`)}</div>
+      </section>
+      <section>
+        <div className="sec-h"><h2>Últimos 7 dias</h2><span className="cnt">${fmtD(CORTE)} a ${fmtD(Hn)}</span></div>
+        <ol className="feed">${NOVIDADES.slice(0, 6).map((n, i) => html`<li key=${i}><button onClick=${() => go(...n.go)}>
+          <time>${fmtD(n.d)}</time><i className=${'dot ' + n.tone}></i><span><b>${n.t}</b><small>${n.s}</small></span></button></li>`)}</ol>
+      </section>
     </div>
-    <${Card} delay="320ms" title="Reclamações no STF" right=${html`<button className="link" onClick=${() => go('reclamacoes')}>Abrir <${Icon} n="right" s=${13}/></button>`}>
-      <div className="row r3">${za.map(r => html`<button key=${r.id} className="rowbtn" onClick=${() => go('reclamacoes')}>
-        <div className="r"><span className="rcl-n">${r.numero}</span><span className=${'st ' + (r.liminar === 'Deferida' ? 'good' : 'warn')}>Liminar ${r.liminar.toLowerCase()}</span></div>
-        <div className="r"><span className="who-n">${r.cliente}</span><span className="num">${fmtK(r.valorDiscutido)}</span></div>
-        <div className="who-s">${r.assunto}</div></button>`)}</div>
-    <//>
+
+    <section className="fill-in" style=${{animationDelay:'160ms'}}>
+      <div className="sec-h"><h2>Clientes</h2><button className="link" onClick=${() => go('clientes')}>Abrir clientes <${Icon} n="right" s=${13}/></button></div>
+      <div className="surface"><${MatrizClientes} go=${go}/></div>
+    </section>
+
+    <section className="fill-in" style=${{animationDelay:'200ms'}}>
+      <div className="sec-h"><h2>Reclamações no STF</h2><button className="link" onClick=${() => go('reclamacoes')}>Abrir reclamações <${Icon} n="right" s=${13}/></button></div>
+      <div className="surface"><ul className="rlist">${za.map(r => html`<li key=${r.id}><button onClick=${() => go('reclamacoes')}>
+        <span className="mono">${r.numero}</span>
+        <span className="rl-t"><b>${r.cliente}</b><small>${r.assunto}</small></span>
+        <${Etapas} r=${r}/>
+        <span className="num rl-v">${fmtK(r.valorDiscutido)}</span>
+      </button></li>`)}</ul></div>
+    </section>
     <p className="foot">Dados de exemplo, os mesmos do App dos Sócios. Nada do que você faz aqui muda o Legal One.</p>
   </div>`;
 }
 
 /* ================= Processos ================= */
+const COLS_P = [
+  ['numero', 'Processo', (a, b) => a.numero.localeCompare(b.numero)],
+  ['cliente', 'Cliente', (a, b) => a.cliente.localeCompare(b.cliente) || a.contrato.localeCompare(b.contrato)],
+  ['parado', 'Parado', (a, b) => a.diasParado - b.diasParado],
+  ['valor', 'Valor', (a, b) => a.valorCausa - b.valorCausa],
+  ['bloq', 'Bloqueado', (a, b) => bloqAtivo(a) - bloqAtivo(b)]
+];
+const MAXDIAS = Math.max(...Se.map(p => p.diasParado));
 function Processos({opts, go, perguntar, setCtx}){
-  const {seg, toggleSeg} = useContext(AppCtx);
+  const {seg} = useContext(AppCtx);
   const [q, setQ] = useState('');
   const [cli, setCli] = useState(opts.cli || null);
   const [area, setArea] = useState(null);
-  const [parados, setParados] = useState(!!opts.parados);
-  const [comBloq, setComBloq] = useState(false);
-  const [sigo, setSigo] = useState(false);
-  const [ord, setOrd] = useState(opts.parados ? 'parado' : 'recente');
+  const [vis, setVis] = useState(opts.parados ? 'parados' : 'todos');
+  const [ordem, setOrdem] = useState(opts.parados ? ['parado', -1] : ['parado', 1]);
+  const [agrupar, setAgrupar] = useState(false);
   const [sel, setSel] = useState(opts.sel || null);
   const [marc, setMarc] = useState([]);
   const f = q.trim().toLowerCase();
-  const ORD = {recente:(a, b) => a.diasParado - b.diasParado, parado:(a, b) => b.diasParado - a.diasParado, valor:(a, b) => b.valorCausa - a.valorCausa, bloq:(a, b) => bloqAtivo(b) - bloqAtivo(a)};
-  const list = Se.filter(p => (!cli || p.clienteId === cli) && (!area || p.area === area) && (!parados || p.diasParado >= PARADO) && (!comBloq || bloqAtivo(p) > 0) && (!sigo || seg.includes(p.id))
-    && (!f || (p.numero + p.desc + p.cliente + p.contrato + p.status).toLowerCase().includes(f))).sort(ORD[ord]);
+  const cmp = COLS_P.find(c => c[0] === ordem[0])[2];
+  const list = Se.filter(p => (!cli || p.clienteId === cli) && (!area || p.area === area)
+    && (vis !== 'parados' || p.diasParado >= PARADO) && (vis !== 'bloq' || bloqAtivo(p) > 0) && (vis !== 'sigo' || seg.includes(p.id))
+    && (!f || (p.numero + p.desc + p.cliente + p.contrato + p.status).toLowerCase().includes(f))).sort((a, b) => cmp(a, b) * ordem[1]);
   const cur = (sel && procById(sel)) || list[0];
   useEffect(() => { if (cur) setCtx({label:`Processo ${cur.numero}`, nota:`A usuária está vendo o processo ${cur.numero} (${cur.cliente}, ${cur.contrato}). Se a pergunta falar de "este processo", use ver_processo com esse número.`}); }, [cur && cur.id]);
   const marcar = id => setMarc(m => m.includes(id) ? m.filter(x => x !== id) : m.length >= 8 ? m : [...m, id]);
+  const ordenar = k => setOrdem(o => o[0] === k ? [k, -o[1]] : [k, k === 'numero' || k === 'cliente' ? 1 : -1]);
+  const grupos = agrupar ? ti.map(id => ({id, ps:list.filter(p => p.clienteId === id)})).filter(g => g.ps.length) : [{id:null, ps:list}];
+  const linha = p => { const bl = bloqAtivo(p), on = marc.includes(p.id);
+    return html`<tr key=${p.id} aria-selected=${cur && cur.id === p.id} onClick=${() => setSel(p.id)}>
+      <td onClick=${e => { e.stopPropagation(); marcar(p.id); }}><button className="cb" role="checkbox" aria-checked=${on} aria-label=${'Selecionar ' + p.numero}>${on ? html`<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>` : null}</button></td>
+      <td><span className="mono strong">${p.numero}</span>${seg.includes(p.id) ? html`<span className="seguido" title="Você segue"><${Icon} n="bookmark" s=${11}/></span>` : null}<span className="sub">${p.desc}</span></td>
+      <td><span className="who-n">${p.cliente}</span><span className="sub">${p.contrato}</span></td>
+      <td><span className=${'aging' + (p.diasParado >= PARADO ? ' late' : '')}><i style=${{width: Math.max(2, p.diasParado / MAXDIAS * 100) + '%'}}></i></span><span className="sub num">${p.diasParado ? plural(p.diasParado, 'dia', 'dias') : 'hoje'}</span></td>
+      <td className="r num">${p.valorCausa ? fmtK(p.valorCausa) : '—'}${p.valorCausa ? html`<span className="sub"><${Prog} p=${p.prognostico}/></span>` : null}</td>
+      <td className="r num" style=${{color: bl ? 'var(--ink)' : 'var(--ink-4)'}}>${bl ? fmtK(bl) : '—'}</td>
+    </tr>`; };
   return html`<div className="page v-in">
-    <${PH} eyebrow="Carteira" title="Processos" desc=${`${Se.length} processos dos 4 clientes. Selecione até 8 para analisar com o assistente.`}/>
+    <header className="ph fill-in"><div><h1>Processos</h1><p>${Se.length} processos dos ${ti.length} clientes. Marque até 8 para o assistente analisar juntos.</p></div></header>
+    <div className="filters fill-in">
+      <label className="search"><${Icon} n="search" s=${14}/><input id="proc-q" placeholder="Número, cliente ou assunto" value=${q} onInput=${e => setQ(e.target.value)}/></label>
+      <div className="seg" role="group" aria-label="Mostrar">${[['todos', 'Todos'], ['parados', `Parados ${PARADO}+`], ['bloq', 'Com bloqueio'], ['sigo', `Sigo · ${seg.length}`]].map(([k, l]) => html`<button key=${k} aria-pressed=${vis === k} onClick=${() => setVis(k)}>${l}</button>`)}</div>
+      <label className="select"><span className="sr">Cliente</span><select value=${cli || ''} onChange=${e => setCli(e.target.value || null)}><option value="">Todos os clientes</option>${ti.map(id => html`<option key=${id} value=${id}>${fe[id].name}</option>`)}</select><${Icon} n="down" s=${13}/></label>
+      <label className="select"><span className="sr">Área</span><select value=${area || ''} onChange=${e => setArea(e.target.value || null)}><option value="">Todas as áreas</option>${AREAS.map(a => html`<option key=${a} value=${a}>${a}</option>`)}</select><${Icon} n="down" s=${13}/></label>
+      <span className="grow"></span>
+      <label className="toggle"><input type="checkbox" checked=${agrupar} onChange=${e => setAgrupar(e.target.checked)}/><span></span>Agrupar por cliente</label>
+    </div>
     <div className="md">
-      <${Card} className="flush" delay="60ms">
-        <div style=${{padding:'18px 24px 4px'}}>
-          <div className="toolbar">
-            <label className="search"><${Icon} n="search" s=${14}/><input id="proc-q" placeholder="Número, cliente ou assunto" value=${q} onInput=${e => setQ(e.target.value)}/></label>
-            <div className="chips">${[[null, 'Todos'], ...ti.map(id => [id, fe[id].name])].map(([id, l]) => html`<button key=${l} className="fbtn" aria-pressed=${cli === id} onClick=${() => setCli(id)}>${l}</button>`)}</div>
-          </div>
-          <div className="toolbar">
-            <div className="chips">${[null, ...AREAS].map(a => html`<button key=${a || 't'} className="fbtn" aria-pressed=${area === a} onClick=${() => setArea(a)}>${a || 'Todas as áreas'}</button>`)}</div>
-            <span className="grow"></span>
-            <div className="chips">
-              <button className="fbtn" aria-pressed=${parados} onClick=${() => setParados(v => !v)}>Parados ${PARADO}+ dias</button>
-              <button className="fbtn" aria-pressed=${comBloq} onClick=${() => setComBloq(v => !v)}>Com bloqueio</button>
-              <button className="fbtn" aria-pressed=${sigo} onClick=${() => setSigo(v => !v)}><${Icon} n="bookmark" s=${12}/>Sigo <span className="n">${seg.length}</span></button>
-            </div>
-          </div>
-          <div className="toolbar" style=${{marginBottom:6}}><span className="cnt">${list.length} de ${Se.length} processos</span><span className="grow"></span>
-            <div className="seg" role="group" aria-label="Ordenar">${[['recente', 'Movimentados'], ['parado', 'Mais parados'], ['valor', 'Maior valor'], ['bloq', 'Mais bloqueado']].map(([k, l]) => html`<button key=${k} aria-pressed=${ord === k} onClick=${() => setOrd(k)}>${l}</button>`)}</div></div>
-        </div>
-        <div className="tbl-wrap"><table className="sel fixed">
-          <colgroup><col style=${{width:48}}/><col style=${{width:"36%"}}/><col style=${{width:"26%"}}/><col style=${{width:"22%"}}/><col/></colgroup><thead><tr><th style=${{width:36}}><span className="sr">Selecionar</span></th><th>Processo</th><th>Cliente · contrato</th><th>Situação</th><th className="r">Em discussão</th></tr></thead>
-          <tbody>${list.map(p => { const bl = bloqAtivo(p), on = marc.includes(p.id);
-            return html`<tr key=${p.id} aria-selected=${cur && cur.id === p.id} onClick=${() => setSel(p.id)}>
-              <td onClick=${e => { e.stopPropagation(); marcar(p.id); }}><button className="cb" role="checkbox" aria-checked=${on} aria-label=${'Selecionar ' + p.numero}>${on ? html`<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>` : null}</button></td>
-              <td><span className="mono" style=${{color:'var(--ink)'}}>${p.numero}</span>${seg.includes(p.id) ? html` <span title="Você segue" style=${{color:'var(--ai)'}}><${Icon} n="bookmark" s=${11}/></span>` : null}<span className="sub">${p.desc}</span></td>
-              <td><span className="who-n">${p.cliente}</span><span className="sub">${p.contrato}</span></td>
-              <td>${p.diasParado >= PARADO ? html`<span className="st warn">Parado há ${p.diasParado} dias</span>` : html`<span className="st">${p.status}</span>`}<span className="sub">Últ. mov. ${quando(p.lastUpdate)}</span></td>
-              <td className="r num">${p.valorCausa ? fmtK(p.valorCausa) : '—'}<span className="sub" style=${{textAlign:'right',color: bl ? 'var(--ink-2)' : null}}>${bl ? 'bloq. ' + fmtK(bl) : p.valorCausa ? p.prognostico : ''}</span></td>
-            </tr>`; })}
-            ${list.length ? null : html`<tr><td colSpan="5" className="empty">Nenhum processo com esses filtros.</td></tr>`}</tbody>
+      <section className="surface fill-in" style=${{animationDelay:'60ms'}}>
+        <div className="tbl-wrap"><table className="sel fixed grid">
+          <colgroup><col style=${{width:44}}/><col style=${{width:'32%'}}/><col style=${{width:'22%'}}/><col style=${{width:'12%'}}/><col style=${{width:'17%'}}/><col style=${{width:'17%'}}/></colgroup>
+          <thead><tr><th><span className="sr">Selecionar</span></th>${COLS_P.map(([k, l]) => html`<th key=${k} className=${k === 'valor' || k === 'bloq' ? 'r' : ''} aria-sort=${ordem[0] === k ? (ordem[1] > 0 ? 'ascending' : 'descending') : 'none'}>
+            <button className="th-b" onClick=${() => ordenar(k)}>${l}<span className="arr">${ordem[0] === k ? (ordem[1] > 0 ? '↑' : '↓') : ''}</span></button></th>`)}</tr></thead>
+          ${grupos.map(g => html`<tbody key=${g.id || 'all'}>
+            ${g.id ? html`<tr className="grp"><td colSpan="6"><b>${fe[g.id].name}</b><span>${plural(g.ps.length, 'processo', 'processos')} · em discussão ${fmtK(sum(g.ps, p => p.valorCausa))} · bloqueado ${fmtK0(sum(g.ps, bloqAtivo))}</span></td></tr>` : null}
+            ${g.ps.map(linha)}</tbody>`)}
+          ${list.length ? null : html`<tbody><tr><td colSpan="6" className="empty">Nenhum processo com esses filtros.</td></tr></tbody>`}
         </table></div>
-      <//>
-      <aside className="card panel fill-in" style=${{animationDelay:'120ms'}}>${cur ? html`<${ProcDetail} key=${cur.id} p=${cur} go=${go} perguntar=${perguntar}/>` : html`<div className="empty">Nenhum processo selecionado.</div>`}</aside>
+        <div className="tfoot"><span>${list.length} de ${Se.length} processos</span><span>Em discussão <b className="num">${fmtK(sum(list, p => p.valorCausa))}</b></span><span>Bloqueado <b className="num">${fmtK0(sum(list, bloqAtivo))}</b></span></div>
+      </section>
+      <aside className="surface panel fill-in" style=${{animationDelay:'120ms'}}>${cur ? html`<${ProcDetail} key=${cur.id} p=${cur} go=${go} perguntar=${perguntar}/>` : html`<div className="empty">Nenhum processo selecionado.</div>`}</aside>
     </div>
     ${marc.length ? html`<div className="selbar"><div>
       <span>${plural(marc.length, 'processo selecionado', 'processos selecionados')}</span>
@@ -2354,31 +2712,31 @@ function Processos({opts, go, perguntar, setCtx}){
 }
 function ProcDetail({p, go, perguntar}){
   const {seg, toggleSeg} = useContext(AppCtx);
+  const [tab, setTab] = useState('resumo');
   const bl = bloqDe(p), seguindo = seg.includes(p.id);
   return html`<div className="rev">
     <div className="dh">
       <span className="mono">${p.numero}</span>
       <h3>${p.desc}</h3>
-      <span className="meta">${p.cliente} · ${p.contrato}</span>
+      <span className="meta2">${p.cliente} · ${p.contrato} · ${p.area}</span>
       <div className="dacts">
         <button className=${'btn sm ' + (seguindo ? 'on' : 'ghost')} onClick=${() => toggleSeg(p.id)} aria-pressed=${seguindo}><${Icon} n="bookmark" s=${13}/>${seguindo ? 'Seguindo' : 'Seguir'}</button>
         <button className="btn ai sm" onClick=${() => perguntar(`Conte a história do processo ${p.numero} por fases, com as datas das movimentações e o que aconteceu com os bloqueios.`)}><${Icon} n="sparkle" s=${13}/>Contar a história</button>
       </div>
     </div>
-    <div className="facts">
-      <div className="fact"><small>Área</small><b>${p.area}</b></div>
-      <div className="fact"><small>Situação</small><b>${p.status}</b></div>
-      <div className="fact"><small>Última movimentação</small><b className="num">${fmtDL(p.ultimaMov)}</b></div>
-      <div className="fact"><small>Parado há</small><b style=${{color: p.diasParado >= PARADO ? 'var(--warn)' : null}}>${p.diasParado ? p.diasParado + ' dias' : 'Movimentou hoje'}</b></div>
-      <div className="fact"><small>Valor em discussão</small><b className="num">${p.valorCausa ? fmtR(p.valorCausa) : '—'}</b></div>
-      <div className="fact"><small>Prognóstico</small><b>${p.valorCausa ? html`<${Prog} p=${p.prognostico}/>` : '—'}</b>${p.prognosticoAntes ? html`<small style=${{marginTop:2}}>Era ${p.prognosticoAntes.era.toLowerCase()} até ${MESC[p.prognosticoAntes.mes]}</small>` : null}</div>
-    </div>
-    ${bl.length ? html`<div className="dsec"><h4><span className="eyebrow">Bloqueios</span><span className="cnt">${bl.length}</span></h4>
-      <div style=${{display:'flex',flexDirection:'column',gap:8}}>${bl.map(b => html`<button key=${b.id} className="rowbtn" onClick=${() => go('bloqueios', {sel:b.id, aba:'todos'})}>
-        <div className="r"><span className="num" style=${{fontFamily:'var(--serif)',fontSize:18}}>${fmtR(b.original)}</span><${St} k=${stB(b)}/></div>
+    <div className="ptabs" role="tablist">${[['resumo', 'Resumo'], ['movs', `Movimentações · ${p.movs.length}`], ['bloq', `Bloqueios · ${bl.length}`]].map(([k, l]) => html`<button key=${k} role="tab" aria-selected=${tab === k} onClick=${() => setTab(k)}>${l}</button>`)}</div>
+    ${tab === 'resumo' ? html`<dl className="dl">
+      <div><dt>Situação</dt><dd>${p.status}</dd></div>
+      <div><dt>Última movimentação</dt><dd className="num">${fmtDL(p.ultimaMov)} · ${p.movs[0] ? p.movs[0].text : ''}</dd></div>
+      <div><dt>Parado há</dt><dd style=${{color: p.diasParado >= PARADO ? 'var(--warn)' : null}}>${p.diasParado ? plural(p.diasParado, 'dia', 'dias') : 'Movimentou hoje'}</dd></div>
+      <div><dt>Em discussão</dt><dd className="num">${p.valorCausa ? fmtR(p.valorCausa) : '—'}</dd></div>
+      <div><dt>Prognóstico</dt><dd>${p.valorCausa ? html`<${Prog} p=${p.prognostico}/>` : '—'}${p.prognosticoAntes ? html` <span className="cnt">(era ${p.prognosticoAntes.era.toLowerCase()} até ${MESC[p.prognosticoAntes.mes]})</span>` : null}</dd></div>
+      <div><dt>Bloqueado hoje</dt><dd className="num">${bloqAtivo(p) ? fmtR(bloqAtivo(p)) : 'Nada'}</dd></div>
+    </dl>` : tab === 'movs' ? html`<div style=${{paddingTop:18}}><${Timeline} items=${p.movs.map(m => ({date:m.date, text:m.text, tone:toneDe(m.text)}))}/></div>`
+    : html`<div style=${{display:'flex',flexDirection:'column',gap:10,paddingTop:18}}>${bl.length ? bl.map(b => html`<button key=${b.id} className="rowbtn" onClick=${() => go('bloqueios', {sel:b.id, aba:'todos'})}>
+        <div className="r"><span className="num" style=${{fontFamily:'var(--serif)',fontSize:19}}>${fmtR(b.original)}</span><${St} k=${stB(b)}/></div>
         <${MoneyBar} devolvido=${b.devolvido} perdido=${b.perdido} bloqueado=${hojeB(b)}/>
-        <div className="r who-s"><span>Bloqueado em ${fmtDL(b.data)}</span><span>Caminho do dinheiro →</span></div></button>`)}</div></div>` : null}
-    <div className="dsec"><h4><span className="eyebrow">Movimentações</span></h4><${Timeline} items=${p.movs.map(m => ({date:m.date, text:m.text, tone:toneDe(m.text)}))}/></div>
+        <div className="r who-s"><span>Bloqueado em ${fmtDL(b.data)}</span><span>Ver passos →</span></div></button>`) : html`<p className="empty">Nenhum bloqueio neste processo.</p>`}</div>`}
   </div>`;
 }
 
@@ -2397,38 +2755,34 @@ function Bloqueios({opts, go, setCtx}){
   useEffect(() => { if (cur) setCtx({label:`Bloqueio de ${fmtR(cur.original)}`, cli:cur.clienteId, nota:`A usuária está vendo um bloqueio de ${fmtR(cur.original)} em ${fmtDL(cur.data)}, do ${cur.cliente} (${cur.contrato}), no processo ${procById(cur.processoId).numero}. Hoje bloqueado: ${fmtR(hojeB(cur))}; devolvido ${fmtR(cur.devolvido)}; perdido ${fmtR(cur.perdido)}. Para detalhes use ver_processo.`}); }, [cur && cur.id]);
   const hoje = sum(base, hojeB), dev = sum(base, b => b.devolvido), per = sum(base, b => b.perdido), orig = sum(base, b => b.original);
   return html`<div className="page v-in">
-    <${PH} eyebrow="SISBAJUD" title="Bloqueios" desc=${`${Tn.length} bloqueios em 2026. Para cada um, o caminho do dinheiro: o que segue bloqueado, o que voltou ao cliente e o que foi perdido.`}>
-      <div className="seg" role="group" aria-label="Cliente">${[[null, 'Todos'], ...ti.map(id => [id, fe[id].name])].map(([id, l]) => html`<button key=${l} aria-pressed=${cli === id} onClick=${() => { setCli(id); setSel(null); }}>${l}</button>`)}</div>
-    <//>
-    <div className="card fill-in" style=${{padding:0}}>
-      <div className="strip" style=${{border:0,borderRadius:0,background:'none'}}>
-        <${Fig} label="Bloqueado em 2026" value=${orig} fmt=${fmtK} sub=${plural(base.length, 'bloqueio', 'bloqueios')}/>
-        <${Fig} label="Ainda bloqueado" value=${hoje} fmt=${fmtK} sub=${html`<span><i className="mark" style=${{'--sc':MONEY.bloqueado}}></i>${Math.round(hoje / orig * 100)}% do total</span>`}/>
-        <${Fig} label="Devolvido ao cliente" value=${dev} fmt=${fmtK} sub=${html`<span><i className="mark" style=${{'--sc':MONEY.devolvido}}></i>${Math.round(dev / orig * 100)}% do total</span>`}/>
-        <${Fig} label="Perdido" value=${per} fmt=${fmtK} sub=${html`<span><i className="mark" style=${{'--sc':MONEY.perdido}}></i>${Math.round(per / orig * 100)}%, transferido ao credor</span>`}/>
-      </div>
-      <div style=${{padding:'0 24px 22px'}}><${MoneyBar} big devolvido=${dev} perdido=${per} bloqueado=${hoje}/></div>
-    </div>
+    <header className="ph fill-in"><div><h1>Bloqueios</h1><p>${plural(Tn.length, 'bloqueio', 'bloqueios')} SISBAJUD em 2026 e o caminho de cada real: o que segue bloqueado, o que voltou ao cliente e o que foi perdido.</p></div>
+      <div className="ph-act"><label className="select"><span className="sr">Cliente</span><select value=${cli || ''} onChange=${e => { setCli(e.target.value || null); setSel(null); }}><option value="">Todos os clientes</option>${ti.map(id => html`<option key=${id} value=${id}>${fe[id].name}</option>`)}</select><${Icon} n="down" s=${13}/></label></div></header>
+    <section className="pane fill-in" key=${'f' + cli}>
+      <div className="flow-head"><span className="fig">${fmtK(orig)}</span><span>bloqueados${cli ? ' do ' + fe[cli].name : ''} em ${plural(base.length, 'bloqueio', 'bloqueios')}</span></div>
+      <${FluxoDinheiro} dev=${dev} per=${per} hoje=${hoje} h=${210}/>
+    </section>
     <div className="md">
-      <${Card} className="flush" delay="80ms">
-        <div className="toolbar" style=${{padding:'18px 24px 6px',margin:0}}>
+      <section className="surface fill-in" style=${{animationDelay:'80ms'}}>
+        <div className="filters" style=${{padding:'14px 16px',margin:0,borderBottom:'1px solid var(--line)'}}>
           <div className="seg" role="group" aria-label="Situação">${ABAS.map(([k, l, fn]) => html`<button key=${k} aria-pressed=${aba === k} onClick=${() => { setAba(k); setSel(null); }}>${l}<span className="cnt">${base.filter(fn).length}</span></button>`)}</div>
           <span className="grow"></span>
           <label className="search"><${Icon} n="search" s=${14}/><input id="bloq-q" placeholder="Cliente, contrato ou processo" value=${q} onInput=${e => setQ(e.target.value)}/></label>
         </div>
-        <div className="tbl-wrap"><table className="sel fixed">
-          <colgroup><col style=${{width:86}}/><col/><col className="hide-md" style=${{width:"24%"}}/><col style=${{width:"16%"}}/><col style=${{width:"16%"}}/><col style=${{width:"20%"}}/></colgroup><thead><tr><th>Data</th><th>Cliente · contrato</th><th className="hide-md">Processo</th><th className="r">Bloqueado</th><th className="r">Hoje</th><th>Situação</th></tr></thead>
+        <div className="tbl-wrap"><table className="sel fixed grid">
+          <colgroup><col style=${{width:84}}/><col/><col className="hide-md" style=${{width:'24%'}}/><col style=${{width:'16%'}}/><col style=${{width:'16%'}}/><col style=${{width:'19%'}}/></colgroup>
+          <thead><tr><th>Data</th><th>Cliente · contrato</th><th className="hide-md">Processo</th><th className="r">Bloqueado</th><th className="r">Hoje</th><th>Situação</th></tr></thead>
           <tbody>${list.map(b => html`<tr key=${b.id} aria-selected=${cur && cur.id === b.id} onClick=${() => setSel(b.id)}>
             <td className="num muted">${fmtD(b.data)}</td>
             <td><span className="who-n">${b.cliente}</span><span className="sub">${b.contrato}</span></td>
             <td className="hide-md"><span className="mono">${procById(b.processoId).numero}</span><span className="sub">${b.area}</span></td>
-            <td className="r num">${fmtR(b.original)}</td>
+            <td className="r num">${fmtR(b.original)}<span className="sub"><${MoneyBar} devolvido=${b.devolvido} perdido=${b.perdido} bloqueado=${hojeB(b)}/></span></td>
             <td className="r num" style=${{color: hojeB(b) ? 'var(--ink)' : 'var(--ink-4)'}}>${hojeB(b) ? fmtR(hojeB(b)) : '—'}</td>
             <td><${St} k=${stB(b)}/></td></tr>`)}
             ${list.length ? null : html`<tr><td colSpan="6" className="empty">Nenhum bloqueio aqui.</td></tr>`}</tbody>
         </table></div>
-      <//>
-      <aside className="card panel fill-in" style=${{animationDelay:'140ms'}}>${cur ? html`<${BloqDetail} key=${cur.id} b=${cur} go=${go}/>` : html`<div className="empty">Nenhum bloqueio selecionado.</div>`}</aside>
+        <div className="tfoot"><span>${plural(list.length, 'bloqueio', 'bloqueios')}</span><span>Bloqueado <b className="num">${fmtK(sum(list, b => b.original))}</b></span><span>Hoje <b className="num">${fmtK0(sum(list, hojeB))}</b></span></div>
+      </section>
+      <aside className="surface panel fill-in" style=${{animationDelay:'140ms'}}>${cur ? html`<${BloqDetail} key=${cur.id} b=${cur} go=${go}/>` : html`<div className="empty">Nenhum bloqueio selecionado.</div>`}</aside>
     </div>
   </div>`;
 }
@@ -2436,24 +2790,25 @@ function BloqDetail({b, go}){
   const p = procById(b.processoId);
   const contas = D.V10contas(b.clienteId, b.contrato, Tn.filter(x => x.clienteId === b.clienteId && x.contrato === b.contrato));
   const conta = contas.find(c => c.bloqueios.includes(b));
-  const rows = [['perdido', 'Perdido', 'transferido ao credor', b.perdido, b.perdidoEm], ['devolvido', 'Devolvido ao cliente', 'liberado por decisão judicial', b.devolvido, b.devolvidoEm], ['bloqueado', 'Ainda bloqueado', 'na conta do contrato', hojeB(b), null]];
+  const passos = b.historico.slice().reverse().map(h => ({date:h.date, text:h.text, tone:toneDe(h.text)}));
+  passos.push({date:'Hoje', text: hojeB(b) ? `${fmtR(hojeB(b))} seguem bloqueados` : 'Nada segue bloqueado', tone: hojeB(b) ? 'warn now' : 'good now'});
   return html`<div className="rev">
     <div className="dh">
-      <span className="eyebrow">Bloqueio SISBAJUD · ${fmtDL(b.data)}</span>
-      <h3 className="num" style=${{fontSize:30}}>${fmtR(b.original)}</h3>
-      <span className="meta">${b.cliente} · ${b.contrato}</span>
+      <span className="meta2">Bloqueio SISBAJUD de ${fmtDL(b.data)}</span>
+      <h3 className="num" style=${{fontSize:32}}>${fmtR(b.original)}</h3>
+      <span className="meta2">${b.cliente} · ${b.contrato}</span>
       <div style=${{marginTop:4}}><${St} k=${stB(b)}/></div>
     </div>
-    <div className="dsec"><h4><span className="eyebrow">Caminho do dinheiro</span></h4>
+    <div className="dsec"><h4>Caminho do dinheiro</h4>
       <${MoneyBar} big devolvido=${b.devolvido} perdido=${b.perdido} bloqueado=${hojeB(b)}/>
-      <div className="mrows">${rows.map(([k, l, s, v, em]) => html`<div className="mrow" key=${k} style=${{opacity: v ? 1 : .45}}>
-        <i style=${{background: MONEY[k]}}></i><span>${l}<small>${v ? (em ? `${s} em ${fmtDL(em)}` : s) : 'nada'}</small></span><span className="num">${v ? fmtR(v) : 'R$ 0'}</span></div>`)}</div>
+      <div className="mrows">${[['perdido', 'Perdido', b.perdido, b.perdidoEm], ['devolvido', 'Devolvido ao cliente', b.devolvido, b.devolvidoEm], ['bloqueado', 'Ainda bloqueado', hojeB(b), null]].map(([k, l, v, em]) => html`<div className="mrow" key=${k} style=${{opacity: v ? 1 : .5}}>
+        <i style=${{background: MONEY[k]}}></i><span>${l}${em && v ? html`<small>em ${fmtDL(em)}</small>` : null}</span><span className="num">${v ? fmtR(v) : 'R$ 0'}</span></div>`)}</div>
     </div>
-    ${conta ? html`<div className="dsec"><h4><span className="eyebrow">Conta atingida</span><span className="cnt">${plural(conta.bloqueios.length, 'bloqueio', 'bloqueios')} no ano</span></h4>
-      <div className="acct" style=${{borderTop:0,padding:0}}><span>${conta.banco} · ag. ${conta.agencia} · c/c ${conta.final}<small>${conta.fim}</small></span></div></div>` : null}
-    <div className="dsec"><h4><span className="eyebrow">Histórico</span></h4><${Timeline} items=${b.historico.map(h => ({date:h.date, text:h.text, tone:toneDe(h.text)}))}/></div>
-    <div className="dsec"><h4><span className="eyebrow">Processo</span></h4>
-      <button className="lnk" onClick=${() => go('processos', {sel:p.id})}><span><span className="mono" style=${{color:'var(--ink)'}}>${p.numero}</span><span className="who-s" style=${{display:'block'}}>${p.desc}</span></span><${Icon} n="right" s=${15}/></button></div>
+    <div className="dsec"><h4>Passo a passo</h4><${Timeline} items=${passos}/></div>
+    ${conta ? html`<div className="dsec"><h4>Conta atingida</h4>
+      <dl className="dl" style=${{paddingTop:0}}><div><dt>Banco</dt><dd>${conta.banco} · ag. ${conta.agencia} · c/c ${conta.final}</dd></div><div><dt>Finalidade</dt><dd>${conta.fim} · ${plural(conta.bloqueios.length, 'bloqueio', 'bloqueios')} no ano</dd></div></dl></div>` : null}
+    <div className="dsec"><h4>Processo</h4>
+      <button className="lnk" onClick=${() => go('processos', {sel:p.id})}><span><span className="mono strong">${p.numero}</span><span className="who-s" style=${{display:'block'}}>${p.desc}</span></span><${Icon} n="right" s=${15}/></button></div>
   </div>`;
 }
 
@@ -2462,74 +2817,82 @@ function Clientes({opts, go, perguntar, setCtx}){
   const [cli, setCli] = useState(opts.cli || 'gnosis');
   const a = D.aa(cli), c = fe[cli], enc = D.ac(cli);
   useEffect(() => { setCtx({label:c.name, cli, nota:`A usuária está vendo a página do cliente ${c.name}. Filtre as consultas por esse cliente, a menos que ela peça outra coisa.`}); }, [cli]);
+  const parados = a.processos.filter(p => p.diasParado >= PARADO).length;
   return html`<div className="page v-in">
-    <${PH} eyebrow="Organizações sociais" title=${c.name} desc=${`${c.contratos.length} contratos de gestão e ${a.processos.length} processos. Passivo, bloqueios e contas de cada contrato.`}>
-      <button className="btn ghost" onClick=${() => go('processos', {cli})}><${Icon} n="scale" s=${14}/>Processos</button>
-      <button className="btn ai" onClick=${() => perguntar(MODELOS[1].p(cli))}><${Icon} n="sparkle" s=${14}/>Raio-x com o assistente</button>
-    <//>
-    <nav className="tabs fill-in" aria-label="Clientes">${ti.map(id => html`<button key=${id} aria-current=${cli === id} onClick=${() => setCli(id)}>${fe[id].name}<small>${fmtK(D.aa(id).bloqueadoAtivo)}</small></button>`)}</nav>
-    <div className="strip fill-in" key=${'s' + cli}>
-      <${Fig} label="Passivo estimado" value=${a.passivo.total} fmt=${fmtK} sub=${`${fmtK(a.passivo['Provável'])} provável`}/>
-      <${Fig} label="Bloqueado hoje" value=${a.bloqueadoAtivo} fmt=${fmtK} sub=${plural(a.bloqueiosAtivos, 'bloqueio ativo', 'bloqueios ativos')}/>
-      <${Fig} label="Devolvido" value=${a.levantado} fmt=${fmtK0} sub="em 2026"/>
-      <${Fig} label="Perdido" value=${a.perdido} fmt=${fmtK0} sub="transferido ao credor"/>
+    <nav className="tabs fill-in" aria-label="Clientes">${ti.map(id => html`<button key=${id} aria-current=${cli === id} onClick=${() => setCli(id)}>${fe[id].name}</button>`)}</nav>
+    <header className="ph fill-in" key=${'h' + cli}><div><h1>${c.name}</h1>
+      <p>Passivo estimado de <b>${fmtK(a.passivo.total)}</b> em ${plural(a.processos.length, 'processo', 'processos')}${parados ? `, ${parados} parados há mais de ${PARADO} dias` : ''}. Hoje há <b>${fmtK0(a.bloqueadoAtivo)}</b> bloqueados; em 2026 voltaram ${fmtK0(a.levantado)} e foram perdidos ${fmtK0(a.perdido)}.</p></div>
+      <div className="ph-act"><button className="btn ghost" onClick=${() => go('processos', {cli})}><${Icon} n="scale" s=${14}/>Processos</button>
+        <button className="btn ai" onClick=${() => perguntar(MODELOS[1].p(cli))}><${Icon} n="sparkle" s=${14}/>Raio-x com o assistente</button></div></header>
+    <div className="pane fill-in" key=${'m' + cli} style=${{paddingBottom:12}}>
+      <div className="sec-h"><h2>Dinheiro bloqueado do cliente</h2></div>
+      <${FluxoDinheiro} dev=${a.levantado} per=${a.perdido} hoje=${a.bloqueadoAtivo} h=${170}/>
     </div>
-    <div className="row r11" key=${'c' + cli}>${a.contratos.map((k, i) => html`<${Contrato} key=${k.orgao} k=${k} i=${i} go=${go}/>`)}</div>
-    <${Card} className="flush" key=${'e' + cli}>
-      <div className="card-h" style=${{padding:'20px 24px 0',marginBottom:12}}><div><h2>Processos encerrados em 2026</h2><div className="sub">Quanto estava em discussão e quanto foi revertido a favor do cliente</div></div><span className="cnt">${enc.length}</span></div>
-      ${enc.length ? html`<div className="tbl-wrap"><table>
+    <section key=${'c' + cli} style=${{display:'flex',flexDirection:'column',gap:16}}>
+      <div className="sec-h"><h2>Contratos de gestão</h2><span className="cnt">${a.contratos.length}</span></div>
+      ${a.contratos.map((k, i) => html`<${Contrato} key=${k.orgao} k=${k} i=${i} go=${go}/>`)}
+    </section>
+    <section key=${'e' + cli}>
+      <div className="sec-h"><h2>Encerrados em 2026</h2><span className="cnt">Quanto estava em discussão e quanto foi revertido a favor do cliente</span></div>
+      <div className="surface">${enc.length ? html`<div className="tbl-wrap"><table className="grid">
         <thead><tr><th>Contrato</th><th className="hide-md">Área</th><th>Como terminou</th><th>Resultado</th><th className="r">Em discussão</th><th className="r">Revertido</th></tr></thead>
         <tbody>${enc.map(e => html`<tr key=${e.id}><td>${e.contrato}</td><td className="hide-md muted">${e.area}</td><td>${e.motivo}<span className="sub">em ${MESC[e.saiuMes]}</span></td>
           <td><span className=${'st ' + (e.resultado === 'Favorável' ? 'good' : e.resultado === 'Acordo' ? 'info' : 'bad')}>${e.resultado}</span></td>
           <td className="r num">${fmtK(e.valorCausa)}</td><td className="r num">${fmtK0(e.valorRevertido)}</td></tr>`)}</tbody></table></div>`
-        : html`<div className="empty">Nenhum processo encerrado este ano.</div>`}
-    <//>
+        : html`<div className="empty">Nenhum processo encerrado este ano.</div>`}</div>
+    </section>
   </div>`;
 }
 function Contrato({k, i, go}){
   const contas = D.V10contas(k.orgId, k.orgao, k.bloqueios);
   const vs = k.vigenciaStatus;
-  return html`<article className="card cg2 fill-in" style=${{animationDelay: (80 + i * 80) + 'ms'}}>
-    <div style=${{display:'flex',justifyContent:'space-between',gap:12,alignItems:'flex-start'}}>
-      <div><span className="eyebrow">Contrato de gestão · ${k.vigencia}</span><h3>${k.orgao}</h3></div>
-      <span className=${'st ' + (vs.id === 'curso' ? 'good' : vs.id === 'atencao' ? 'warn' : '')}>${vs.texto}</span>
+  return html`<article className="contract fill-in" style=${{animationDelay: (60 + i * 80) + 'ms'}}>
+    <div className="ct-a">
+      <div style=${{display:'flex',justifyContent:'space-between',gap:12,alignItems:'baseline'}}><h3>${k.orgao}</h3><span className=${'st ' + (vs.id === 'curso' ? 'good' : vs.id === 'atencao' ? 'warn' : '')}>${vs.texto}</span></div>
+      <${Vigencia} vig=${k.vigencia}/>
+      <dl className="dl cols">
+        <div><dt>Processos</dt><dd className="num">${k.processos.length}</dd></div>
+        <div><dt>Bloqueado hoje</dt><dd className="num">${k.bloqueadoAtivo ? fmtK(k.bloqueadoAtivo) : 'Nada'}</dd></div>
+        <div><dt>Devolvido</dt><dd className="num" style=${{color: k.levantado ? 'var(--good)' : null}}>${k.levantado ? fmtK(k.levantado) : 'Nada'}</dd></div>
+        <div><dt>Perdido</dt><dd className="num" style=${{color: k.perdido ? 'var(--bad)' : null}}>${k.perdido ? fmtK(k.perdido) : 'Nada'}</dd></div>
+      </dl>
     </div>
-    <div><div style=${{display:'flex',justifyContent:'space-between',alignItems:'baseline',marginBottom:10}}><span className="who-s">Passivo estimado</span><span className="fig sm">${fmtK(k.passivo.total)}</span></div>
-      <div className="hb-t" style=${{height:8}}>${PROGS.map((pg, j) => k.passivo[pg] ? html`<i key=${pg} style=${{width: (k.passivo[pg] / (k.passivo.total || 1) * 100) + '%', background: PROG_COR[pg], animationDelay: (j * 90) + 'ms'}}></i>` : null)}</div>
-      <div style=${{marginTop:10}}><${Legend} items=${PROGS.map(pg => [`${pg} ${fmtK(k.passivo[pg])}`, PROG_COR[pg]])}/></div></div>
-    <div className="nums4">
-      <div><small>Processos</small><b>${k.processos.length}</b></div>
-      <div><small>Bloqueado hoje</small><b>${k.bloqueadoAtivo ? fmtK(k.bloqueadoAtivo) : 'Nada'}</b></div>
-      <div><small>Devolvido</small><b>${k.levantado ? fmtK(k.levantado) : 'Nada'}</b></div>
-      <div><small>Perdido</small><b style=${{color: k.perdido ? 'var(--bad)' : null}}>${k.perdido ? fmtK(k.perdido) : 'Nada'}</b></div>
+    <div className="ct-b">
+      <div className="ct-pass"><span>Passivo estimado</span><span className="fig sm">${fmtK(k.passivo.total)}</span></div>
+      <div className="hb-t" style=${{height:10}}>${PROGS.map((pg, j) => k.passivo[pg] ? html`<i key=${pg} style=${{width: (k.passivo[pg] / (k.passivo.total || 1) * 100) + '%', background: PROG_COR[pg], animationDelay: (j * 90) + 'ms'}}></i>` : null)}</div>
+      <div style=${{marginTop:10}}><${Legend} items=${PROGS.map(pg => [`${pg} ${fmtK(k.passivo[pg])}`, PROG_COR[pg]])}/></div>
+      <table className="accts"><thead><tr><th>Conta</th><th>Finalidade</th><th className="r">Bloqueado</th></tr></thead>
+        <tbody>${contas.map(ct => { const at = sum(ct.bloqueios, hojeB);
+          return html`<tr key=${ct.id}><td>${ct.banco}<span className="sub">c/c ${ct.final}</span></td><td className="muted">${ct.fim}</td><td className="r num">${at ? fmtK(at) : html`<span className="muted">—</span>`}<span className="sub">${plural(ct.bloqueios.length, 'bloqueio', 'bloqueios')}</span></td></tr>`; })}</tbody></table>
     </div>
-    <div><div className="eyebrow" style=${{marginBottom:6}}>Contas do contrato</div>
-      ${contas.map(ct => { const at = sum(ct.bloqueios, hojeB);
-        return html`<div className="acct" key=${ct.id}><span>${ct.banco} · c/c ${ct.final}<small>${ct.fim} · ag. ${ct.agencia}</small></span>
-          <span style=${{textAlign:'right'}}>${at ? html`<span className="num">${fmtK(at)}</span>` : html`<span className="cnt">sem bloqueio</span>`}<small className="cnt" style=${{display:'block'}}>${plural(ct.bloqueios.length, 'bloqueio', 'bloqueios')} no ano</small></span></div>`; })}
-    </div>
-    <button className="link" style=${{alignSelf:'flex-start'}} onClick=${() => go('bloqueios', {cli:k.orgId, aba:'todos'})}>Ver bloqueios do cliente <${Icon} n="right" s=${13}/></button>
   </article>`;
 }
 
 /* ================= Reclamações ================= */
 function Reclamacoes({go, perguntar, setCtx}){
+  const [aberta, setAberta] = useState(za[0].id);
   useEffect(() => { setCtx({label:'Reclamações no STF', nota:'A usuária está vendo as reclamações constitucionais no STF. Use listar_reclamacoes.'}); }, []);
   return html`<div className="page v-in">
-    <${PH} eyebrow="Supremo Tribunal Federal" title="Reclamações constitucionais" desc=${`${za.length} reclamações com base na ADPF 664, contra bloqueios de verbas dos contratos de gestão.`}>
-      <button className="btn ai" onClick=${() => perguntar(MODELOS[5].p())}><${Icon} n="sparkle" s=${14}/>Resumo com o assistente</button>
-    <//>
-    <div className="row r3 stretch">${za.map((r, i) => html`<article key=${r.id} className="card rcl fill-in" style=${{animationDelay: (60 + i * 80) + 'ms'}}>
-      <div style=${{display:'flex',justifyContent:'space-between',gap:8,alignItems:'center'}}><span className="rcl-n">${r.numero}</span><span className=${'st ' + (r.status === 'Julgada' ? 'good' : 'info')}>${r.status}</span></div>
-      <div><h3>${r.cliente}</h3><div className="who-s" style=${{marginTop:4}}>Paradigma ${r.paradigma}</div></div>
-      <p>${r.assunto}</p>
-      <div className="nums4" style=${{gridTemplateColumns:'1fr 1fr'}}><div><small>Liminar</small><b><span className=${'st ' + (r.liminar === 'Deferida' ? 'good' : 'warn')}>${r.liminar}</span></b></div><div><small>Em discussão</small><b>${fmtR(r.valorDiscutido)}</b></div></div>
-      <div><div className="eyebrow" style=${{marginBottom:8}}>Ato reclamado</div><p className="quote">${r.ato}</p></div>
-      <div><div className="eyebrow" style=${{marginBottom:8}}>Processos de origem</div>
-        <div style=${{display:'flex',flexDirection:'column',gap:6}}>${r.processosOrigem.map(id => { const p = procById(id);
-          return html`<button key=${id} className="lnk" onClick=${() => go('processos', {sel:id})}><span><span className="mono" style=${{color:'var(--ink)'}}>${p.numero}</span><span className="who-s" style=${{display:'block'}}>${p.desc} · ${fmtK(bloqAtivo(p))} bloqueado</span></span><${Icon} n="right" s=${14}/></button>`; })}</div></div>
-      <div><div className="eyebrow" style=${{marginBottom:10}}>Andamento</div><${Timeline} items=${r.movs.map(([d, t]) => ({date:d, text:t, tone:toneDe(t) || 'acc'}))}/></div>
-    </article>`)}</div>
+    <header className="ph fill-in"><div><h1>Reclamações constitucionais</h1><p>${za.length} reclamações no STF com base na ADPF 664, contra bloqueios de verbas dos contratos de gestão. Em discussão: <b>${fmtK(sum(za, r => r.valorDiscutido))}</b>.</p></div>
+      <div className="ph-act"><button className="btn ai" onClick=${() => perguntar(MODELOS[5].p())}><${Icon} n="sparkle" s=${14}/>Resumo com o assistente</button></div></header>
+    <div className="surface fill-in"><ul className="rlist big">${za.map(r => { const on = aberta === r.id;
+      return html`<li key=${r.id} className=${on ? 'open' : ''}>
+        <button aria-expanded=${on} onClick=${() => setAberta(on ? null : r.id)}>
+          <span className="mono strong">${r.numero}</span>
+          <span className="rl-t"><b>${r.cliente}</b><small>${r.assunto}</small></span>
+          <${Etapas} r=${r}/>
+          <span className="num rl-v">${fmtK(r.valorDiscutido)}</span>
+          <span className="chev"><${Icon} n="down" s=${15}/></span>
+        </button>
+        ${on ? html`<div className="rl-body rev">
+          <div><h4>Ato reclamado</h4><p className="quote">${r.ato}</p>
+            <h4 style=${{marginTop:22}}>Processos de origem</h4>
+            <div style=${{display:'flex',flexDirection:'column',gap:6}}>${r.processosOrigem.map(id => { const p = procById(id);
+              return html`<button key=${id} className="lnk" onClick=${() => go('processos', {sel:id})}><span><span className="mono strong">${p.numero}</span><span className="who-s" style=${{display:'block'}}>${p.desc} · ${fmtK(bloqAtivo(p))} bloqueado</span></span><${Icon} n="right" s=${14}/></button>`; })}</div></div>
+          <div><h4>Andamento</h4><${Timeline} items=${r.movs.map(([d, t]) => ({date:d, text:t, tone:toneDe(t) || 'acc'}))}/>
+            <dl className="dl"><div><dt>Liminar</dt><dd><span className=${'st ' + (r.liminar === 'Deferida' ? 'good' : 'warn')}>${r.liminar}</span></dd></div><div><dt>Paradigma</dt><dd>${r.paradigma}</dd></div></dl></div>
+        </div>` : null}
+      </li>`; })}</ul></div>
   </div>`;
 }
 
@@ -2550,37 +2913,35 @@ function Desempenho({setCtx}){
   const lp = pass[pass.length - 1], fp = pass[0];
   const porArea = D.Pw('area', di).filter(a => a.encerrados), porCli = D.Pw('cliente', di).filter(a => a.encerrados);
   const i1 = s1 ?? pass.length - 1, i2 = s2 ?? meses.length - 1, i3 = s3 ?? meses.length - 1;
+  const varP = Math.round((lp.total / fp.total - 1) * 100);
   return html`<div className="page v-in">
-    <${PH} eyebrow="2026" title="Desempenho" desc="Como a carteira se moveu: entradas, encerramentos, passivo e o dinheiro que voltou aos clientes.">
-      <div className="seg" role="group" aria-label="Período">${[['2026', 'Ano todo'], ['6m', '6 meses'], ['3m', '3 meses']].map(([k, l]) => html`<button key=${k} aria-pressed=${per === k} onClick=${() => setPer(k)}>${l}</button>`)}</div>
-    <//>
-    <div className="strip fill-in">
-      <${Fig} label="Carteira hoje" value=${full.carteiraHoje} fmt=${v => fmtN(v)} sub=${html`<span className="trend neutral">${full.carteiraHoje - cartIni >= 0 ? '+' : ''}${full.carteiraHoje - cartIni} no período</span>`}/>
-      <${Fig} label="Entraram · encerrados" value=${novos} fmt=${v => `${fmtN(v)} · ${encs}`} sub="processos no período"/>
-      <${Fig} label="Devolvido aos clientes" value=${devV} fmt=${fmtK} sub=${`${plural(devQ, 'desbloqueio', 'desbloqueios')} · média de ${D.jw().diasMedio} dias`}/>
-      <${Fig} label="Revertido nos encerrados" value=${disc ? Math.round(rev / disc * 100) : 0} fmt=${v => Math.round(v) + '%'} sub=${`${fmtK(rev)} de ${fmtK(disc)}`}/>
-    </div>
-    <div className="row r11 stretch">
-      <${Card} delay="80ms" title="Passivo estimado" sub="No fim de cada mês, por prognóstico" right=${html`<span className=${'trend ' + (lp.total > fp.total ? 'bad' : 'good')}>${lp.total > fp.total ? '+' : ''}${Math.round((lp.total / fp.total - 1) * 100)}% no período</span>`}>
-        <div onMouseLeave=${() => setS1(null)}><${StackBars} cats=${cats} series=${PROGS.map(pg => ({label:pg, color:PROG_COR[pg], vals:pass.map(m => m[pg])}))} fmt=${v => fmtK(v).replace('R$ ', '')} sel=${s1} onSel=${setS1} label="Passivo estimado por mês e prognóstico"/></div>
-        <div className="readout"><b>${D.V12mesLongo(cats[i1])}</b><span>Total <b className="num">${fmtK(pass[i1].total)}</b></span>${PROGS.map(pg => html`<span key=${pg}><i className="mark" style=${{'--sc':PROG_COR[pg]}}></i>${pg} <b className="num">${fmtK(pass[i1][pg])}</b></span>`)}</div>
-      <//>
-      <${Card} delay="120ms" title="Carteira" sub="Processos ativos no fim de cada mês">
-        <${LineChart} cats=${cats} lines=${[{label:'Carteira', color:'var(--ink)', vals:meses.map(m => m.carteira)}]} fmt=${fmtN} sel=${s2} onSel=${setS2} label="Processos ativos no fim de cada mês"/>
-        <div className="readout"><b>${D.V12mesLongo(cats[i2])}</b><span><b className="num">${meses[i2].carteira}</b> processos</span><span>${meses[i2].novos} entraram</span><span>${plural(meses[i2].encerrados, 'encerrado', 'encerrados')}</span>${meses[i2].indiceAcumulado != null ? html`<span>${meses[i2].indiceAcumulado}% favoráveis no acumulado</span>` : null}</div>
-      <//>
-    </div>
-    <div className="row r11 stretch">
-      <${Card} delay="160ms" title="Devolvido aos clientes" sub="Valor liberado por mês">
-        <div onMouseLeave=${() => setS3(null)}><${StackBars} cats=${cats} series=${[{label:'Devolvido', color:'var(--m-dev)', vals:meses.map(m => m.levantadoValor)}]} fmt=${v => v ? fmtK(v).replace('R$ ', '') : ''} sel=${s3} onSel=${setS3} label="Valor devolvido por mês"/></div>
-        <div className="readout"><b>${D.V12mesLongo(cats[i3])}</b><span>${meses[i3].levantadoValor ? html`<b className="num">${fmtR(meses[i3].levantadoValor)}</b> em ${plural(meses[i3].levantadoQtd, 'desbloqueio', 'desbloqueios')}` : 'Nenhum desbloqueio no mês'}</span></div>
-      <//>
-      <${Card} delay="200ms" title="Encerrados em 2026" sub="Em discussão e revertido a favor do cliente" right=${html`<${Legend} items=${[['Revertido', 'var(--m-dev)'], ['Mantido', 'var(--surface-3)']]}/>`}>
-        <div className="eyebrow" style=${{marginBottom:12}}>Por área</div>
-        <${HBars} rows=${porArea.map(a => ({label:`${a.nome} · ${a.encerrados}`, total:a.emDiscussao, vals:[a.revertido, a.emDiscussao - a.revertido]}))} parts colors=${['var(--m-dev)', 'var(--line-2)']} fmt=${fmtK0}/>
-        <div className="eyebrow" style=${{margin:'22px 0 12px'}}>Por cliente</div>
-        <${HBars} rows=${porCli.map(a => ({label:`${a.nome} · ${a.encerrados}`, total:a.emDiscussao, vals:[a.revertido, a.emDiscussao - a.revertido]}))} parts colors=${['var(--m-dev)', 'var(--line-2)']} fmt=${fmtK0}/>
-      <//>
+    <header className="ph fill-in"><div><h1>Desempenho</h1>
+      <p>No período, o passivo estimado ${varP >= 0 ? 'subiu' : 'caiu'} <b>${Math.abs(varP)}%</b> e chegou a ${fmtK(lp.total)}. Entraram ${novos} processos e ${plural(encs, 'foi encerrado', 'foram encerrados')} ${encs}; ${fmtK(devV)} voltaram aos clientes em ${plural(devQ, 'desbloqueio', 'desbloqueios')}.</p></div>
+      <div className="ph-act"><div className="seg" role="group" aria-label="Período">${[['2026', 'Ano todo'], ['6m', '6 meses'], ['3m', '3 meses']].map(([k, l]) => html`<button key=${k} aria-pressed=${per === k} onClick=${() => setPer(k)}>${l}</button>`)}</div></div></header>
+    <section className="pane fill-in">
+      <div className="sec-h"><h2>Passivo estimado no fim de cada mês</h2><${Legend} items=${PROGS.map(pg => [pg, PROG_COR[pg]])}/></div>
+      <div onMouseLeave=${() => setS1(null)}><${StackBars} h=${280} cats=${cats} series=${PROGS.map(pg => ({label:pg, color:PROG_COR[pg], vals:pass.map(m => m[pg])}))} fmt=${v => fmtK(v).replace('R$ ', '')} sel=${s1} onSel=${setS1} label="Passivo estimado por mês e prognóstico"/></div>
+      <div className="readout"><b>${D.V12mesLongo(cats[i1])}</b><span>Total <b className="num">${fmtK(pass[i1].total)}</b></span>${PROGS.map(pg => html`<span key=${pg}>${pg} <b className="num">${fmtK(pass[i1][pg])}</b></span>`)}</div>
+    </section>
+    <div className="row r3 fill-in">
+      <section>
+        <div className="sec-h"><h2>Carteira</h2><span className="cnt">${full.carteiraHoje} processos hoje · ${full.carteiraHoje - cartIni >= 0 ? '+' : ''}${full.carteiraHoje - cartIni}</span></div>
+        <${LineChart} h=${180} cats=${cats} lines=${[{label:'Carteira', color:'var(--brand)', vals:meses.map(m => m.carteira)}]} fmt=${fmtN} sel=${s2} onSel=${setS2} label="Processos ativos no fim de cada mês"/>
+        <div className="readout"><b>${cats[i2]}</b><span><b className="num">${meses[i2].carteira}</b> processos</span><span>+${meses[i2].novos} / −${meses[i2].encerrados}</span></div>
+      </section>
+      <section>
+        <div className="sec-h"><h2>Devolvido aos clientes</h2><span className="cnt">média de ${D.jw().diasMedio} dias até liberar</span></div>
+        <div onMouseLeave=${() => setS3(null)}><${StackBars} h=${180} cats=${cats} series=${[{label:'Devolvido', color:'var(--m-dev)', vals:meses.map(m => m.levantadoValor)}]} fmt=${v => v ? fmtK(v).replace('R$ ', '') : ''} sel=${s3} onSel=${setS3} label="Valor devolvido por mês"/></div>
+        <div className="readout"><b>${cats[i3]}</b><span>${meses[i3].levantadoValor ? html`<b className="num">${fmtK(meses[i3].levantadoValor)}</b> em ${meses[i3].levantadoQtd}` : 'nenhum'}</span></div>
+      </section>
+      <section>
+        <div className="sec-h"><h2>Revertido nos encerrados</h2><span className="cnt">${disc ? Math.round(rev / disc * 100) : 0}% de ${fmtK(disc)}</span></div>
+        <div style=${{display:'flex',flexDirection:'column',gap:18,paddingTop:6}}>
+          <div><div className="cnt" style=${{marginBottom:10}}>Por área</div><${HBars} rows=${porArea.map(a => ({label:a.nome, total:a.emDiscussao, vals:[a.revertido, a.emDiscussao - a.revertido]}))} parts colors=${['var(--m-dev)', 'var(--line-2)']} fmt=${fmtK0}/></div>
+          <div><div className="cnt" style=${{marginBottom:10}}>Por cliente</div><${HBars} rows=${porCli.map(a => ({label:a.nome, total:a.emDiscussao, vals:[a.revertido, a.emDiscussao - a.revertido]}))} parts colors=${['var(--m-dev)', 'var(--line-2)']} fmt=${fmtK0}/></div>
+          <${Legend} items=${[['Revertido', 'var(--m-dev)'], ['Mantido', 'var(--line-2)']]}/>
+        </div>
+      </section>
     </div>
   </div>`;
 }
