@@ -1,7 +1,27 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
 /* Layout: barra lateral fixa (navegação + clientes) | área principal com barra superior fina | assistente acoplado à direita.
    Linguagem: papel claro e azul-marinho editorial (como um dossiê impresso), serifa leve nos títulos e nos números,
    linhas finas no lugar de sombras, cor só para estado (dessaturada) e argila reservada à IA. O marinho também carrega
-   o "hero" do Painel, criando contraste real entre o que é manchete e o que é apoio. */
+   o "hero" do Painel, criando contraste real entre o que é manchete e o que é apoio.
+   Tailwind + shadcn/ui entram para os componentes novos (Button, Card, Chart…); os tokens abaixo continuam a fonte
+   única de cor e são só reexpostos para o Tailwind pelo @theme inline, então os dois sistemas compartilham paleta e tema. */
+@theme inline{
+  --color-background:var(--bg); --color-foreground:var(--ink);
+  --color-card:var(--surface); --color-card-foreground:var(--ink);
+  --color-popover:var(--surface); --color-popover-foreground:var(--ink);
+  --color-primary:var(--ink); --color-primary-foreground:var(--cta-ink);
+  --color-secondary:var(--surface-3); --color-secondary-foreground:var(--ink);
+  --color-muted:var(--surface-2); --color-muted-foreground:var(--ink-3);
+  --color-accent:var(--ai-soft); --color-accent-foreground:var(--ai-ink);
+  --color-destructive:var(--bad); --color-destructive-foreground:#fff;
+  --color-border:var(--line); --color-input:var(--line-2); --color-ring:var(--ai);
+  --color-chart-1:var(--c1); --color-chart-2:var(--c2); --color-chart-3:var(--c3); --color-chart-4:var(--good); --color-chart-5:var(--bad);
+  --radius-sm:var(--r1); --radius-md:var(--r2); --radius-lg:var(--r3); --radius-xl:calc(var(--r3) + 4px);
+  --font-sans:var(--font); --font-serif:var(--serif); --font-mono:var(--mono);
+}
+
 :root{
   --bg:#F7F4EE; --surface:#FFFFFF; --surface-2:#F8F6F1; --surface-3:#EEEAE1; --sunk:#F1EDE3;
   --ink:#20242E; --ink-2:#565B68; --ink-3:#878C97; --ink-4:#B8BAC1;

@@ -12,6 +12,7 @@ import { ATENCAO } from '../features/atencao/regras';
 import { MatrizClientes } from '../features/clientes/MatrizClientes';
 import { Grafico } from '../features/assistente/Grafico';
 import { modelo } from '../features/assistente/modelos';
+import { Button } from '../components/ui/button';
 
 export function Painel({ go, perguntar }: { go: Go; perguntar: (q: string) => void }) {
   const { pins } = useApp();
@@ -52,7 +53,9 @@ export function Painel({ go, perguntar }: { go: Go; perguntar: (q: string) => vo
           <svg className="spark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" dangerouslySetInnerHTML={{ __html: ICON_PATHS.sparkle }} />
           <input id="ask-painel" aria-label="Pergunte ao assistente" placeholder="Pergunte ao assistente, por exemplo: quanto o Instituto Gnosis perdeu em setembro?" value={q} onChange={e => setQ(e.target.value)} />
           <span className="kbd hide-sm">⌘.</span>
-          <button type="submit" className={'send' + (q.trim() ? ' ready' : '')} aria-label="Perguntar" disabled={!q.trim()}><Icon n="up" s={15} w={2} /></button>
+          <Button type="submit" size="icon" variant={q.trim() ? 'ai' : 'secondary'} className="rounded-sm" aria-label="Perguntar" disabled={!q.trim()}>
+            <Icon n="up" s={15} w={2} />
+          </Button>
         </form>
         <div className="chips">
           {chips.map((c, i) => (
