@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { RefreshCw, Sparkles } from 'lucide-react';
 import { useApp } from '../app/AppCtx';
 import { Icon, ICON_PATHS } from '../components/Icon';
 import { FluxoDinheiro } from '../components/charts/FluxoDinheiro';
@@ -9,22 +10,25 @@ import { AREAS, AREA_COR, CORTE, D, Hn, NOVIDADES, PARADO, Se, Tn, fe, ir, procB
 import { MESC, fmtD, fmtDL, fmtK, fmtK0, fmtR, greeting, mesLongo, plural, sum } from '../domain/format';
 import { Atencao } from '../features/atencao/Atencao';
 import { ATENCAO } from '../features/atencao/regras';
+import { useAtencaoIA } from '../features/atencao/useAtencaoIA';
 import { MatrizClientes } from '../features/clientes/MatrizClientes';
 import { Grafico } from '../features/assistente/Grafico';
 import { modelo } from '../features/assistente/modelos';
+import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 
 export function Painel({ go, perguntar }: { go: Go; perguntar: (q: string) => void }) {
   const { pins } = useApp();
   const [sel, setSel] = useState<number | null>(null);
   const [q, setQ] = useState('');
+  const atencaoIA = useAtencaoIA();
   const meses = MESC.slice(0, Hn.getMonth() + 1).map(m => m[0].toUpperCase() + m.slice(1));
   const series = AREAS.slice(0, 3).map(a => ({ label: a, color: AREA_COR[a], vals: meses.map((_, i) => sum(Tn.filter(b => b.mes === i && b.area === a), b => b.original)) }));
   const h = sel == null ? meses.length - 1 : sel;
   const ativos = Tn.filter(b => b.status === 'Ativo');
   const parados = D.nc(Se).length;
   const dev = sum(Tn, b => b.devolvido), per = sum(Tn, b => b.perdido), orig = sum(Tn, b => b.original);
-  const altas = ATENCAO.filter(a => a.sev === 3).length;
+  const altas = atencaoIA.itens.filter(a => a.sev === 3).length;
   const contratos = sum(ti, id => fe[id].contratos.length);
   const abrirNum = (num: string) => { const pr = procByNum(num); if (pr) go('processos', { sel: pr.id }); };
   const semPedido = ATENCAO.filter(a => a.k === 'pedido').length;
@@ -72,8 +76,17 @@ export function Painel({ go, perguntar }: { go: Go; perguntar: (q: string) => vo
           <FluxoDinheiro dev={dev} per={per} hoje={ir.bloqueadoAtivo} />
         </section>
         <section className="pane">
-          <div className="sec-h"><h2>Atenção agora</h2><span className="cnt">{plural(ATENCAO.length, 'item', 'itens')}</span></div>
-          <Atencao go={go} max={5} />
+          <div className="sec-h">
+            <h2>Atenção agora</h2>
+            <span className="grow" />
+            {atencaoIA.fonte === 'ia' ? (
+              <Badge variant="ai"><Sparkles className="size-3" />Priorizado pela IA</Badge>
+            ) : <span className="cnt">{plural(atencaoIA.itens.length, 'item', 'itens')}</span>}
+            <button className="ibtn" title="Atualizar com a IA" aria-label="Atualizar priorização com a IA" onClick={atencaoIA.atualizar} disabled={atencaoIA.carregando}>
+              <RefreshCw className={'size-[15px]' + (atencaoIA.carregando ? ' animate-spin' : '')} />
+            </button>
+          </div>
+          <Atencao go={go} itens={atencaoIA.itens} max={5} />
         </section>
       </div>
 
