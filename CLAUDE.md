@@ -9,8 +9,11 @@ não é detalhe: contraste, tamanho de texto e alvos de toque guiam todas as dec
 
 ## Estado atual (versão 9)
 
-- Versão de trabalho publicada em https://claude.ai/artifact/CC5B6mT6EASzhR7H6ktshd ("App dos Sócios Neutro").
-  A versão anterior, em marinho, ficou em https://claude.ai/artifact/GFoRKY7Ht8UpAKLsqZCnyj.
+- Este branch (redesenho v3 + totais reais) está publicado, privado, em
+  https://claude.ai/artifact/Urm76PwhobpygDKm9dP46L. **Não publicar em**
+  https://claude.ai/artifact/CC5B6mT6EASzhR7H6ktshd ("App dos Sócios Neutro"): desde 15/10/2026 ele tem a versão
+  de outra linha de trabalho (branch `main`: Versão 12 / Pauta Jurídica). A versão em marinho ficou em
+  https://claude.ai/artifact/GFoRKY7Ht8UpAKLsqZCnyj.
 
 - **Redesenho v3 em andamento** (`docs/redesign-v3/`: protótipo HTML, guia por tela/tokens/movimento,
   especificação dos gráficos, decisões de conflito e os prints de referência). Aplicado em 8 passos
