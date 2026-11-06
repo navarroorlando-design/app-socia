@@ -37,7 +37,7 @@ function Passivo({ onBack, onOpenOrg, onOpenContrato }) {
   return (
     <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 60 }}>
       <Faixa bleed={32} onBack={onBack} backLabel="Início" eyebrow="Todos os clientes" titulo="Passivo"
-             sub="Risco estimado nos processos dos contratos de gestão" />
+             sub="Risco estimado nos processos dos contratos de gestão · exemplo (o cadastro real não traz valor da causa nem prognóstico)" />
       <Dica id="passivo" style={{ marginTop: 0, marginBottom: 16 }} />
 
       <div style={{ background: S.marca, borderRadius: 24, padding: 20 }}>

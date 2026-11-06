@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { ChevronDownIcon, ChevronIcon, LockIcon, SearchIcon } from "../componentes/icones";
-import { Botao, Etiqueta, Faixa, FolhaInferior, KPIs, LinhaLista, SeletorSegmentado } from "../componentes/ui";
+import { Botao, Etiqueta, Faixa, FolhaInferior, Fonte, KPIs, LinhaLista, SeletorSegmentado } from "../componentes/ui";
 import { BLOQUEIOS_LISTA, ORGS, ORG_ORDER, PROCESSOS_LISTA } from "../dados/base";
 import { DIAS_NOVO_LIMITE, DIAS_PARADO_LIMITE, ROTULO_STATUS_BLOQUEIO, SEM_ID_STATUS_BLOQUEIO, statusVisualBloqueio } from "../dados/criterios";
 import { diasEntre, fmtBRL, fmtData, HOJE, norm } from "../dados/formato";
+import { FONTE_REAL, REAL } from "../dados/reais";
 import { CARD, F, S, SEMANTICA } from "../estilo/tokens";
 import { MarcaOrg } from "../componentes/MarcaOrg";
 
@@ -40,20 +41,15 @@ function BloqueiosTela({ onBack, onOpenOrg, onOpenParados, onOpenContrato, onOpe
   const comProcesso = BLOQUEIOS_LISTA.map((b) => ({ ...b, processo: processoPorId(b.processoId) }));
   const ativos = comProcesso.filter((b) => b.status === "Ativo");
   const levantados = comProcesso.filter((b) => b.status === "Levantado");
-  const totalAtivo = ativos.reduce((s, b) => s + b.valorNum, 0);
   const novos7 = ativos.filter((b) => diasEntre(b.data, HOJE) <= DIAS_NOVO_LIMITE).length;
   const paradosCount = ativos.filter((b) => statusVisualBloqueio(b, b.processo) === "parado").length;
 
+  // Topo escuro: totais reais (controle de bloqueio). Cada bloqueio da lista abaixo ainda é de
+  // exemplo — o controle real só traz o saldo por processo, sem cada bloqueio com data.
   const porCliente = ORG_ORDER
-    .map((id) => {
-      const lista = ativos.filter((b) => b.clienteId === id);
-      const valor = lista.reduce((s, b) => s + b.valorNum, 0);
-      const novos = lista.filter((b) => diasEntre(b.data, HOJE) <= DIAS_NOVO_LIMITE).length;
-      return { id, valor, n: lista.length, novos };
-    })
-    .filter((c) => c.n > 0)
+    .map((id) => ({ id, valor: REAL.porCliente[id]?.bloqueado || 0, n: REAL.porCliente[id]?.comValor || 0 }))
+    .filter((c) => c.valor > 0)
     .sort((a, b) => b.valor - a.valor);
-  const maxCliente = Math.max(...porCliente.map((c) => c.valor), 1);
 
   const contagem = { Ativo: ativos.length, Levantado: levantados.length, todos: comProcesso.length };
   const RECORTES = [
@@ -85,18 +81,19 @@ function BloqueiosTela({ onBack, onOpenOrg, onOpenParados, onOpenContrato, onOpe
   return (
     <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 60 }}>
       <Faixa bleed={32} bloco onBack={onBack} backLabel="Início" eyebrow="Todos os clientes" titulo="Bloqueios"
-             sub={`${lista.length} ${lista.length === 1 ? "bloqueio" : "bloqueios"} · ${escopo}`} />
+             sub={`${lista.length} ${lista.length === 1 ? "bloqueio" : "bloqueios"} de exemplo · ${escopo}`} />
 
       {/* topo escuro: total ativo, novos, parados e o resumo por cliente */}
       <div style={{ background: S.marca, borderRadius: 24, padding: 20, marginTop: 4 }}>
         <p style={{ fontFamily: F.ui, fontSize: 15, color: S.marcaTexto2 }}>Bloqueado hoje, todos os clientes</p>
-        <p style={{ fontFamily: F.ui, fontSize: 32, fontWeight: 600, color: "#FFFFFF", letterSpacing: "-0.03em", marginTop: 4, fontVariantNumeric: "tabular-nums" }}>{fmtBRL(totalAtivo)}</p>
-        <p style={{ fontFamily: F.ui, fontSize: 15, color: S.marcaTexto2, marginTop: 6 }}>{ativos.length} bloqueios ativos</p>
+        <p style={{ fontFamily: F.ui, fontSize: 32, fontWeight: 600, color: "#FFFFFF", letterSpacing: "-0.03em", marginTop: 4, fontVariantNumeric: "tabular-nums" }}>{fmtBRL(REAL.bloqueado)}</p>
+        <p style={{ fontFamily: F.ui, fontSize: 15, color: S.marcaTexto2, marginTop: 6 }}>{REAL.comValor} processos com valor bloqueado</p>
+        <p style={{ fontFamily: F.ui, fontSize: 15, color: S.marcaTexto2, marginTop: 2 }}>Já devolvido {fmtBRL(REAL.devolvido)} · pago à outra parte {fmtBRL(REAL.pago)}</p>
         <div className="flex flex-wrap gap-2 mt-2">
-          {novos7 > 0 && <Etiqueta s={sem("risco")} texto={`${novos7} novos nos últimos 7 dias`} sobreCor />}
+          {novos7 > 0 && <Etiqueta s={sem("risco")} texto={`${novos7} novos nos últimos 7 dias · exemplo`} sobreCor />}
           {paradosCount > 0 && (
             <button onClick={onOpenParados} aria-label={`${paradosCount} bloqueios parados há mais de 90 dias, ver lista`}>
-              <Etiqueta s={sem("atencao")} texto={`${paradosCount} parados há 90+ dias`} sobreCor />
+              <Etiqueta s={sem("atencao")} texto={`${paradosCount} parados há 90+ dias · exemplo`} sobreCor />
             </button>
           )}
         </div>
@@ -105,7 +102,7 @@ function BloqueiosTela({ onBack, onOpenOrg, onOpenParados, onOpenContrato, onOpe
           <div className="flex flex-col gap-3 mt-4">
             {porCliente.map((c) => {
               const ativo = clienteFiltro === c.id;
-              const pct = Math.round((c.valor / totalAtivo) * 100);
+              const pct = Math.round((c.valor / REAL.bloqueado) * 100);
               return (
                 <button key={c.id} onClick={() => setClienteFiltro(ativo ? null : c.id)} className="w-full text-left pressable">
                   <span className="flex items-baseline justify-between gap-2">
@@ -116,7 +113,7 @@ function BloqueiosTela({ onBack, onOpenOrg, onOpenParados, onOpenContrato, onOpe
                     <span className="block" style={{ height: 8, borderRadius: 999, width: `${Math.max(3, pct)}%`, background: ativo ? S.dourado : S.osso }} />
                   </span>
                   <span style={{ fontFamily: F.ui, fontSize: 13, color: S.marcaTexto2, marginTop: 4, display: "block" }}>
-                    {c.n} {c.n === 1 ? "bloqueio" : "bloqueios"}{c.novos > 0 ? ` · ${c.novos} novos` : ""} · {pct}%
+                    {c.n} {c.n === 1 ? "processo" : "processos"} com valor · {pct}%
                   </span>
                 </button>
               );
@@ -128,7 +125,12 @@ function BloqueiosTela({ onBack, onOpenOrg, onOpenParados, onOpenContrato, onOpe
             )}
           </div>
         )}
+        <Fonte sobreCor style={{ marginTop: 14 }}>{FONTE_REAL}</Fonte>
       </div>
+      <Fonte style={{ marginTop: 10, lineHeight: 1.45 }}>
+        A lista abaixo é de exemplo: o controle de bloqueio real traz só o saldo de cada processo, sem cada bloqueio com data.
+        Tocar num cliente acima filtra essa lista.
+      </Fonte>
 
       {/* busca */}
       <div className="busca-campo flex items-center gap-2 px-4 rounded-full mt-4" style={{ height: 50, background: S.cartao, boxShadow: CARD.boxShadow }}>

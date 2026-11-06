@@ -31,7 +31,7 @@ function ReclamacoesTela({ orgId, onBack, backLabel, onOpen }) {
     <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 60 }}>
       <Faixa bleed={32} onBack={onBack} backLabel={backLabel} eyebrow={orgId ? ORGS[orgId].name : "Supremo Tribunal Federal"}
              titulo="Reclamações constitucionais" tituloCompacto="Reclamações" tituloSize={30}
-             sub={itens.length ? `${andamento} em andamento · ${itens.length - andamento} julgada${itens.length - andamento === 1 ? "" : "s"}` : "Nenhuma reclamação"} />
+             sub={itens.length ? `${andamento} em andamento · ${itens.length - andamento} julgada${itens.length - andamento === 1 ? "" : "s"} · exemplo` : "Nenhuma reclamação"} />
       {itens.length ? <ListaReclamacoes itens={itens} onOpen={onOpen} />
         : <p style={{ fontFamily: F.ui, fontSize: 16, color: S.texto2, lineHeight: 1.5 }}>Esta organização não tem reclamação constitucional na base.</p>}
     </div>

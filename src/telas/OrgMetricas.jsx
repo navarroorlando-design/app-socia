@@ -5,6 +5,7 @@ import { ORGS } from "../dados/base";
 import { fmtBRL, fmtBRLCurto, fmtData } from "../dados/formato";
 import { ORDEM_PROGNOSTICO, encerradosDe, historicoPassivo, motivosVariacao, resumoContrato, resumoOrg } from "../dados/passivo";
 import { DIAS_PARADO_LIMITE, processosParados } from "../dados/criterios";
+import { realCliente } from "../dados/reais";
 import { GraficoColunas } from "../ia/Graficos";
 import { CARD, DADOS, F, S, SEMANTICA, semDe } from "../estilo/tokens";
 import { Anotacao, BotaoAlerta } from "../pessoal";
@@ -204,7 +205,7 @@ function ContratosOrg({ orgId, onBack, onOpenContrato, onEnviarCliente }) {
     <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 60 }}>
       <Faixa bleed={32} bloco onBack={onBack} backLabel={o.name} eyebrow={`${o.name} · passivo estimado`}
              titulo={fmtBRL(r.passivo.total)} tituloCompacto="Contratos de gestão" tituloSize={36}
-             sub={`${r.contratos.length} contratos de gestão · ${r.processos.length} processos`}>
+             sub={`${r.contratos.length} contratos de gestão · ${r.processos.length} processos · exemplo`}>
         <div style={{ ...CARD, padding: 18 }}><PassivoBarra passivo={r.passivo} /></div>
       </Faixa>
       <SecLabel>Por contrato de gestão</SecLabel>
@@ -234,7 +235,7 @@ function ContratoDetalhe({ orgId, orgao, onBack, backLabel, onOpenProcesso, onOp
   const processos = [...c.processos].sort((a, b) => b.valorCausa - a.valorCausa);
   return (
     <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 60 }}>
-      <Faixa bleed={32} bloco onBack={onBack} backLabel={backLabel} eyebrow={`${o.name} · contrato de gestão`}
+      <Faixa bleed={32} bloco onBack={onBack} backLabel={backLabel} eyebrow={`${o.name} · contrato de gestão · exemplo`}
              titulo={orgao} tituloCompacto={orgao} tituloSize={28}
              sub={<span className="flex flex-col items-start gap-2"><span>Vigência {c.vigencia}</span><Etiqueta s={sem(c.vigenciaStatus.id)} texto={c.vigenciaStatus.texto} sobreCor /></span>}>
         <div style={{ ...CARD, padding: 18 }}>
@@ -308,7 +309,7 @@ function ProcessosOrg({ orgId, onBack, onOpenContrato, onOpenProcesso }) {
     <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 60 }}>
       <Faixa bleed={32} bloco onBack={onBack} backLabel={o.name} eyebrow={`${o.name} · processos`}
              titulo={`${r.processos.length} processos`} tituloCompacto="Processos" tituloSize={36}
-             sub={`${parados} parados há mais de ${DIAS_PARADO_LIMITE} dias`}>
+             sub={`Lista de exemplo${realCliente(orgId) ? ` (o cadastro tem ${realCliente(orgId).processos.toLocaleString("pt-BR")})` : ""} · ${parados} parados há mais de ${DIAS_PARADO_LIMITE} dias`}>
         <KPIs itens={[["Trabalhista", String(conta("Trabalhista"))], ["Cível", String(conta("Cível"))], ["Administr.", String(conta("Administrativo"))]]} />
       </Faixa>
       <SecLabel>Por contrato de gestão</SecLabel>

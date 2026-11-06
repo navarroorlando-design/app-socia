@@ -17,7 +17,7 @@ function Movimentacoes({ onBack, onOpenProcesso, onOpenBloqueio }) {
   const grupos = ["Hoje e ontem", "Nesta semana", "Anteriores"].map((g) => [g, eventos.filter((e) => grupo(e.data) === g)]).filter(([, l]) => l.length);
   return (
     <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 60 }}>
-      <Faixa bleed={32} onBack={onBack} backLabel="Início" titulo="Movimentações" sub="As mais recentes, de todos os clientes" />
+      <Faixa bleed={32} onBack={onBack} backLabel="Início" titulo="Movimentações" sub="As mais recentes, de todos os clientes · exemplo" />
       {grupos.map(([g, lista]) => (
         <div key={g}>
           <SecLabel>{g}</SecLabel>

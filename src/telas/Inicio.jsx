@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ChevronIcon, FlagIcon, FolderIcon, LockIcon, MoedaIcon, SearchIcon, TendenciaIcon } from "../componentes/icones";
-import { Badge, Etiqueta, Faixa, LinhaLista, SecLabel } from "../componentes/ui";
-import { BLOQUEIOS_LISTA, ENCERRADOS_2026, ORGS, ORG_ORDER, PROCESSOS_LISTA, RECLAMACOES_LISTA, TOTAIS } from "../dados/base";
+import { Badge, Etiqueta, Faixa, Fonte, LinhaLista, SecLabel, SeloExemplo } from "../componentes/ui";
+import { BLOQUEIOS_LISTA, ENCERRADOS_2026, ORGS, ORG_ORDER, PROCESSOS_LISTA, RECLAMACOES_LISTA } from "../dados/base";
 import { processosParados } from "../dados/criterios";
+import { FONTE_REAL, REAL } from "../dados/reais";
 import { fmtBRL, fmtBRLCurto, fmtData, norm } from "../dados/formato";
 import { CARD, F, LINK, S, SEMANTICA, T, semDe } from "../estilo/tokens";
 import { prefersReducedMotion } from "../motion/motion";
@@ -68,23 +69,19 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, onOpenPassivo, onO
   const saudacao = hora < 12 ? "Bom dia," : hora < 18 ? "Boa tarde," : "Boa noite,";
   const data = agora.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
 
-  // Parte do valor bloqueado em 2026 que já foi levantada (anel do cartão principal).
-  const levantado = BLOQUEIOS_LISTA.filter((b) => b.status === "Levantado").reduce((s, b) => s + b.valorNum, 0);
-  const pctLevantado = Math.round((levantado / (levantado + TOTAIS.bloqueadoAtivo)) * 100);
-  const ativos = BLOQUEIOS_LISTA.filter((b) => b.status === "Ativo").length;
+  // Cartão principal e atalhos de Processos/Bloqueios: totais reais (src/dados/reais.js).
   const passivo = PROCESSOS_LISTA.reduce((soma, p) => soma + p.valorCausa, 0);
   const totalEncerrados2026 = ENCERRADOS_2026.length;
   const pctExito = totalEncerrados2026 ? Math.round((ENCERRADOS_2026.filter((e) => e.resultado === "Favorável" || e.resultado === "Acordo").length / totalEncerrados2026) * 100) : 0;
   const proc = (id) => PROCESSOS_LISTA.find((p) => p.id === id);
-  // "Ativo" = não arquivado nem baixado. Na base de exemplo, todos estão ativos.
-  const ativosProc = PROCESSOS_LISTA.filter((p) => !["Arquivado", "Baixado"].includes(p.status));
-  const outrosProc = ativosProc.filter((p) => !NATUREZAS.includes(p.area)).length;
+  // Processos ativos por natureza: contagem real do acervo; outras áreas (ex.: Penal) ficam numa linha.
+  const outrasAreas = Object.entries(REAL.porArea).filter(([a]) => !NATUREZAS.includes(a));
 
   // Contador e anel animados: só na primeira abertura do Início na sessão (seção B.1/D).
   const primeiraAbertura = useRef(!INICIO_JA_ABRIU).current;
   useEffect(() => { INICIO_JA_ABRIU = true; }, []);
-  const valorAnimado = useContarAoAbrir(TOTAIS.bloqueadoAtivo, primeiraAbertura);
-  const pctAnimado = useContarAoAbrir(pctLevantado, primeiraAbertura);
+  const valorAnimado = useContarAoAbrir(REAL.bloqueado, primeiraAbertura);
+  const pctAnimado = useContarAoAbrir(REAL.pctDevolvido, primeiraAbertura);
 
   // O primeiro bloco visível fica em destaque, no carvão da marca; os outros, em cartão branco.
   // Assim, quando a sócia reordena o Início (Perfil → Personalizar Início), o destaque acompanha.
@@ -101,7 +98,7 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, onOpenPassivo, onO
     osso: { fundo: S.osso, titulo: S.ink, apoio: S.ossoTexto2, circulo: "rgba(255,253,249,.55)" },
     oliva: { fundo: S.oliva, titulo: "#FFFFFF", apoio: "#E6E1D6", circulo: "rgba(255,255,255,.14)" },
   };
-  const Atalho = ({ Icone, rotulo, detalhe, onClick, tom = "cartao" }) => {
+  const Atalho = ({ Icone, rotulo, detalhe, onClick, tom = "cartao", exemplo }) => {
     const t = TONS_ATALHO[tom];
     return (
       <button onClick={onClick} className="flex flex-col items-start text-left min-w-0"
@@ -112,6 +109,7 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, onOpenPassivo, onO
         <span className="min-w-0">
           <span className="block" style={{ fontFamily: F.ui, fontSize: 17, fontWeight: 600, color: t.titulo }}>{rotulo}</span>
           <span className="block" style={{ fontFamily: F.ui, fontSize: 14, color: t.apoio, marginTop: 2, lineHeight: 1.3 }}>{detalhe}</span>
+          {exemplo && <span className="block" style={{ marginTop: 6 }}><SeloExemplo sobreCor={tom === "oliva"} /></span>}
         </span>
       </button>
     );
@@ -126,10 +124,10 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, onOpenPassivo, onO
         <p style={{ fontFamily: F.ui, fontSize: 36, fontWeight: 600, color: tResumo.texto, letterSpacing: "-0.03em", lineHeight: 1.1, marginTop: 4, fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>{fmtBRL(valorAnimado)}</p>
         <div className="flex items-end justify-between gap-3 mt-3">
           <div className="min-w-0 flex flex-col items-start gap-1.5">
-            <p style={{ fontFamily: F.ui, fontSize: 15, color: tResumo.apoio, marginBottom: 1 }}>{ativos} bloqueios ativos</p>
+            <p style={{ fontFamily: F.ui, fontSize: 15, color: tResumo.apoio, marginBottom: 1 }}>{REAL.comValor} processos com valor bloqueado</p>
             {parados90 > 0 && (
               <button onClick={onOpenParados} aria-label={`${parados90} processos parados há mais de 90 dias, ver lista`}>
-                <Etiqueta s={sem("atencao")} texto={`${parados90} parados há 90 dias`} sobreCor={tResumo.escuro} />
+                <Etiqueta s={sem("atencao")} texto={`${parados90} parados há 90 dias · exemplo`} sobreCor={tResumo.escuro} />
               </button>
             )}
             <button onClick={onOpenAcompanhando} aria-label={`${followedItems.length} processos acompanhados`}>
@@ -138,16 +136,17 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, onOpenPassivo, onO
           </div>
           <Anel pct={pctAnimado} rotulo="já levantado" size={72} claro={!tResumo.escuro} />
         </div>
+        <Fonte sobreCor={tResumo.escuro} style={{ marginTop: 12 }}>{FONTE_REAL}</Fonte>
       </div>
       <Dica id="inicio" style={{ marginTop: 10, padding: "10px 12px" }} />
     </>),
     atalhos: (<>
       {/* atalhos em grade 2×2: 4 tipos, sempre o mesmo tamanho */}
       <div className="grid grid-cols-2 gap-2.5 mt-3">
-        <Atalho rotulo="Processos" detalhe={`${PROCESSOS_LISTA.length} no total`} onClick={() => onOpenList("processos")} Icone={FolderIcon} tom="cartao" />
-        <Atalho rotulo="Bloqueios" detalhe={`${ativos} ativos · ${fmtBRLCurto(TOTAIS.bloqueadoAtivo)}`} onClick={() => onOpenList("bloqueios")} Icone={LockIcon} tom="osso" />
-        <Atalho rotulo="Passivo" detalhe={`${fmtBRLCurto(passivo)} estimado`} onClick={onOpenPassivo} Icone={MoedaIcon} tom="cartao" />
-        <Atalho rotulo="Desempenho" detalhe={`${pctExito}% de êxito em 2026`} onClick={onOpenDesempenho} Icone={TendenciaIcon} tom="oliva" />
+        <Atalho rotulo="Processos" detalhe={`${REAL.processos.toLocaleString("pt-BR")} no total`} onClick={() => onOpenList("processos")} Icone={FolderIcon} tom="cartao" />
+        <Atalho rotulo="Bloqueios" detalhe={`${REAL.comValor} com valor · ${fmtBRLCurto(REAL.bloqueado)}`} onClick={() => onOpenList("bloqueios")} Icone={LockIcon} tom="osso" />
+        <Atalho rotulo="Passivo" detalhe={`${fmtBRLCurto(passivo)} estimado`} onClick={onOpenPassivo} Icone={MoedaIcon} tom="cartao" exemplo />
+        <Atalho rotulo="Desempenho" detalhe={`${pctExito}% de êxito em 2026`} onClick={onOpenDesempenho} Icone={TendenciaIcon} tom="oliva" exemplo />
       </div>
       <button onClick={() => onOpenList("reclamacoes")} className="w-full text-left flex items-center gap-3 mt-3"
               style={{ ...CARD, padding: 16 }} aria-label={`Reclamação constitucional, ${RECLAMACOES_LISTA.length} no STF`}>
@@ -156,7 +155,7 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, onOpenPassivo, onO
         </span>
         <span className="flex-1 min-w-0">
           <span className="block" style={{ fontFamily: F.ui, fontSize: 17, fontWeight: 600, color: S.ink }}>Reclamação constitucional</span>
-          <span className="block" style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2, marginTop: 2 }}>{RECLAMACOES_LISTA.length} no STF</span>
+          <span className="flex items-center gap-2 flex-wrap" style={{ fontFamily: F.ui, fontSize: 14, color: S.texto2, marginTop: 2 }}>{RECLAMACOES_LISTA.length} no STF <SeloExemplo /></span>
         </span>
         <ChevronIcon size={18} color={S.texto2} strokeWidth={2} />
       </button>
@@ -166,12 +165,12 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, onOpenPassivo, onO
       <SecLabel acao="Ver todos" onAcao={() => onOpenProcessos("todos")}>Processos ativos</SecLabel>
       <div style={{ ...caixa(tDetalhes), padding: 18 }}>
         <div className="flex items-baseline gap-2">
-          <span style={{ fontFamily: F.ui, fontSize: 34, fontWeight: 600, color: tDetalhes.texto, letterSpacing: "-0.02em" }}>{ativosProc.length}</span>
-          <span style={{ fontFamily: F.ui, fontSize: 16, color: tDetalhes.apoio }}>processos em andamento no escritório</span>
+          <span style={{ fontFamily: F.ui, fontSize: 34, fontWeight: 600, color: tDetalhes.texto, letterSpacing: "-0.02em", fontVariantNumeric: "tabular-nums" }}>{REAL.processos.toLocaleString("pt-BR")}</span>
+          <span style={{ fontFamily: F.ui, fontSize: 16, color: tDetalhes.apoio }}>processos ativos no escritório</span>
         </div>
         <div className="flex flex-col mt-3" style={{ gap: 4 }}>
           {NATUREZAS.map((n) => {
-            const qtd = ativosProc.filter((p) => p.area === n).length;
+            const qtd = REAL.porArea[n] || 0;
             return (
               <button key={n} onClick={() => onOpenProcessos(n)} className="w-full text-left" style={{ padding: "8px 0" }} aria-label={`${n}: ${qtd} processos, ver lista`}>
                 <span className="flex items-baseline justify-between gap-2">
@@ -179,17 +178,20 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, onOpenPassivo, onO
                   <span className="flex items-center gap-1.5" style={{ fontFamily: F.ui, fontSize: 16, fontWeight: 600, color: tDetalhes.texto }}>{qtd}<ChevronIcon size={14} color={tDetalhes.apoio} strokeWidth={2} /></span>
                 </span>
                 <span className="block" style={{ marginTop: 6, height: 8, borderRadius: 999, background: tDetalhes.trilho }}>
-                  <span className="block" style={{ height: 8, borderRadius: 999, width: `${Math.max(2, (qtd / ativosProc.length) * 100)}%`, background: tDetalhes.barra }} />
+                  <span className="block" style={{ height: 8, borderRadius: 999, width: `${Math.max(2, (qtd / REAL.processos) * 100)}%`, background: tDetalhes.barra }} />
                 </span>
               </button>
             );
           })}
         </div>
-        {outrosProc > 0 && <p style={{ fontFamily: F.ui, fontSize: 14, color: tDetalhes.apoio, marginTop: 6 }}>Mais {outrosProc} {outrosProc === 1 ? "processo constitucional" : "processos constitucionais"} (reclamações no STF).</p>}
+        {outrasAreas.map(([area, n]) => (
+          <p key={area} style={{ fontFamily: F.ui, fontSize: 14, color: tDetalhes.apoio, marginTop: 6 }}>Mais {n} {n === 1 ? "processo" : "processos"} da área {area.toLowerCase()}.</p>
+        ))}
+        <Fonte sobreCor={tDetalhes.escuro}>{FONTE_REAL}. A lista que abre ao tocar ainda é de exemplo.</Fonte>
       </div>
       {preview.length > 0 && (
         <>
-          <SecLabel acao="Ver todos" onAcao={onOpenAcompanhando}>Processos que você segue</SecLabel>
+          <SecLabel acao="Ver todos" onAcao={onOpenAcompanhando}>Processos que você segue <SeloExemplo /></SecLabel>
           <div style={caixa(tDetalhes)}>
             {preview.map((item, i) => (
               <button key={item.id} onClick={() => onOpenProcesso(item, "feed")} className="w-full text-left flex items-center gap-3"
@@ -211,7 +213,7 @@ function InicioFeed({ onOpenList, onOpenProcessos, onOpenOrg, onOpenPassivo, onO
       )}
     </>),
     hoje: (<>
-      <SecLabel acao="Ver tudo" onAcao={() => onOpenList("movimentacoes")}>Hoje no escritório</SecLabel>
+      <SecLabel acao="Ver tudo" onAcao={() => onOpenList("movimentacoes")}>Hoje no escritório <SeloExemplo /></SecLabel>
       <div style={caixa(tHoje)}>
         <FeedItem cliente="Instituto Gnosis" text="Decisão interlocutória publicada na ação cível de cobrança" time="40 min" sem={sem("curso")} tag="Movimentação" onClick={() => onOpenProcesso(proc("p2"), "feed")} t={tHoje} />
         <FeedItem cliente="AFNE" text="Bloqueio de R$ 18.400 foi levantado" time="3 h" sem={sem("resolvido")} tag="Levantado" onClick={() => onOpenBloqueio(BLOQUEIOS_LISTA.find((b) => b.id === "b1"), "feed")} t={tHoje} />
@@ -274,7 +276,7 @@ function ProcessosTela({ onBack, onOpenProcesso, onOpenBloqueio, onOpenOrg }) {
   const total = orgs.length + processos.length + bloqueios.length;
   return (
     <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 60 }}>
-      <Faixa bleed={32} onBack={onBack} backLabel="Início" titulo="Processos" sub={`${PROCESSOS_LISTA.length} na base de exemplo`} />
+      <Faixa bleed={32} onBack={onBack} backLabel="Início" titulo="Processos" sub={`Busca na base de exemplo (${PROCESSOS_LISTA.length}). O acervo real tem ${REAL.processos.toLocaleString("pt-BR")}.`} />
       <div className="busca-campo flex items-center gap-2 px-4 rounded-full" style={{ height: 50, background: S.cartao, boxShadow: CARD.boxShadow }}>
         <SearchIcon size={20} color={S.texto2} />
         <input id="busca" aria-label="Buscar" value={q} onChange={(e) => setQ(e.target.value)}
@@ -372,7 +374,7 @@ function ParadosLista({ onOpen, onBack }) {
   return (
     <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 60 }}>
       <Faixa bleed={32} onBack={onBack} backLabel="Início" titulo="Parados há 90+ dias"
-             sub={items.length === 1 ? "1 processo sem movimentação" : `${items.length} processos sem movimentação`} />
+             sub={`${items.length === 1 ? "1 processo sem movimentação" : `${items.length} processos sem movimentação`} · exemplo (o cadastro real não mostra quem está parado)`} />
       {items.length === 0 ? (
         <p style={{ fontFamily: F.ui, fontSize: 16, color: S.texto2, lineHeight: 1.5 }}>Nenhum processo parado há 90 dias ou mais.</p>
       ) : (

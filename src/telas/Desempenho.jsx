@@ -30,7 +30,7 @@ function Desempenho({ onBack, onOpenBloqueios }) {
   return (
     <div className="flex-1 overflow-y-auto no-scrollbar px-8" style={{ paddingBottom: 60 }}>
       <Faixa bleed={32} onBack={onBack} backLabel="Início" eyebrow="Indicadores do escritório" titulo="Desempenho"
-             sub={serie ? `2026 até ${fmtDDMM(serie.periodo.ate)}` : "Período sem dados de exemplo"} />
+             sub={serie ? `2026 até ${fmtDDMM(serie.periodo.ate)} · exemplo (o cadastro real ainda não traz os encerrados)` : "Período sem dados de exemplo"} />
       <Dica id="desempenho" style={{ marginTop: 0 }} />
 
       <div className="mt-4">

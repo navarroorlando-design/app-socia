@@ -72,8 +72,15 @@ não é detalhe: contraste, tamanho de texto e alvos de toque guiam todas as dec
   capacidade `sample`. `app-socios-publicado.html` é a última versão publicada (v8).
 - Fora do claude.ai, `window.claude` não existe: no app Next.js a IA fica desativada até o servidor
   com a API da Anthropic ficar pronto.
-- Os dados são uma **base de exemplo determinística** (58 processos, 39 bloqueios, 4 clientes).
-  Não há dado real de cliente.
+- **Totais reais + base de exemplo.** Os números de cabeçalho vêm do acervo real (Legal One + controle de
+  bloqueio, posição de 03/11/2026, `src/dados/reais.js`): processos por cliente, área e contrato, e os valores
+  ainda bloqueados, já devolvidos e pagos à outra parte. Todo o resto continua na **base de exemplo
+  determinística** (58 processos, 39 bloqueios, 4 clientes) e aparece marcado com `<SeloExemplo />` ou
+  "exemplo" no texto: passivo, prognóstico, parados, encerrados (Desempenho), cada bloqueio com data, cada
+  processo, reclamações e movimentações — a planilha real não traz esses dados.
+- **Privacidade: o repositório no GitHub e o link do artifact são públicos.** Só entram no código totais por
+  cliente, área e contrato. Número de processo e nome de parte **nunca** entram (decisão da usuária,
+  06/11/2026). `lib/importar/totais.mjs` recusa gravar se aparecer um número CNJ.
 
 ## Como rodar
 
@@ -83,6 +90,7 @@ npm run dev        # app Next.js em http://localhost:3000
 npm run build      # build de produção do Next.js
 npm run artifact   # gera dist/app-socios.html (artifact do claude.ai)
 npm run icones     # regera os ícones do app (precisa do Playwright)
+npm run totais -- <planilha.xlsx>   # regrava src/dados/reais.gerado.js com os totais reais (só somas e contagens)
 ```
 
 As fontes Lexend e IBM Plex Mono vêm do pacote `@fontsource` (servidas pelo próprio app) no Next.js;
@@ -99,7 +107,9 @@ o artifact carrega do Google Fonts.
 - `src/componentes/`: `icones.jsx` (SVG) e `ui.jsx` (peças compartilhadas: `Faixa`, `KPIs`,
   `SecLabel`, `CardRow`, `TabBar`, `Etiqueta`, `Botao`, `Badge`...). `Faixa` é o cabeçalho das telas:
   título grande que vira barra fina ao rolar; com `tom`, vira cabeçalho de objeto.
-- `src/dados/`: `formato.js` (datas e moeda), `base.js` (base de exemplo, `TOTAIS`),
+- `src/dados/`: `formato.js` (datas e moeda), `base.js` (base de exemplo, `TOTAIS`), `reais.gerado.js`
+  (totais reais, gerado por `npm run totais`; não editar à mão) e `reais.js` (`REAL`, `realCliente`, `FONTE_REAL`,
+  `consultarTotaisReais`),
   `consultas.js` (`consultarDados`, `listarProcessos`: as funções que a IA chama).
 - `src/ia/`: `motor.js` (`useSample`, `TOOLS_DEF`, `montarPrompt`, `gerarRelatorio`, relatórios de
   exemplo) e `RelatorioView.jsx` (blocos `destaque`, `linha`, `barras`, `tabela`, `texto`).
@@ -290,7 +300,9 @@ O contrato do Legal One **não tem API**. Os dados entram por **relatórios expo
 ## Regra da IA (arquitetura)
 
 A IA **nunca** é a fonte do número. Ela chama `consultar_dados`, `consultar_cruzado` e
-`listar_processos` (`src/dados/consultas.js`), que calculam sobre a base. Em produção, essas funções
+`listar_processos` (`src/dados/consultas.js`), que calculam sobre a base de exemplo, e `consultar_totais_reais`
+(`src/dados/reais.js`), que devolve os totais reais; as regras mandam usar os reais para quantidade de processos
+e valores bloqueados e dizer "exemplo" quando o número vier da outra base. Em produção, essas funções
 passam a consultar a camada de métricas real (Legal One + Log de Bloqueios), sem mudar o contrato.
 
 **Formato: conversa como no app do Claude** (`src/telas/Ia.jsx`, `IaConversa`). Resposta em Markdown,

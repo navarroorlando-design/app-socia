@@ -12,7 +12,8 @@
     "icones": "node scripts/gerar_icones.js",
     "test": "node --test \"tests/*.test.mjs\"",
     "datajud": "node scripts/datajud.mjs",
-    "importar": "node scripts/importar.mjs"
+    "importar": "node scripts/importar.mjs",
+    "totais": "node scripts/totais.mjs"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.3.0",

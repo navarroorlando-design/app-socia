@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { BLOQUEIOS_LISTA, CLIENTE_NOME, TOTAIS } from "../dados/base";
 import { consultarCruzado, consultarDados, listarProcessos } from "../dados/consultas";
+import { REFERENCIA_REAL, consultarTotaisReais } from "../dados/reais";
 import { PERGUNTAS, textoDaPergunta } from "../ajuda/conteudo";
 
 /* ------------------------------------------------------------------ */
@@ -88,6 +89,15 @@ const TOOLS_DEF = (onProgress) => [
     },
     execute: (input) => { onProgress(`Listando processos${input.cliente ? ` de ${input.cliente}` : ""}`); return listarProcessos(input); },
   },
+  {
+    name: "consultar_totais_reais",
+    description: `Totais REAIS do acervo ativo (Legal One + controle de bloqueio, posição em ${REFERENCIA_REAL}): processos por cliente, área e contrato; valor ainda bloqueado, já devolvido ao cliente e pago à outra parte. Use para "quantos processos", "quanto está bloqueado", "quanto já voltou", por cliente ou contrato. Não traz passivo, prognóstico, parados, encerrados nem cada bloqueio com data: para isso só há a base de exemplo das outras funções.`,
+    inputSchema: {
+      type: "object",
+      properties: { cliente: { type: "string", description: "AFNE, Instituto Gnosis, FAS ou IGEDES. Omita para a firma toda (vem com a divisão por cliente)." } },
+    },
+    execute: (input) => { onProgress(`Consultando os totais reais${input.cliente ? ` de ${input.cliente}` : ""}`); return consultarTotaisReais(input); },
+  },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -99,8 +109,9 @@ function regras(clienteId) {
   return `Você é o analista de dados do app interno dos sócios do escritório Azevedo dos Reis Advogados & Associados (Direito do Terceiro Setor: organizações sociais com contratos de gestão com o poder público). Converse com a sócia como o Claude conversa no celular: análise de verdade, clara e bem organizada. Ela tem dificuldade de ver de perto, então escreva para leitura fácil.
 
 DADOS
-- A base cobre ${TOTAIS.processos} processos e ${BLOQUEIOS_LISTA.length} bloqueios SISBAJUD de 4 clientes (AFNE, Instituto Gnosis, FAS, IGEDES), cada um com contratos de gestão, com dados de 2026 até outubro. Hoje é 06/10/2026. São dados de exemplo.
-- Todo número que você escrever tem de vir das funções consultar_dados, consultar_cruzado ou listar_processos. Nunca invente nem estime. Pode calcular percentuais e diferenças a partir do que as funções devolverem.
+- Há duas fontes. (1) Totais reais, em consultar_totais_reais: quantidade de processos por cliente, área e contrato e os valores ainda bloqueados, já devolvidos e pagos à outra parte, posição do acervo em ${REFERENCIA_REAL}. (2) Uma base de exemplo, em consultar_dados, consultar_cruzado e listar_processos: ${TOTAIS.processos} processos e ${BLOQUEIOS_LISTA.length} bloqueios inventados, a única que tem passivo, prognóstico, parados, encerrados, bloqueios com data e processos individuais.
+- Para quantidade de processos e valores bloqueados, use SEMPRE os totais reais. Quando um número vier da base de exemplo, diga na mesma frase que é exemplo. Nunca misture as duas fontes numa mesma conta.
+- Todo número que você escrever tem de vir dessas funções. Nunca invente nem estime. Pode calcular percentuais e diferenças a partir do que as funções devolverem.
 - Para "o passivo subiu ou caiu?", use passivo_estimado com agrupar_por "mes" (evolução mês a mês) e desenhe em "linha" ou "empilhado" com dividir_por "prognostico".
 - Passivo de um contrato de gestão = metrica passivo_estimado (valor em discussão nos processos, por prognóstico Provável/Possível/Remoto). Não confunda com valor bloqueado (o que já saiu da conta).
 - Se pedirem algo que a base não tem (prazos, honorários, partes, outros anos), diga com clareza e ofereça o que dá para mostrar.

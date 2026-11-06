@@ -257,6 +257,23 @@ function Etiqueta({ s, texto, sobreCor }) {
   );
 }
 
+/* Marca de "dado de exemplo": aparece onde a planilha real não traz o dado (passivo, prognóstico,
+   parados, encerrados, cada bloqueio com data). Cinza, sem ícone de status: não é um alerta. */
+function SeloExemplo({ sobreCor }) {
+  return (
+    <span className="inline-flex items-center rounded-full shrink-0" title="Dado de exemplo: o cadastro real ainda não traz este número"
+          style={{ background: sobreCor ? "rgba(255,255,255,.14)" : S.inativoFundo, color: sobreCor ? "#FFFFFF" : S.inativo,
+                   fontFamily: F.ui, fontSize: 13, fontWeight: 600, padding: "2px 9px", verticalAlign: "middle" }}>
+      exemplo
+    </span>
+  );
+}
+
+/* Linha de origem embaixo de um número real (de onde veio e de quando é). */
+function Fonte({ children, sobreCor, style }) {
+  return <p style={{ fontFamily: F.ui, fontSize: 13, color: sobreCor ? S.marcaTexto2 : S.texto2, marginTop: 8, ...style }}>{children}</p>;
+}
+
 function Botao({ variante = "primario", children, onClick, disabled, loading, full = true }) {
   const base = { fontFamily: F.ui, fontSize: 17, fontWeight: 600, height: 50, borderRadius: 14, padding: "0 20px", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, width: full ? "100%" : "auto", transition: "transform .08s ease, background .15s ease" };
   const v = {
@@ -338,4 +355,4 @@ function FolhaInferior({ titulo, onFechar, children }) {
   );
 }
 
-export { BackHeader, Badge, Botao, CardRow, Cartao, Etiqueta, Faixa, FolhaInferior, InfoLinha, KPIs, LinhaLista, Row, SecLabel, Secao, SeletorSegmentado, Sparkline, StatusBar, TabBar, Toggle };
+export { BackHeader, Badge, Botao, CardRow, Cartao, Etiqueta, Faixa, FolhaInferior, Fonte, InfoLinha, KPIs, LinhaLista, Row, SecLabel, Secao, SeletorSegmentado, SeloExemplo, Sparkline, StatusBar, TabBar, Toggle };
